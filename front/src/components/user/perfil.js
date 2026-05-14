@@ -48,13 +48,12 @@ import {
     Add,
     Security,
     PhotoCamera,
-    SelectAll,
-    SelectAllOutlined,
+
     Done,
     DoneAll,
     Cancel,
     Save,
-    RemoveCircle,
+
     DeleteForever,
     VisibilityOff,
     Visibility,
@@ -64,7 +63,7 @@ import ListIcon from '@mui/icons-material/List';
 import { DadosContext, Url_img } from '../../routs.js';
 import { api } from '../../api/index.js';
 import ProductCard from '../card/index.js';
-import InfoIcon from '@mui/icons-material/Info';
+
 import AddchartIcon from '@mui/icons-material/Addchart';
 import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2'
@@ -76,20 +75,9 @@ export default function AdminPanel() {
 
 
     const theme = useTheme();
-    const [editeProduto, setEditeProduto] = useState({
-        "id": "",
-        "description": "",
-        "size": "",
-        "price": "",
-        "url": "",
-        "unit": "",
-        "image_id": "",
-        "name": "",
-        "images": [],
-        "categories": []
-    });
+
     const [Dados, setDados] = React.useContext(DadosContext);
-    console.log(Dados);
+    // console.log(Dados);
     const navigate = useNavigate();
     const isSmallScreen = useMediaQuery(theme.breakpoints.down("md"));
     const [showPassword, setShowPassword] = React.useState(false);
@@ -126,6 +114,10 @@ export default function AdminPanel() {
     const [openDialog5, setOpenDialog5] = useState(false);// para abrir as imagens do usuário
     const handleOpenDialog5 = () => setOpenDialog5(true);
     const handleCloseDialog5 = () => setOpenDialog5(false);
+
+    const [openDialog6, setOpenDialog6] = useState(false);// para adicionar categorias de produtos
+    const handleOpenDialog6 = () => setOpenDialog6(true);
+    const handleCloseDialog6 = () => setOpenDialog6(false);
 
 
 
@@ -507,58 +499,87 @@ export default function AdminPanel() {
                                     ))}
                                 </AvatarGroup>
                                 <Divider flexItem variant="middle" sx={{ mt: 2 }} />
-                                <Button onClick={handleOpenDialog3}
+                                <Box sx={{ gap: 2, display: 'flex', flexDirection: isSmallScreen ? 'column' : 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                                    <Button variant='contained' onClick={handleOpenDialog3}
 
-                                    sx={{ mt: 2 }}
-                                >
-                                    Adicionar Imagens
-                                </Button>
-                                <IconButton
-                                    sx={{
-
-                                        mr: 2
-                                    }}
-                                    color="success"
-                                    component="label">
-                                    <input id='img' hidden accept="image/*" type="file"
-                                        onChange={(ee) => {
+                                        sx={{ mt: 2 }}
+                                    >
+                                        Selecionar
+                                    </Button>
 
 
-                                            const files = ee.target.files;
-                                            let uploadedFiles = []
+                                    <IconButton
+                                        sx={{
+
+                                            mr: 2
+                                        }}
+                                        color="success"
+                                        component="label">
+                                        <input id='img' hidden accept="image/*" type="file"
+                                            onChange={async (ee) => {
 
 
-                                            for (let iterator of files) {
-
-                                                uploadedFiles.push(
-                                                    {
-                                                        "file": iterator,
-                                                        "id": uniqueId(),//definindo um id unico 
-                                                        "name": iterator.name,
-                                                        "prod": false,
-                                                        "readableSize": iterator.size,
-                                                        preview: URL.createObjectURL(iterator), // criando um link para preview da foto carregada
-                                                        url: URL.createObjectURL(iterator),// sera usado para setar a variavel img no proprietario/index.js
-                                                    }
-                                                )
-                                            }
+                                                const files = ee.target.files;
+                                                let uploadedFiles = []
 
 
+                                                for (let iterator of files) {
 
-                                            // CRIANDO UM DATAFORM
-                                            const data = new FormData();
-                                            data.append('file', uploadedFiles[0].file, uploadedFiles[0].name);
+                                                    uploadedFiles.push(
+                                                        {
+                                                            "file": iterator,
+                                                            "id": uniqueId(),//definindo um id unico 
+                                                            "name": iterator.name,
+                                                            "prod": false,
+                                                            "readableSize": iterator.size,
+                                                            preview: URL.createObjectURL(iterator), // criando um link para preview da foto carregada
+                                                            url: URL.createObjectURL(iterator),// sera usado para setar a variavel img no proprietario/index.js
+                                                        }
+                                                    )
+                                                }
 
-                                            // SALVANDO NOVA IMAGEM
-                                            // console.log(data)
 
-                                            try {
-                                                api.post(`/api/images/uploadProduct`, data, {
-                                                    onUploadProgress: e => {
-                                                        let progr = parseInt(Math.round((e.loaded * 100) / e.total));
-                                                        // setProgress(a => a + progr)
-                                                    }
-                                                }).then(r => {
+
+                                                // CRIANDO UM DATAFORM
+                                                const data = new FormData();
+                                                data.append('file', uploadedFiles[0].file, uploadedFiles[0].name);
+
+                                                // SALVANDO NOVA IMAGEM
+                                                // console.log(data)
+
+                                                try {
+                                                    await api.post(`/api/images/uploadProduct`, data, {
+                                                        onUploadProgress: e => {
+                                                            let progr = parseInt(Math.round((e.loaded * 100) / e.total));
+                                                            // setProgress(a => a + progr)
+                                                        }
+                                                    }).then(r => {
+
+                                                        Swal.mixin({
+                                                            toast: true,
+                                                            position: "top-end",
+                                                            showConfirmButton: false,
+                                                            timer: 3000,
+                                                            timerProgressBar: true,
+                                                            didOpen: (toast) => {
+                                                                toast.onmouseenter = Swal.stopTimer;
+                                                                toast.onmouseleave = Swal.resumeTimer;
+                                                            }
+                                                        }).fire({
+                                                            icon: "success",
+                                                            title: "Signed in successfully"
+                                                        });
+
+
+
+                                                    })
+                                                    await api.get(`/api/images/getAllImages?is_product=true`).then(r => {
+                                                        setDados(a => ({ ...a, imagesProducts: r.data.images }))
+                                                    })
+
+                                                } catch (error) {
+
+                                                    alert("formato nao aceito");
 
                                                     Swal.mixin({
                                                         toast: true,
@@ -571,41 +592,19 @@ export default function AdminPanel() {
                                                             toast.onmouseleave = Swal.resumeTimer;
                                                         }
                                                     }).fire({
-                                                        icon: "success",
-                                                        title: "Signed in successfully"
-                                                    });
-                                                    api.get(`/api/images/getAllImages?is_product=true`).then(r => {
-                                                        setDados(a => ({ ...a, imagesProducts: [r.data.images] }))
+                                                        icon: "error",
+                                                        title: "Formato de arquivo não aceito"
                                                     })
 
+                                                }
+                                            }}
+                                        />
 
-                                                })
+                                        <PhotoCamera />
+                                    </IconButton>
 
-                                            } catch (error) {
+                                </Box>
 
-                                                alert("formato nao aceito");
-
-                                                Swal.mixin({
-                                                    toast: true,
-                                                    position: "top-end",
-                                                    showConfirmButton: false,
-                                                    timer: 3000,
-                                                    timerProgressBar: true,
-                                                    didOpen: (toast) => {
-                                                        toast.onmouseenter = Swal.stopTimer;
-                                                        toast.onmouseleave = Swal.resumeTimer;
-                                                    }
-                                                }).fire({
-                                                    icon: "error",
-                                                    title: "Formato de arquivo não aceito"
-                                                })
-
-                                            }
-                                        }}
-                                    />
-
-                                    <PhotoCamera />
-                                </IconButton>
                             </Paper>
                             <Paper sx={{ mt: 2, p: 2, width: '100%' }}>
                                 <Typography variant="subtitle1" gutterBottom>
@@ -624,15 +623,18 @@ export default function AdminPanel() {
                                     ))}
 
                                 </Grid>
-                                <Button onClick={handleOpenDialog4}
-                                    size="small"
-                                    sx={{ mt: 2 }}
-                                >
-                                    Adicionar Categorias
-                                </Button>
+                                <Divider flexItem variant="middle" sx={{ mt: 2, mb: 2 }} />
+                                <Box sx={{ display: 'flex', flexDirection: isSmallScreen ? 'column' : 'row', justifyContent: 'space-between', alignItems: 'center', gap: 2 }}>
+
+                                    <Button variant='contained' onClick={handleOpenDialog4}
+                                    >
+                                        Selecionar
+                                    </Button>
+                                    <Button onClick={() => { handleOpenDialog6() }} color='warning' variant='contained'>Adicionar</Button>
+                                </Box>
                             </Paper>
                         </Box>
-                        <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 2 }}>
+                        <Box sx={{ display: 'flex', flexDirection: isSmallScreen ? 'column' : 'row', justifyContent: "space-between", mt: 2, gap: 2 }}>
                             <Button color='error' startIcon={<Cancel />} variant="outlined" onClick={() => {
                                 setDados(a => ({ ...a, ProductDataEdit: null, activeTabPerfil: 'products' }))
 
@@ -1301,6 +1303,33 @@ export default function AdminPanel() {
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleCloseDialog5}>Fechar</Button>
+                </DialogActions>
+            </Dialog>
+
+            {/* criando nova categoria dialog 6 */}
+            <Dialog open={openDialog6} onClose={handleCloseDialog6}>
+                <DialogTitle>Criar Categoria</DialogTitle>
+                <DialogContent sx={{ display: 'flex', flexDirection: 'column', pb: 2 }}>
+
+                    <TextField label="Descrição" value={Dados?.newCategory?.description} onChange={(e) => setDados(a => ({ ...a, newCategory: { ...a.newCategory, description: e.target.value } }))} />
+
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={async () => {
+                        await api.post(`/api/categories`, { description: Dados?.newCategory?.description }).then(res => {
+
+
+                        }).catch(err => {
+                            console.log(err)
+                        })
+                        await api.get(`/api/categories`).then(res => {
+                            console.log("pegou", res.data.categories)
+                            setDados(a => ({ ...a, categories: res.data.categories }))
+                        }).catch(err => {
+                            console.log(err)
+                        })
+                        handleCloseDialog6()
+                    }}>Salvar</Button>
                 </DialogActions>
             </Dialog>
 

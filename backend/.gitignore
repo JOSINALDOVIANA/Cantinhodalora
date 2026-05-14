@@ -4,7 +4,7 @@
 .pnp.js
 .env
 package-lock.json
-package.json
+
 knexfile.js
 knexfile.ts
 knexfile.development.js
