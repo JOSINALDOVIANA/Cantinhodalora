@@ -17,10 +17,12 @@ export default function ProductGrid() {
 
 
   return (
-    <Grid sx={{ m: 2, p: 2 }} container spacing={2} >
+    <Grid sx={{ m: 2, p: 2, justifyContent: "center", alignItems: "center", columns: { xs: 2, sm: 4, md: 6 } }} container spacing={2} >
       {Dados?.products?.map((produto, index) => (
         <Grid
-
+          xs={6}
+          md={4}
+          lg={3}
           key={index}>
           <ProductCard produto={produto} />
         </Grid>
