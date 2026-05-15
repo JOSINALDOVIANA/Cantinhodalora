@@ -8,17 +8,17 @@ import { DadosContext } from '../../routs.js';
 export default function ProductGrid() {
   const [Dados, setDados] = React.useContext(DadosContext);
 
-  const [products, setProducts] = React.useState([]);
+
 
   React.useEffect(() => {
 
-    api.get('/api/products').then(response => setDados(a => ({ ...a, products: response.data.produtos })));
+    api.get('/api/products').then(response => setDados(a => ({ ...a, products: response.data.produtos, productsSearch: response.data.produtos })));
   }, []);
 
 
   return (
     <Grid sx={{ m: 2, p: 2, justifyContent: "center", alignItems: "center", columns: { xs: 2, sm: 4, md: 6 } }} container spacing={2} >
-      {Dados?.products?.map((produto, index) => (
+      {Dados?.productsSearch?.map((produto, index) => (
         <Grid
           xs={6}
           md={4}

@@ -77,7 +77,7 @@ export default function AdminPanel() {
     const theme = useTheme();
 
     const [Dados, setDados] = React.useContext(DadosContext);
-    // console.log(Dados);
+
     const navigate = useNavigate();
     const isSmallScreen = useMediaQuery(theme.breakpoints.down("md"));
     const [showPassword, setShowPassword] = React.useState(false);
@@ -159,10 +159,11 @@ export default function AdminPanel() {
             console.error('Erro ao buscar imagens do usuário:', error);
         });
     }, []);
+    // console.log('Dados: ', Dados);
     // console.log(theme.breakpoints.down('md'));
 
     return (
-        <Container component={Box} disableGutters sx={{ p: 4, display: 'flex', flexDirection: isSmallScreen ? 'column' : 'row', gap: 4, minHeight: '100vh', minWidth: '100vw' }}>
+        <Container component={Box} disableGutters sx={{ p: 4, display: 'flex', flexDirection: isSmallScreen ? 'column' : 'row', gap: 4, minHeight: '100vh', minWidth: '100%' }}>
 
             <Box sx={{ display: { xs: 'none', md: 'flex' }, flexDirection: 'column', gap: 2, minWidth: '200px' }}>
                 <Box sx={{ mb: 0 }}>
@@ -413,7 +414,7 @@ export default function AdminPanel() {
                             Dados?.products?.map((produto, index) => (
                                 <Grid
                                     key={index}>
-                                    <ProductCard onClick={() => { setDados(a => ({ ...a, ProductDataEdit: produto, upProduct: true })); handleOpenDialog2(); }} produto={produto} />
+                                    <ProductCard onClick={() => { setDados(a => ({ ...a, ProductDataEdit: produto })); handleOpenDialog2(); }} produto={produto} />
                                 </Grid>
                             ))
                         }
@@ -650,7 +651,7 @@ export default function AdminPanel() {
                                         timer: 1500
                                     })
                                     api.get('/api/products').then((response) => {
-                                        setDados(a => ({ ...a, products: response.data.produtos, ProductDataEdit: null }));
+                                        setDados(a => ({ ...a, products: response.data.produtos, ProductDataEdit: null, activeTabPerfil: 'products' }));
 
 
                                     }).catch((error) => {

@@ -25,7 +25,7 @@ import { DadosContext, TrocarTheme } from '../../routs';
 import { api } from '../../api/index.js';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { CssBaseline } from '@mui/material';
-import { Call, Dashboard, FolderSpecial, Home, Logout, People, Security, Settings } from '@mui/icons-material';
+import { ArrowBack, Call, Dashboard, FolderSpecial, Home, Logout, People, Security, Settings } from '@mui/icons-material';
 import LoginIcon from '@mui/icons-material/Login';
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { deepOrange, green, blue, red, purple, teal } from '@mui/material/colors';
@@ -71,7 +71,7 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 }));
 
 export default function PrimarySearchAppBar() {
-  const [categories, setCategories] = React.useState([]);
+
   const [Dados, setDados] = React.useContext(DadosContext);
   const location = useLocation();
   const theme = useTheme();
@@ -80,8 +80,9 @@ export default function PrimarySearchAppBar() {
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("md"));
 
   React.useEffect(() => {
-    api.get('/api/categories').then(response => setCategories(response.data.categories));
+    api.get('/api/categories').then(response => setDados(a => ({ ...a, categories: response.data.categories })));
   }, []);
+  console.log('Dados ', Dados)
 
   const [openMenu, setOpenMenu] = React.useState(false);
 
@@ -299,6 +300,40 @@ export default function PrimarySearchAppBar() {
                 <ListItemText primary="Segurança" />
               </ListItem>
             }
+
+            <Divider></Divider>
+            <ListItem
+              sx={{ mb: 1, borderRadius: 2 }}
+              button
+              selected='Todos'
+              onClick={() => { setDados(a => ({ ...a, productsSearch: [...a.products] })) }}
+            >
+              <ListItemIcon>
+                <ArrowBack sx={{ color: purple[500] }} />
+              </ListItemIcon>
+              <ListItemText primary={'Todos os Produtos'} />
+            </ListItem>
+            {Dados?.categories?.map((categoria, index) => (
+              <ListItem
+                sx={{ mb: 1, borderRadius: 2 }}
+                button
+                selected={Dados?.activeTabPerfil === 'categoria'}
+                onClick={() => {
+                  let prod = Dados?.products?.filter(p => p.categories?.find(c => c.id === categoria.id))
+
+                  console.log('selectCategorie', prod)
+                  setDados(a => ({ ...a, productsSearch: [...prod] }))
+
+
+                }
+                }
+              >
+                <ListItemIcon>
+                  <ArrowBack sx={{ color: purple[500] }} />
+                </ListItemIcon>
+                <ListItemText primary={categoria.description} />
+              </ListItem>
+            ))}
           </List>
 
 

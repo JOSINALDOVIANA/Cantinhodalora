@@ -10,18 +10,25 @@ import {
 
 import { Url_img } from '../../routs.js';
 import { useTheme } from "@mui/material/styles";
+import { red } from '@mui/material/colors';
 
 export default function ProductCard({ produto, ...props }) {
   const theme = useTheme()
 
   return (
-    <Card {...props} elevation={3}
+    <Card  {...props} elevation={3}
       sx={{
-        minWidth: 250,
-        maxWidth: 250,
+
+        maxWidth: 200,
+        minWidth: 200,
+        maxHeight: 300,
+        minHeight: 300,
+
         margin: "auto",
         display: "flex",
-        flexDirection: "column"
+        flexDirection: "column",
+        justifyContent: "space-between",
+        alignContent: "space-between",
       }}
     >
       <CardMedia
@@ -30,16 +37,18 @@ export default function ProductCard({ produto, ...props }) {
         image={produto?.url || Url_img}
         alt={produto?.name}
         sx={{
-          objectFit: "", // mantém proporção e encaixa no espaço
-          width: "100%",        // ocupa toda a largura do card
-          height: 200,          // altura fixa
+          objectFit: "cover", // mantém proporção e encaixa no espaço
+          maxWidth: '100%',        // ocupa toda a largura do card
+          minHeight: 170,
+          maxHeight: 170,
+          // altura fixa
           WebkitMaskImage: `linear-gradient(to top, transparent 0.1%, ${theme.palette.mode === "dark" ? "#000" : "#fff"
             } 20%)`
         }}
       />
       <CardContent>
-        <Typography gutterBottom variant="h6" component="div">
-          {produto.name+' '+produto.size}
+        <Typography gutterBottom component="p" noWrap>
+          {produto.name + ' ' + produto.size}
         </Typography>
 
         {/* <Typography
@@ -54,10 +63,10 @@ export default function ProductCard({ produto, ...props }) {
           {produto.description}
         </Typography> */}
 
-        <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+        {/* <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
           Estoque: {produto?.unit} unidades
-        </Typography>
-        <Typography variant="h6" color="warning" sx={{ mt: 1 }}>
+        </Typography> */}
+        <Typography variant="h6" sx={{ mt: 1, color: red[500], fontWeight: 'bold' }}>
           R$ {produto?.price.toFixed(2)}
         </Typography>
       </CardContent>
