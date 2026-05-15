@@ -17,7 +17,7 @@ export default function ProductGrid() {
 
 
   return (
-    <Grid sx={{ m: 2, p: 2, justifyContent: "center", alignItems: "center", columns: { xs: 2, sm: 4, md: 6 } }} container spacing={2} >
+    <Grid sx={{ justifyContent: "center", pb: 2 }} container spacing={1} >
       {Dados?.productsSearch?.map((produto, index) => (
         <Grid
           xs={6}

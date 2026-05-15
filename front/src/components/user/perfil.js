@@ -159,8 +159,7 @@ export default function AdminPanel() {
             console.error('Erro ao buscar imagens do usuário:', error);
         });
     }, []);
-    // console.log('Dados: ', Dados);
-    // console.log(theme.breakpoints.down('md'));
+
 
     return (
         <Container component={Box} disableGutters sx={{ p: 4, display: 'flex', flexDirection: isSmallScreen ? 'column' : 'row', gap: 4, minHeight: '100vh', minWidth: '100%' }}>
@@ -409,10 +408,13 @@ export default function AdminPanel() {
 
                 {Dados?.activeTabPerfil === 'products' && (
 
-                    <Grid sx={{ alignItems: 'center', justifyContent: 'center', alignContent: "center" }} container spacing={2}>
+                    <Grid sx={{ justifyContent: 'center' }} container spacing={1}>
                         {
                             Dados?.products?.map((produto, index) => (
                                 <Grid
+                                    xs={6}
+                                    md={4}
+                                    lg={3}
                                     key={index}>
                                     <ProductCard onClick={() => { setDados(a => ({ ...a, ProductDataEdit: produto })); handleOpenDialog2(); }} produto={produto} />
                                 </Grid>

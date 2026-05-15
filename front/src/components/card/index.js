@@ -18,55 +18,49 @@ export default function ProductCard({ produto, ...props }) {
   return (
     <Card  {...props} elevation={3}
       sx={{
-
-        maxWidth: 200,
-        minWidth: 200,
-        maxHeight: 300,
-        minHeight: 300,
-
-        margin: "auto",
         display: "flex",
         flexDirection: "column",
-        justifyContent: "space-between",
-        alignContent: "space-between",
+        width: "100%",
+        maxWidth: 150, // limite opcional
+        minWidth: 150,
+        maxHeight: 200,
+        minHeight: 200,
+        margin: "auto",
+        boxShadow: 3,
+        borderRadius: 2,
+        justifyContent: 'space-between',
       }}
     >
       <CardMedia
         component="img"
-
-        image={produto?.url || Url_img}
         alt={produto?.name}
+        image={produto?.url}
         sx={{
-          objectFit: "cover", // mantém proporção e encaixa no espaço
-          maxWidth: '100%',        // ocupa toda a largura do card
-          minHeight: 170,
-          maxHeight: 170,
-          // altura fixa
+
+          objectFit: "cover",
+          maxWidth: '100%',
+          minHeight: '50%',
+          maxHeight: '50%',
           WebkitMaskImage: `linear-gradient(to top, transparent 0.1%, ${theme.palette.mode === "dark" ? "#000" : "#fff"
-            } 20%)`
+            } 10%)`
         }}
       />
-      <CardContent>
-        <Typography gutterBottom component="p" noWrap>
+      <CardContent
+        sx={{
+          minHeight: "40%",
+          maxHeight: "40%",
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "space-between",
+          alignItems: "end",
+        }}
+      >
+        <Typography sx={{ fontSize: { xs: "0.7rem", sm: "0.8rem", md: "0.9rem" } }} component="p" >
           {produto.name + ' ' + produto.size}
         </Typography>
 
-        {/* <Typography
-          sx={{
-            mt: 1,
-            display: "-webkit-box",
-            WebkitLineClamp: 3,
-            WebkitBoxOrient: "vertical",
-            overflow: "hidden"
-          }}
-        >
-          {produto.description}
-        </Typography> */}
 
-        {/* <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-          Estoque: {produto?.unit} unidades
-        </Typography> */}
-        <Typography variant="h6" sx={{ mt: 1, color: red[500], fontWeight: 'bold' }}>
+        <Typography component='p' sx={{ fontSize: { xs: "0.7rem", sm: "0.8rem", md: "0.9rem" }, color: red[500], fontWeight: 'bold' }}>
           R$ {produto?.price.toFixed(2)}
         </Typography>
       </CardContent>
@@ -78,6 +72,6 @@ export default function ProductCard({ produto, ...props }) {
           Detalhes
         </Button>
       </CardActions> */}
-    </Card>
+    </Card >
   );
 }

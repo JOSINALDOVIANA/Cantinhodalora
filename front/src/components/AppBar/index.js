@@ -82,7 +82,7 @@ export default function PrimarySearchAppBar() {
   React.useEffect(() => {
     api.get('/api/categories').then(response => setDados(a => ({ ...a, categories: response.data.categories })));
   }, []);
-  console.log('Dados ', Dados)
+  // console.log('Dados ', Dados)
 
   const [openMenu, setOpenMenu] = React.useState(false);
 
