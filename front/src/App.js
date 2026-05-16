@@ -10,7 +10,7 @@ const App = () => {
   return (
 
 
-    <Box variant="elevation" component={Paper} sx={{ pt: 9, display: "flex", flexDirection: "column", minHeight: '100vh' }} >
+    <Box variant="elevation" elevation={1} component={Paper} sx={{ pt: 9, display: "flex", flexDirection: "column", minHeight: '100vh' }} >
 
       <PrimarySearchAppBar />
       <Outlet />

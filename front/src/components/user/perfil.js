@@ -913,7 +913,7 @@ export default function AdminPanel() {
                         value={Dados?.ProductDataEdit?.unit}
                         onChange={(e) => setDados(a => ({ ...a, ProductDataEdit: { ...a.ProductDataEdit, unit: e.target.value } }))}
                     />
-                    <Paper sx={{ mt: 2, p: 2, width: '100%' }}>
+                    <Paper sx={{ mt: 2, p: 2, width: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
                         <Typography variant="subtitle1" gutterBottom>
                             Imagens
                         </Typography>
@@ -936,16 +936,16 @@ export default function AdminPanel() {
                         <Divider flexItem variant="middle" sx={{ mt: 2, mb: 2 }} />
 
 
-                        <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-                            {/* <Button onClick={handleOpenDialog3}
+                        <Box sx={{ width: '100%', display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <Button variant='contained' onClick={handleOpenDialog3}
 
                                 sx={{ mt: 2 }}
                             >
-                                Adicionar Imagens
-                            </Button> */}
-                            <Avatar onClick={handleOpenDialog3} sx={{ cursor: 'pointer', bgcolor: deepOrange[500] }}>
+                                Ver Todas
+                            </Button>
+                            {/* <Avatar onClick={handleOpenDialog3} sx={{ cursor: 'pointer', bgcolor: deepOrange[500] }}>
                                 <Add />
-                            </Avatar>
+                            </Avatar> */}
 
 
                             <IconButton
@@ -1047,7 +1047,7 @@ export default function AdminPanel() {
                         </Typography>
                         <Grid container spacing={2}>
                             {Dados?.ProductDataEdit?.categories?.map((category, index) => (
-                                <Button
+                                <Button variant='contained' color='error' size='small'
                                     onClick={() => { setDados(a => ({ ...a, ProductDataEdit: { ...a.ProductDataEdit, categories: a.ProductDataEdit?.categories.filter(c => c.id !== category.id) } })) }}
                                 >
 
@@ -1058,21 +1058,73 @@ export default function AdminPanel() {
                             ))}
 
                         </Grid>
-                        <Button onClick={handleOpenDialog4}
-                            variant="contained" size="small"
-                            sx={{ mt: 2 }}
-                        >
-                            Ver Categorias
-                        </Button>
+                        <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                            <Button onClick={handleOpenDialog4}
+                                variant="contained" size="small"
+                                sx={{ mt: 2 }}
+                            >
+                                Ver Todas
+                            </Button>
+                            <Button onClick={handleOpenDialog4}
+                                variant="contained" size="small"
+                                sx={{ mt: 2, ml: 2 }}
+                            >
+                                Criar
+                            </Button>
+                        </Box>
                     </Paper>
                 </DialogContent>
                 <DialogActions sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, justifyContent: 'space-between' }}>
-                    <Button variant="contained" startIcon={<Delete />} color='error'
-                        onClick={() => {
-                            api.delete(`api/products/${Dados?.ProductDataEdit?.id}`).then((response) => {
+                    <Box sx={{
+                        display: 'flex',
+                        flexDirection: { xs: 'column', md: 'row' },
+                        justifyContent: 'space-between',
+                        gap: '10px'
+                    }}>
+                        <Button variant="contained" startIcon={<Delete />} color='error'
+                            onClick={() => {
+                                api.delete(`api/products/${Dados?.ProductDataEdit?.id}`).then((response) => {
+                                    Swal.fire({
+                                        icon: 'success',
+                                        title: 'Produto deletado com sucesso!',
+                                        showConfirmButton: false,
+                                        timer: 1500
+                                    })
+                                    api.get('/api/products').then((response) => {
+                                        setDados(a => ({ ...a, products: response.data.produtos }));
+                                        handleCloseDialog2();
+                                    }).catch((error) => {
+                                        Swal.fire({
+                                            icon: 'error',
+                                            title: 'Erro ao buscar produtos!',
+                                            showConfirmButton: false,
+                                            timer: 1500
+                                        })
+                                        handleCloseDialog2();
+                                    });
+                                }).catch((error) => {
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'Erro ao deletar produto!',
+                                        showConfirmButton: false,
+                                        timer: 1500
+                                    })
+                                    handleCloseDialog2();
+                                });
+                            }}>Deletar
+                        </Button>
+                        <Button variant="outlined" startIcon={<Cancel />} color='error' onClick={() => {
+                            setDados(a => ({ ...a, ProductDataEdit: null }))
+                            handleCloseDialog2()
+                        }}>
+                            Cancelar
+                        </Button>
+                        <Button variant="contained" startIcon={<Save />} color='success' onClick={async () => {
+                            await api.put('/api/products/' + Dados?.ProductDataEdit?.id, Dados?.ProductDataEdit).then((response) => {
+                                // atualizar a lista de produtos no frontend
                                 Swal.fire({
                                     icon: 'success',
-                                    title: 'Produto deletado com sucesso!',
+                                    title: 'Produto atualizado com sucesso!',
                                     showConfirmButton: false,
                                     timer: 1500
                                 })
@@ -1089,53 +1141,20 @@ export default function AdminPanel() {
                                     handleCloseDialog2();
                                 });
                             }).catch((error) => {
+                                console.error('Erro ao editar produto:', error);
                                 Swal.fire({
                                     icon: 'error',
-                                    title: 'Erro ao deletar produto!',
+                                    title: 'Erro ao editar produto!',
                                     showConfirmButton: false,
                                     timer: 1500
                                 })
                                 handleCloseDialog2();
                             });
-                        }}>Deletar</Button>
-                    <Button variant="outlined" startIcon={<Cancel />} color='error' onClick={() => {
-                        setDados(a => ({ ...a, ProductDataEdit: null }))
-                        handleCloseDialog2()
-                    }}>Cancelar</Button>
-                    <Button variant="contained" startIcon={<Save />} color='success' onClick={async () => {
-                        await api.put('/api/products/' + Dados?.ProductDataEdit?.id, Dados?.ProductDataEdit).then((response) => {
-                            // atualizar a lista de produtos no frontend
-                            Swal.fire({
-                                icon: 'success',
-                                title: 'Produto atualizado com sucesso!',
-                                showConfirmButton: false,
-                                timer: 1500
-                            })
-                            api.get('/api/products').then((response) => {
-                                setDados(a => ({ ...a, products: response.data.produtos }));
-                                handleCloseDialog2();
-                            }).catch((error) => {
-                                Swal.fire({
-                                    icon: 'error',
-                                    title: 'Erro ao buscar produtos!',
-                                    showConfirmButton: false,
-                                    timer: 1500
-                                })
-                                handleCloseDialog2();
-                            });
-                        }).catch((error) => {
-                            console.error('Erro ao editar produto:', error);
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Erro ao editar produto!',
-                                showConfirmButton: false,
-                                timer: 1500
-                            })
-                            handleCloseDialog2();
-                        });
-                        // /api/products/editProduct.id
-                        // enviar editeProduto para o backend, para atualizar o produto, e depois atualizar a lista de produtos no frontend, e fechar o dialog }} 
-                    }} >{Dados?.upProduct ? "Atualizar" : "salvar"}</Button>
+                            // /api/products/editProduct.id
+                            // enviar editeProduto para o backend, para atualizar o produto, e depois atualizar a lista de produtos no frontend, e fechar o dialog }} 
+                        }} >{Dados?.upProduct ? "Atualizar" : "salvar"}
+                        </Button>
+                    </Box>
                 </DialogActions>
             </Dialog>
 

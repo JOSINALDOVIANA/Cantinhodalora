@@ -24,7 +24,7 @@ import ListItemText from '@mui/material/ListItemText';
 import { DadosContext, TrocarTheme } from '../../routs';
 import { api } from '../../api/index.js';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { CssBaseline } from '@mui/material';
+import { CssBaseline, Paper } from '@mui/material';
 import { ArrowBack, Call, Dashboard, FolderSpecial, Home, Logout, People, Security, Settings } from '@mui/icons-material';
 import LoginIcon from '@mui/icons-material/Login';
 import useMediaQuery from "@mui/material/useMediaQuery";
@@ -94,10 +94,10 @@ export default function PrimarySearchAppBar() {
   };
   // menu atual
   const renderDrawerMenu = (
-    <div>
+    <Box >
       {/* <Button onClick={toggleDrawer(true)}>Open drawer</Button> */}
-      <Drawer open={openMenu} onClose={toggleOpenDrawerMenu(false)}>
-        <Box sx={{ width: 250 }} role="presentation" onClick={toggleOpenDrawerMenu(false)} onKeyDown={toggleOpenDrawerMenu(false)}>
+      <Drawer sx={{}} open={openMenu} onClose={toggleOpenDrawerMenu(false)}>
+        <Box sx={{ width: 250, minHeight: '100vh', maxHeight: '100vh' }} role="presentation" onClick={toggleOpenDrawerMenu(false)} onKeyDown={toggleOpenDrawerMenu(false)}>
 
           <List>
             {/* Login */}
@@ -153,7 +153,7 @@ export default function PrimarySearchAppBar() {
 
             {/* Whatsapp, Facebook, Instagram e telefone */}
             <Divider />
-            <ListItem disablePadding>
+            <ListItem onClick={() => { window.open('https://wa.me/5596981218004', '_blank') }} disablePadding>
               <ListItemButton>
                 <ListItemIcon>
                   <WhatsAppIcon sx={{ color: green[500] }} />
@@ -162,16 +162,16 @@ export default function PrimarySearchAppBar() {
               </ListItemButton>
             </ListItem>
 
-            <ListItem disablePadding>
+            <ListItem onClick={() => { window.open('https://www.facebook.com/CantinhoDaLora') }} disablePadding>
               <ListItemButton>
-                <ListItemIcon>
+                <ListItemIcon >
                   <FacebookIcon sx={{ color: blue[500] }} />
-                </ListItemIcon>
+                </ListItemIcon>''
                 <ListItemText primary={'Facebook'} />
               </ListItemButton>
             </ListItem>
 
-            <ListItem disablePadding>
+            <ListItem onClick={() => { window.open('https://www.instagram.com/josinaldo_viana') }} disablePadding>
               <ListItemButton>
                 <ListItemIcon>
                   <InstagramIcon sx={{ color: purple[500] }} />
@@ -180,7 +180,7 @@ export default function PrimarySearchAppBar() {
               </ListItemButton>
             </ListItem>
 
-            <ListItem disablePadding>
+            <ListItem onClick={() => { window.open('tel:+5596981218004') }} disablePadding>
               <ListItemButton>
                 <ListItemIcon>
                   <Call sx={{ color: deepOrange[500] }} />
@@ -196,7 +196,7 @@ export default function PrimarySearchAppBar() {
             {Dados?.logado && Dados?.user?.adm &&
               <ListItem
                 sx={{ display: { md: "none" }, mb: 1, borderRadius: 2 }}
-                button
+
                 selected={Dados?.activeTabPerfil === 'dashboard'}
                 onClick={() => setDados({ ...Dados, activeTabPerfil: 'dashboard' })}
               >
@@ -211,7 +211,7 @@ export default function PrimarySearchAppBar() {
             {/* User */}
             {Dados?.logado && Dados?.user?.adm &&
               <ListItem
-                button
+
                 selected={Dados?.activeTabPerfil === 'users'}
                 onClick={() => setDados({ ...Dados, activeTabPerfil: 'users' })}
                 sx={{ display: { md: "none" }, mb: 1, borderRadius: 2 }}
@@ -227,7 +227,7 @@ export default function PrimarySearchAppBar() {
             {Dados?.logado &&
               <ListItem
                 sx={{ display: { md: "none" }, mb: 1, borderRadius: 2 }}
-                button
+
                 selected={Dados?.activeTabPerfil === 'settings'}
                 onClick={() => setDados({ ...Dados, activeTabPerfil: 'settings' })}
               >
@@ -257,7 +257,7 @@ export default function PrimarySearchAppBar() {
             {Dados?.logado && Dados?.user?.adm &&
               <ListItem
                 sx={{ display: { md: "none" }, mb: 1, borderRadius: 2 }}
-                button
+
                 selected={Dados?.activeTabPerfil === 'addProduct'}
                 onClick={() => {
                   setDados({
@@ -290,7 +290,7 @@ export default function PrimarySearchAppBar() {
             {Dados?.logado &&
               <ListItem
                 sx={{ display: { md: "none" }, mb: 1, borderRadius: 2 }}
-                button
+
                 selected={Dados?.activeTabPerfil === 'security'}
                 onClick={() => setDados({ ...Dados, activeTabPerfil: 'security' })}
               >
@@ -302,22 +302,27 @@ export default function PrimarySearchAppBar() {
             }
 
             <Divider></Divider>
+            {/* categorias */}
             <ListItem
-              sx={{ mb: 1, borderRadius: 2 }}
-              button
-              selected='Todos'
+
+              sx={{ mb: 1, borderRadius: 2, cursor: 'pointer' }}
+
               onClick={() => { setDados(a => ({ ...a, productsSearch: [...a.products] })) }}
             >
-              <ListItemIcon>
-                <ArrowBack sx={{ color: purple[500] }} />
-              </ListItemIcon>
-              <ListItemText primary={'Todos os Produtos'} />
+              <ListItemButton>
+                <ListItemIcon>
+                  <ArrowBack sx={{ color: purple[500] }} />
+                </ListItemIcon>
+                <ListItemText primary={'Todos os Produtos'} />
+              </ListItemButton>
             </ListItem>
+
             {Dados?.categories?.map((categoria, index) => (
               <ListItem
-                sx={{ mb: 1, borderRadius: 2 }}
-                button
-                selected={Dados?.activeTabPerfil === 'categoria'}
+                sx={{ mb: 1, borderRadius: 2, cursor: 'pointer' }}
+
+                key={categoria.id}
+
                 onClick={() => {
                   let prod = Dados?.products?.filter(p => p.categories?.find(c => c.id === categoria.id))
 
@@ -328,21 +333,23 @@ export default function PrimarySearchAppBar() {
                 }
                 }
               >
-                <ListItemIcon>
-                  <ArrowBack sx={{ color: purple[500] }} />
-                </ListItemIcon>
-                <ListItemText primary={categoria.description} />
+                <ListItemButton>
+                  <ListItemIcon>
+                    <ArrowBack sx={{ color: purple[500] }} />
+                  </ListItemIcon>
+                  <ListItemText primary={categoria.description} />
+                </ListItemButton>
               </ListItem>
             ))}
           </List>
 
 
 
-          <Divider />
+
 
         </Box>
       </Drawer>
-    </div>
+    </Box>
   );
 
 
@@ -354,18 +361,19 @@ export default function PrimarySearchAppBar() {
       <AppBar
         elevation={0}
         sx={{
-          background: 'rgba(18, 18, 18, 0.65)',
+          // background: 'rgba(236, 59, 59, 0.65)',
           backdropFilter: 'blur(12px)',
           borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
+
         }}
         position="fixed">
         <Toolbar>
           <IconButton
             size="large"
             edge="start"
-            color="inherit"
+            // color="inherit"
             aria-label="open drawer"
-            sx={{ mr: 2 }}
+            sx={{ mr: 2, color: red[500] }}
             onClick={toggleOpenDrawerMenu(true)}
           >
             <ListIcon />
@@ -374,11 +382,11 @@ export default function PrimarySearchAppBar() {
             variant="h6"
             noWrap
             component="div"
-            sx={{ display: { xs: 'none', sm: 'block' } }}
+            sx={{ display: { sm: 'block' }, color: red[500] }}
           >
             Cantinho da Lora
           </Typography>
-          <Search>
+          <Search sx={{ display: { xs: 'none', md: 'block' } }}>
             <SearchIconWrapper>
               <SearchIcon />
             </SearchIconWrapper>
