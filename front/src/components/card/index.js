@@ -23,12 +23,12 @@ export default function ProductCard({ produto, ...props }) {
         width: "100%",
         maxWidth: 150, // limite opcional
         minWidth: 150,
-        maxHeight: 200,
-        minHeight: 200,
-        margin: "auto",
+        maxHeight: 250,
+        minHeight: 250,
         boxShadow: 3,
         borderRadius: 2,
         justifyContent: 'space-between',
+
       }}
     >
       <CardMedia
@@ -39,23 +39,26 @@ export default function ProductCard({ produto, ...props }) {
 
           objectFit: "cover",
           maxWidth: '100%',
-          minHeight: '50%',
-          maxHeight: '50%',
+          minHeight: 150,
+          maxHeight: 150,
           WebkitMaskImage: `linear-gradient(to top, transparent 0.1%, ${theme.palette.mode === "dark" ? "#000" : "#fff"
             } 10%)`
         }}
       />
       <CardContent
         sx={{
-          minHeight: "40%",
-          maxHeight: "40%",
+          minHeight: 70,
+          maxHeight: 70,
           display: "flex",
           flexDirection: "column",
           justifyContent: "space-between",
-          alignItems: "end",
+          // alignContent: "space-between",
+          // alignItems: "flex-end",
+          justifyItems: "flex-end",
+          padding: 1,
         }}
       >
-        <Typography sx={{ fontSize: { xs: "0.7rem", sm: "0.8rem", md: "0.9rem" } }} component="p" >
+        <Typography sx={{ fontSize: { xs: "0.6rem", sm: "0.7rem", md: "0.8rem" } }} component="p" >
           {produto.name + ' ' + produto.size}
         </Typography>
 
