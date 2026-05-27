@@ -1,4 +1,5 @@
 import express from 'express';
+import {autenticarJWT} from '../../index.js';
 import { getAllClients, getClientById, createClient, updateClient, deleteClient } from '../controller/clientsController.js';
 
 const router = express.Router();
@@ -6,7 +7,7 @@ const router = express.Router();
 // GET /api/clients
 router.get('/', async (req, res) => {
   try {
-    const clients = await getAllClientes();
+    const clients = await getAllClients();
     res.json({ clients });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -14,7 +15,7 @@ router.get('/', async (req, res) => {
 });
 
 // POST /api/clients
-router.post('/', async (req, res) => {
+router.post('/',autenticarJWT, async (req, res) => {
   try {
     const cliente = await createClient(req.body);
     res.status(201).json(cliente);
@@ -44,7 +45,7 @@ router.put('/:id', async (req, res) => {
 });
 
 // DELETE /api/clients/:id
-router.delete('/:id', async (req, res) => {
+router.delete('/:id',autenticarJWT, async (req, res) => {
   try {
     const result = await deleteClient(req.params.id);
     res.json(result);

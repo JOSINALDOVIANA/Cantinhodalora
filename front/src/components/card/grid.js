@@ -11,10 +11,17 @@ export default function ProductGrid() {
 
 
   React.useEffect(() => {
-
-    api.get('/api/products').then(response => setDados(a => ({ ...a, products: response.data.produtos, productsSearch: response.data.produtos })));
+    api.get('/api/products').then(response => {
+      // console.log('response.data.produtos', response);
+      setDados(a => ({ ...a, productsSearch: response.data.produtos, products: response.data.produtos }))
+    });
+    api.get('/api/categories').then(response => {
+      // console.log('response.data.categories', response);
+      setDados(a => ({ ...a, categories: response.data.categories }))
+    });
   }, []);
 
+  // console.log(Dados)
 
   return (
     <Grid sx={{ justifyContent: "center", pb: 2 }} container spacing={1} >

@@ -1,5 +1,125 @@
-import db from '../database/db.js';
+import db from '../database/conexao.js';
 
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     Product:
+ *       type: object
+ *       required:
+ *         - id
+ *         - name
+ *       properties:
+ *         id:
+ *           type: string
+ *           description: ID único do produto
+ *         name:
+ *           type: string
+ *           description: Nome do produto
+ *         description:
+ *           type: string
+ *           description: Descrição detalhada do produto
+ *         price:
+ *           type: number
+ *           format: float
+ *           description: Preço do produto
+ *         unit:
+ *           type: integer
+ *           description: Unidade do produto
+ *         size:
+ *           type: string
+ *           description: Tamanho do produto
+ *         url:
+ *           type: string
+ *           nullable: true
+ *           description: URL da imagem principal ativa do produto
+ *         image_id:
+ *           type: string
+ *           nullable: true
+ *           description: ID da imagem principal ativa
+ *         images:
+ *           type: array
+ *           description: Lista de imagens associadas ao produto
+ *           items:
+ *             type: object
+ *             properties:
+ *               id:
+ *                 type: string
+ *               name:
+ *                 type: string
+ *               size:
+ *                 type: string
+ *               key:
+ *                 type: string
+ *               url:
+ *                 type: string
+ *               delete:
+ *                 type: string
+ *         categories:
+ *           type: array
+ *           description: Lista de categorias associadas ao produto
+ *           items:
+ *             type: object
+ *             properties:
+ *               id:
+ *                 type: string
+ *               name:
+ *                 type: string
+ *       example:
+ *         id: "1"
+ *         name: "Coxinha"
+ *         description: "Deliciosa coxinha de frango"
+ *         price: 5.50
+ *         unit: 10
+ *         size: "Grande"
+ *         url: "http://localhost:3001/api/static/images/coxinha.jpg"
+ *         image_id: "123"
+ *         images: []
+ *         categories: []
+ */
+
+/**
+ * @openapi
+ * tags:
+ *   name: Products
+ *   description: Rotas relacionadas a produtos
+ */
+
+/**
+ * @openapi
+ * /api/products:
+ *   get:
+ *     summary: Retorna a lista de produtos ou um produto específico
+ *     description: Retorna todos os produtos do banco de dados ou filtra por product_id se passado na query.
+ *     tags: [Products]
+ *     parameters:
+ *       - in: query
+ *         name: product_id
+ *         schema:
+ *           type: string
+ *         required: false
+ *         description: ID de um produto específico para busca
+ *     responses:
+ *       200:
+ *         description: Lista de produtos ou produto encontrado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: boolean
+ *                 produto:
+ *                   $ref: '#/components/schemas/Product'
+ *                 produtos:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Product'
+ *       404:
+ *         description: Produto não encontrado
+ *       500:
+ *         description: Erro interno no servidor
+ */
 export const getAllProducts = async (req, res) => {
   const { product_id } = req.query;
   // console.log('product_id:', product_id);
@@ -37,6 +157,8 @@ export const getAllProducts = async (req, res) => {
       }
       produtos[key].url = produtos[key].images.find(img => img.id === produtos[key].image_id)?.url || null;
     }
+
+
     return res.json({ status: true, produtos });
   } catch (error) {
     console.log(error);
@@ -44,18 +166,61 @@ export const getAllProducts = async (req, res) => {
   }
 };
 
-// export const getProductById = async (id) => {
-//   try {
-//     const produto = await db('products').where({ id }).first();
-//     if (!produto) {
-//       throw new Error('Produto não encontrado');
-//     }
-//     return produto;
-//   } catch (error) {
-//     throw new Error('Erro ao buscar produto: ' + error.message);
-//   }
-// };
 
+/**
+ * @openapi
+ * /api/products:
+ *   post:
+ *     summary: Cria um novo produto
+ *     description: Registra um novo produto com suas respectivas associações de imagens e categorias.
+ *     tags: [Products]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - name
+ *             properties:
+ *               name:
+ *                 type: string
+ *               description:
+ *                 type: string
+ *               price:
+ *                 type: number
+ *               unit:
+ *                 type: integer
+ *               size:
+ *                 type: string
+ *               url:
+ *                 type: string
+ *               image_id:
+ *                 type: string
+ *               images:
+ *                 type: array
+ *                 items:
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: string
+ *               categories:
+ *                 type: array
+ *                 items:
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: string
+ *     responses:
+ *       201:
+ *         description: Produto criado com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Product'
+ *       500:
+ *         description: Erro ao criar o produto
+ */
 export const createProduct = async (req, res) => {
   let { description, price, unit, size, url = "", images = [], image_id, name, categories = [] } = req.body;
   console.log("body", req.body);
@@ -85,6 +250,67 @@ export const createProduct = async (req, res) => {
   }
 };
 
+/**
+ * @openapi
+ * /api/products/{id}:
+ *   put:
+ *     summary: Atualiza os dados de um produto existente
+ *     description: Atualiza os dados principais do produto e renova as associações de categorias e imagens.
+ *     tags: [Products]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID do produto a ser atualizado
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *               description:
+ *                 type: string
+ *               price:
+ *                 type: number
+ *               unit:
+ *                 type: integer
+ *               size:
+ *                 type: string
+ *               url:
+ *                 type: string
+ *               image_id:
+ *                 type: string
+ *               images:
+ *                 type: array
+ *                 items:
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: string
+ *               categories:
+ *                 type: array
+ *                 items:
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: string
+ *     responses:
+ *       200:
+ *         description: Produto atualizado com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Product'
+ *       404:
+ *         description: Produto não encontrado
+ *       500:
+ *         description: Erro ao atualizar o produto
+ */
 export const updateProduct = async (req, res) => {
   const { id } = req.params;
   const { description, price, unit, size, url = "", images = [], image_id, name, categories = [] } = req.body;
@@ -114,6 +340,36 @@ export const updateProduct = async (req, res) => {
   }
 };
 
+/**
+ * @openapi
+ * /api/products/{id}:
+ *   delete:
+ *     summary: Exclui um produto do banco de dados
+ *     description: Deleta o registro de um produto pelo seu ID único.
+ *     tags: [Products]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID do produto a ser excluído
+ *     responses:
+ *       200:
+ *         description: Produto deletado com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Produto deletado com sucesso
+ *       404:
+ *         description: Produto não encontrado
+ *       500:
+ *         description: Erro ao excluir o produto
+ */
 export const deleteProduct = async (req, res) => {
   const { id } = req.params;
 

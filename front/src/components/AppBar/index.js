@@ -79,10 +79,7 @@ export default function PrimarySearchAppBar() {
 
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("md"));
 
-  React.useEffect(() => {
-    api.get('/api/categories').then(response => setDados(a => ({ ...a, categories: response.data.categories })));
-  }, []);
-  // console.log('Dados ', Dados)
+
 
   const [openMenu, setOpenMenu] = React.useState(false);
 
@@ -115,8 +112,14 @@ export default function PrimarySearchAppBar() {
             {/* sair/logout */}
             {Dados?.logado &&
               <ListItem onClick={() => {
-                setDados({ ...Dados, logado: false, user: null });
-                navegation('/')
+                api.post('/api/users/logout').then(response => {
+                  if (response.status === 200) {
+                    setDados({ ...Dados, logado: false, user: null });
+                    navegation('/')
+                  }
+                }).catch(error => {
+                  console.error(error);
+                })
               }} disablePadding>
                 <ListItemButton>
                   <ListItemIcon>
@@ -373,7 +376,7 @@ export default function PrimarySearchAppBar() {
             edge="start"
             // color="inherit"
             aria-label="open drawer"
-            sx={{ mr: 2, color: red[500] }}
+            sx={{ mr: 2 }}
             onClick={toggleOpenDrawerMenu(true)}
           >
             <ListIcon />
@@ -382,7 +385,7 @@ export default function PrimarySearchAppBar() {
             variant="h6"
             noWrap
             component="div"
-            sx={{ display: { sm: 'block' }, color: red[500] }}
+            sx={{ display: { sm: 'block' } }}
           >
             Cantinho da Lora
           </Typography>

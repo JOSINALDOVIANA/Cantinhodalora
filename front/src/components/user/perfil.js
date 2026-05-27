@@ -38,6 +38,7 @@ import {
     OutlinedInput,
     InputLabel,
     FormControl,
+    CircularProgress,
 } from '@mui/material';
 import {
     Dashboard,
@@ -93,7 +94,114 @@ export default function AdminPanel() {
         event.preventDefault();
     };
 
+    const totalUsers = Dados?.user?.usersSystem?.length || 0;
+    const activeUsers = Dados?.user?.usersSystem?.filter(u => u.status == true).length || 0;
+    const adminUsers = Dados?.user?.usersSystem?.filter(u => u.adm == true).length || 0;
+    const totalProducts = Dados?.products?.length || 0;
 
+    const getPercent = (value, total) => total > 0 ? Math.round((value / total) * 100) : 0;
+
+    const dashboardCards = [
+        {
+            title: 'Usuários',
+            value: totalUsers,
+            subtitle: 'Total de usuários cadastrados',
+            percent: getPercent(totalUsers, totalUsers), // Sempre 100% para o total
+            color: green[500],
+        },
+        {
+            title: 'Ativos',
+            value: activeUsers,
+            subtitle: 'Usuários com status ativo',
+            percent: getPercent(activeUsers, totalUsers),
+            color: blue[500],
+        },
+        {
+            title: 'Administradores',
+            value: adminUsers,
+            subtitle: 'Contagem de administradores',
+            percent: getPercent(adminUsers, totalUsers),
+            color: purple[500],
+        },
+        {
+            title: 'Produtos',
+            value: totalProducts,
+            subtitle: 'Produtos cadastrados no catálogo',
+            percent: totalProducts > 0 ? 100 : 0,
+            color: deepOrange[500],
+        },
+    ];
+
+    const renderDashboardCard = ({ title, value, subtitle, percent, color }) => (
+        <Grid xs={12} sm={6} md={4} key={title}>
+            <Card sx={{
+                minHeight: 220,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                backgroundColor: theme.palette.mode === 'dark' ? theme.palette.primary.dark : theme.palette.grey[50],
+                border: `1px solid ${theme.palette.divider}`,
+                boxShadow: theme.shadows[1],
+            }}>
+                <CardContent sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: 2,
+                    height: '100%',
+                    width: '100%',
+                }}>
+                    <Typography color="textSecondary" gutterBottom sx={{ letterSpacing: 0.5 }}>
+                        {title}
+                    </Typography>
+                    <Box sx={{ position: 'relative', display: 'inline-flex' }}>
+                        <CircularProgress
+                            variant="determinate"
+                            value={percent}
+                            size={120}
+                            thickness={5}
+                            sx={{ color, opacity: 0.2 }}
+                        />
+                        <CircularProgress
+                            variant="determinate"
+                            value={percent}
+                            size={120}
+                            thickness={5}
+                            sx={{
+                                color,
+                                position: 'absolute',
+                                left: 0,
+                                top: 0,
+                                transform: 'rotate(-90deg)',
+                            }}
+                        />
+                        <Box sx={{
+                            top: 0,
+                            left: 0,
+                            bottom: 0,
+                            right: 0,
+                            position: 'absolute',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                        }}>
+                            <Typography variant="h4" sx={{ fontWeight: 700 }}>
+                                {value}
+                            </Typography>
+                            <Typography variant="caption" color="textSecondary">
+                                {percent}%
+                            </Typography>
+                        </Box>
+                    </Box>
+                    <Typography variant="body2" color="textSecondary" textAlign="center">
+                        {subtitle}
+                    </Typography>
+                </CardContent>
+            </Card>
+        </Grid>
+    );
 
     const [openDialog, setOpenDialog] = useState(false);// para adicionar usuário
     const handleOpenDialog = () => setOpenDialog(true);
@@ -123,7 +231,6 @@ export default function AdminPanel() {
 
     React.useEffect(() => {
         if (!Dados?.logado) {
-
             Swal.fire({
                 title: "Erro",
                 text: "Você não tem permissão para acessar esta página!",
@@ -132,6 +239,7 @@ export default function AdminPanel() {
                 confirmButtonColor: "#050505",
             });
             navigate('/');
+            return; // Impede que o restante do useEffect seja executado se não estiver logado
         }
 
         api.get('/api/users').then((response) => {
@@ -153,7 +261,7 @@ export default function AdminPanel() {
 
         setDados(a => ({ ...a, activeTabPerfil: 'dashboard', newUser: { name: '', email: '', password: '', image_id: null, images: [] } }));
 
-        api.get('api/images/getAllImages').then((response) => {
+        api.get('/api/images/getAllImages').then((response) => {
             setDados(a => ({ ...a, userImages: response.data.images }));
         }).catch((error) => {
             console.error('Erro ao buscar imagens do usuário:', error);
@@ -241,69 +349,8 @@ export default function AdminPanel() {
             <Box sx={{ flexGrow: 1 }}>
 
                 {Dados?.activeTabPerfil === 'dashboard' && (
-                    <Grid sx={{ alignItems: 'center', justifyContent: 'center', alignContent: "center" }} container spacing={2}>
-                        <Grid xs={12} sm={6} md={4}>
-                            <Card sx={{
-                                width: '150px',
-                                backgroundColor: theme.palette.mode === 'dark' ? theme.palette.primary.dark : theme.palette.primary.light,
-                                height: '150px',
-                            }}>
-                                <CardContent sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
-                                    <Typography color="textSecondary" gutterBottom>
-                                        Usuários
-                                    </Typography>
-                                    <Typography variant="h5">{Dados?.user?.usersSystem?.length}</Typography>
-                                </CardContent>
-                            </Card>
-                        </Grid>
-                        <Grid xs={12} sm={6} md={4}>
-                            <Card
-                                sx={{
-                                    width: '150px',
-                                    backgroundColor: theme.palette.mode === 'dark' ? theme.palette.primary.dark : theme.palette.primary.light,
-                                    height: '150px',
-                                }}
-                            >
-                                <CardContent sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
-                                    <Typography color="textSecondary" gutterBottom>
-                                        Ativos
-                                    </Typography>
-                                    <Typography variant="h5">{Dados?.user?.usersSystem?.filter(u => u.status == true).length}</Typography>
-                                </CardContent>
-                            </Card>
-                        </Grid>
-                        <Grid xs={12} sm={6} md={4}>
-                            <Card
-                                sx={{
-                                    width: '150px',
-                                    backgroundColor: theme.palette.mode === 'dark' ? theme.palette.primary.dark : theme.palette.primary.light,
-                                    height: '150px',
-                                }}
-                            >
-                                <CardContent sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
-                                    <Typography color="textSecondary" gutterBottom>
-                                        Administradores
-                                    </Typography>
-                                    <Typography variant="h5">{Dados?.user?.usersSystem?.filter(u => u.adm == true).length}</Typography>
-                                </CardContent>
-                            </Card>
-                        </Grid>
-                        <Grid xs={12} sm={6} md={4}>
-                            <Card
-                                sx={{
-                                    width: '150px',
-                                    backgroundColor: theme.palette.mode === 'dark' ? theme.palette.primary.dark : theme.palette.primary.light,
-                                    height: '150px',
-                                }}
-                            >
-                                <CardContent sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
-                                    <Typography color="textSecondary" gutterBottom>
-                                        Produtos
-                                    </Typography>
-                                    <Typography variant="h5">{Dados?.products?.length}</Typography>
-                                </CardContent>
-                            </Card>
-                        </Grid>
+                    <Grid container spacing={2} sx={{ alignItems: 'stretch', justifyContent: 'center' }}>
+                        {dashboardCards.map((card) => renderDashboardCard(card))}
                     </Grid>
                 )}
 
@@ -520,7 +567,6 @@ export default function AdminPanel() {
                                         component="label">
                                         <input id='img' hidden accept="image/*" type="file"
                                             onChange={async (ee) => {
-
 
                                                 const files = ee.target.files;
                                                 let uploadedFiles = []
@@ -1065,7 +1111,7 @@ export default function AdminPanel() {
                             >
                                 Ver Todas
                             </Button>
-                            <Button onClick={handleOpenDialog4}
+                            <Button onClick={handleOpenDialog6}
                                 variant="contained" size="small"
                                 sx={{ mt: 2, ml: 2 }}
                             >

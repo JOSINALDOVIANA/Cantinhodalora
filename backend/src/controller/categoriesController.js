@@ -1,54 +1,220 @@
-import db from '../database/db.js';
+import db from '../database/conexao.js';
 
-export const getAllCategories = async () => {
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     Category:
+ *       type: object
+ *       required:
+ *         - id
+ *         - name
+ *       properties:
+ *         id:
+ *           type: string
+ *           description: ID único da categoria
+ *         name:
+ *           type: string
+ *           description: Nome da categoria
+ *       example:
+ *         id: "1"
+ *         name: "Bebidas"
+ */
+
+/**
+ * @openapi
+ * tags:
+ *   name: Categories
+ *   description: Rotas relacionadas a categorias de produtos
+ */
+
+/**
+ * @openapi
+ * /api/categories:
+ *   get:
+ *     summary: Retorna todas as categorias cadastradas
+ *     tags: [Categories]
+ *     responses:
+ *       200:
+ *         description: Lista de categorias retornada com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 categories:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Category'
+ *       500:
+ *         description: Erro interno no servidor ao buscar categorias
+ */
+export const getAllCategories = async (req, res) => {
   try {
-    return await db('categories').select('*');
+    return res.json({
+      categories: await db('categories').select('*')
+    })
   } catch (error) {
-    throw new Error('Erro ao buscar categories: ' + error.message);
+    return res.json({
+      categories: []
+    })
   }
 };
 
-export const getCategoryById = async (id) => {
+/**
+ * @openapi
+ * /api/categories/{id}:
+ *   get:
+ *     summary: Retorna uma categoria específica pelo ID
+ *     tags: [Categories]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID da categoria
+ *     responses:
+ *       200:
+ *         description: Categoria retornada com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Category'
+ *       404:
+ *         description: Categoria não encontrada
+ */
+export const getCategoryById = async (req, res) => {
+  const { id } = req.params;
   try {
     const categoria = await db('categories').where({ id }).first();
     if (!categoria) {
-      throw new Error('Categoria não encontrada');
+      return res.json({ category: {} })
     }
-    return categoria;
+    return res.json({ category: categoria })
   } catch (error) {
-    throw new Error('Erro ao buscar categoria: ' + error.message);
+    return res.json({ category: {} })
   }
 };
 
-export const createCategory = async (categoriaData) => {
+/**
+ * @openapi
+ * /api/categories:
+ *   post:
+ *     summary: Cria uma nova categoria
+ *     tags: [Categories]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - name
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 description: Nome da categoria
+ *     responses:
+ *       201:
+ *         description: Categoria criada com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Category'
+ *       500:
+ *         description: Erro ao criar categoria
+ */
+export const createCategory = async (req, res) => {
+  const { description } = req.body;
   try {
-    const [id] = await db('categories').insert(categoriaData).returning('id');
-    return { id, ...categoriaData };
+    const [id] = await db('categories').insert({ description }).returning('id');
+    return res.json({ category: { id, description } })
   } catch (error) {
-    throw new Error('Erro ao criar categoria: ' + error.message);
+    return res.json({ category: {} })
   }
 };
 
-export const updateCategory = async (id, categoriaData) => {
+/**
+ * @openapi
+ * /api/categories/{id}:
+ *   put:
+ *     summary: Atualiza os dados de uma categoria existente
+ *     tags: [Categories]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID da categoria a ser atualizada
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - name
+ *             properties:
+ *               name:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Categoria atualizada com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Category'
+ *       500:
+ *         description: Erro ao atualizar categoria
+ */
+export const updateCategory = async (req, res) => {
+  const { id, name } = req.body;
   try {
-    const updated = await db('categories').where({ id }).update(categoriaData);
+    const updated = await db('categories').where({ id }).update({ name });
     if (!updated) {
-      throw new Error('Categoria não encontrada');
+      return res.json({ category: {} })
     }
-    return await getCategoryById(id);
+    return await getCategoryById(req, res);
   } catch (error) {
-    throw new Error('Erro ao atualizar categoria: ' + error.message);
+    return res.json({ category: {} })
   }
 };
 
-export const deleteCategory = async (id) => {
+/**
+ * @openapi
+ * /api/categories/{id}:
+ *   delete:
+ *     summary: Deleta uma categoria existente
+ *     tags: [Categories]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID da categoria a ser deletada
+ *     responses:
+ *       200:
+ *         description: Categoria excluída com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Categoria deletada com sucesso
+ *       500:
+ *         description: Erro ao deletar categoria
+ */
+export const deleteCategory = async (req, res) => {
+  const { id } = req.body;
   try {
-    const deleted = await db('categories').where({ id }).del();
-    if (!deleted) {
-      throw new Error('Categoria não encontrada');
-    }
-    return { message: 'Categoria deletada com sucesso' };
+    await db('categories').where({ id }).del();
+    return res.json({ message: 'Categoria deletada com sucesso' })
   } catch (error) {
-    throw new Error('Erro ao deletar categoria: ' + error.message);
+    return res.json({ message: 'Erro ao deletar categoria' })
   }
 };

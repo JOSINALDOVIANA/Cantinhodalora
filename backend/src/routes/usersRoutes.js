@@ -1,23 +1,28 @@
 import express from 'express';
-import { getAllUsers, getUserById, createUser, updateUser, deleteUser, userLogin } from '../controller/usersController.js';
+import { getAllUsers, createUser, updateUser, deleteUser, userLogin, userRefresh, userLogout } from '../controller/usersController.js';
+import { autenticarJWT } from '../../index.js';
 
 const router = express.Router();
 
 // GET /api/users
-// GET /api/users?user_id=1
-router.get('/', async (req, res) => getAllUsers(req, res));
+router.get('/', autenticarJWT, getAllUsers);
 
 // POST /api/users
-router.post('/', async (req, res) => createUser(req, res));
+router.post('/', createUser);
 
-// GET /api/users/login
-router.post('/login', async (req, res) => userLogin(req, res));
-
+// POST /api/users/login
+router.post('/login', userLogin);
 
 // PUT /api/users/:id
-router.put('/:id', async (req, res) => updateUser(req, res));
+router.put('/:id', autenticarJWT, updateUser);
 
 // DELETE /api/users/:id
-router.delete('/:id', async (req, res) => deleteUser(req, res));
+router.delete('/:id', autenticarJWT, deleteUser);
+
+// POST /api/users/refresh
+router.post("/refresh", userRefresh);
+
+// POST /api/users/logout
+router.post("/logout", userLogout);
 
 export default router;

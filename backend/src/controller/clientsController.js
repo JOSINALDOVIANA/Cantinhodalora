@@ -1,5 +1,66 @@
-import db from '../database/db.js';
+import db from '../database/conexao.js';
 
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     Client:
+ *       type: object
+ *       required:
+ *         - id
+ *         - name
+ *       properties:
+ *         id:
+ *           type: string
+ *           description: ID único do cliente
+ *         name:
+ *           type: string
+ *           description: Nome completo do cliente
+ *         email:
+ *           type: string
+ *           description: Endereço de e-mail do cliente
+ *         phone:
+ *           type: string
+ *           description: Número de telefone/celular do cliente
+ *         address:
+ *           type: string
+ *           description: Endereço residencial do cliente
+ *       example:
+ *         id: "1"
+ *         name: "Maria Silva"
+ *         email: "maria.silva@example.com"
+ *         phone: "11999999999"
+ *         address: "Rua das Flores, 123"
+ */
+
+/**
+ * @openapi
+ * tags:
+ *   name: Clients
+ *   description: Rotas relacionadas a clientes cadastrados
+ */
+
+/**
+ * @openapi
+ * /api/clients:
+ *   get:
+ *     summary: Retorna a lista de todos os clientes
+ *     tags: [Clients]
+ *     responses:
+ *       200:
+ *         description: Lista de clientes retornada com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 clients:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Client'
+ *       500:
+ *         description: Erro interno no servidor ao buscar clientes
+ */
 export const getAllClients = async () => {
   try {
     return await db('clients').select('*');
@@ -8,6 +69,29 @@ export const getAllClients = async () => {
   }
 };
 
+/**
+ * @openapi
+ * /api/clients/{id}:
+ *   get:
+ *     summary: Retorna um cliente específico pelo seu ID
+ *     tags: [Clients]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID do cliente a ser buscado
+ *     responses:
+ *       200:
+ *         description: Dados do cliente retornados com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Client'
+ *       404:
+ *         description: Cliente não encontrado
+ */
 export const getClientById = async (id) => {
   try {
     const cliente = await db('clients').where({ id }).first();
@@ -20,6 +104,39 @@ export const getClientById = async (id) => {
   }
 };
 
+/**
+ * @openapi
+ * /api/clients:
+ *   post:
+ *     summary: Cadastra um novo cliente
+ *     tags: [Clients]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - name
+ *             properties:
+ *               name:
+ *                 type: string
+ *               email:
+ *                 type: string
+ *               phone:
+ *                 type: string
+ *               address:
+ *                 type: string
+ *     responses:
+ *       201:
+ *         description: Cliente cadastrado com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Client'
+ *       500:
+ *         description: Erro ao cadastrar o cliente
+ */
 export const createClient = async (clienteData) => {
   try {
     const [id] = await db('clients').insert(clienteData).returning('id');
@@ -29,6 +146,44 @@ export const createClient = async (clienteData) => {
   }
 };
 
+/**
+ * @openapi
+ * /api/clients/{id}:
+ *   put:
+ *     summary: Atualiza os dados de um cliente existente
+ *     tags: [Clients]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID do cliente a ser atualizado
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *               email:
+ *                 type: string
+ *               phone:
+ *                 type: string
+ *               address:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Cliente atualizado com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Client'
+ *       500:
+ *         description: Erro ao atualizar o cliente
+ */
 export const updateClient = async (id, clienteData) => {
   try {
     const updated = await db('clients').where({ id }).update(clienteData);
@@ -41,6 +196,33 @@ export const updateClient = async (id, clienteData) => {
   }
 };
 
+/**
+ * @openapi
+ * /api/clients/{id}:
+ *   delete:
+ *     summary: Deleta um cliente do banco de dados
+ *     tags: [Clients]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID do cliente a ser excluído
+ *     responses:
+ *       200:
+ *         description: Cliente excluído com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Cliente deletado com sucesso
+ *       500:
+ *         description: Erro ao deletar o cliente
+ */
 export const deleteClient = async (id) => {
   try {
     const deleted = await db('clients').where({ id }).del();

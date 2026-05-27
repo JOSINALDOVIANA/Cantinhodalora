@@ -12,6 +12,91 @@ import conexao from '../database/conexao.js';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     Image:
+ *       type: object
+ *       required:
+ *         - id
+ *         - name
+ *         - key
+ *       properties:
+ *         id:
+ *           type: string
+ *           description: ID único da imagem
+ *         name:
+ *           type: string
+ *           description: Nome original do arquivo da imagem
+ *         size:
+ *           type: string
+ *           description: Tamanho do arquivo em bytes
+ *         key:
+ *           type: string
+ *           description: Chave única gerada para o arquivo
+ *         url:
+ *           type: string
+ *           description: URL pública de acesso à imagem
+ *         delete:
+ *           type: string
+ *           description: Rota e query params para deletar a imagem
+ *         is_product:
+ *           type: boolean
+ *           description: Define se a imagem está associada a um produto ou usuário
+ *       example:
+ *         id: "8c3b12ad76fc"
+ *         name: "foto.jpg"
+ *         size: "102400"
+ *         key: "8c3b12ad76fc-foto.jpg"
+ *         url: "http://localhost:3001/api/static/images/8c3b12ad76fc-foto.jpg"
+ *         delete: "http://localhost:3001/api/images?id=8c3b12ad76fc&key=8c3b12ad76fc-foto.jpg"
+ *         is_product: false
+ */
+
+/**
+ * @openapi
+ * tags:
+ *   name: Images
+ *   description: Upload, deleção e listagem de imagens do sistema (usuários e produtos)
+ */
+
+/**
+ * @openapi
+ * /api/images/uploadUser:
+ *   post:
+ *     summary: Realiza o upload de imagem de perfil de um usuário
+ *     tags: [Images]
+ *     parameters:
+ *       - in: query
+ *         name: user_id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID do usuário proprietário da imagem
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - file
+ *             properties:
+ *               file:
+ *                 type: string
+ *                 format: binary
+ *                 description: Arquivo de imagem a ser enviado (via Multer)
+ *     responses:
+ *       200:
+ *         description: Upload realizado com sucesso e imagem vinculada ao usuário
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Image'
+ *       500:
+ *         description: Erro ao realizar upload de imagem
+ */
 export const uploadIMGuser = async (req, res) => {
     let { originalname: name, size, key, location: url = '' } = req.file;
     let { user_id } = req.query;
@@ -43,6 +128,41 @@ export const uploadIMGuser = async (req, res) => {
     }
 
 };
+/**
+ * @openapi
+ * /api/images:
+ *   delete:
+ *     summary: Deleta uma imagem do banco de dados e do sistema de arquivos local
+ *     tags: [Images]
+ *     parameters:
+ *       - in: query
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID da imagem a ser deletada
+ *       - in: query
+ *         name: key
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Chave única do arquivo físico da imagem
+ *     responses:
+ *       200:
+ *         description: Imagem deletada com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: boolean
+ *                 mensagem:
+ *                   type: string
+ *                   example: apagada
+ *       500:
+ *         description: Erro ao excluir imagem
+ */
 export const deleteImage = async (req, res) => {
     const { id, key } = req.query
 
@@ -76,6 +196,49 @@ export const deleteImage = async (req, res) => {
 //     }
 // };
 
+/**
+ * @openapi
+ * /api/images/getAllImages:
+ *   get:
+ *     summary: Consulta imagens registradas
+ *     description: Lista imagens baseado em filtros opcionais de consulta.
+ *     tags: [Images]
+ *     parameters:
+ *       - in: query
+ *         name: user_id
+ *         schema:
+ *           type: string
+ *         description: ID do usuário para obter suas imagens
+ *       - in: query
+ *         name: id
+ *         schema:
+ *           type: string
+ *         description: ID de uma imagem específica
+ *       - in: query
+ *         name: product_id
+ *         schema:
+ *           type: string
+ *         description: ID de um produto para obter suas imagens
+ *       - in: query
+ *         name: is_product
+ *         schema:
+ *           type: boolean
+ *         description: Filtra para trazer todas as imagens que pertencem a produtos
+ *     responses:
+ *       200:
+ *         description: Imagens retornadas com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: boolean
+ *                 images:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Image'
+ */
 export const selectImages = async (req, res) => {
     let { user_id } = req.query // id do user
     let { id } = req.query // id da imagem
@@ -160,6 +323,52 @@ export const selectImages = async (req, res) => {
     }
 };
 
+/**
+ * @openapi
+ * /api/images/uploadProduct:
+ *   post:
+ *     summary: Realiza o upload de imagem de um produto
+ *     tags: [Images]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - file
+ *             properties:
+ *               file:
+ *                 type: string
+ *                 format: binary
+ *                 description: Arquivo de imagem a ser enviado (via Multer)
+ *     responses:
+ *       200:
+ *         description: Upload realizado com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: boolean
+ *                 id:
+ *                   type: string
+ *                 name:
+ *                   type: string
+ *                 size:
+ *                   type: string
+ *                 key:
+ *                   type: string
+ *                 url:
+ *                   type: string
+ *                 delete:
+ *                   type: string
+ *                 is_product:
+ *                   type: boolean
+ *       500:
+ *         description: Erro ao realizar upload de imagem
+ */
 export const uploadIMGprod = async (req, res) => {
     let { originalname: name, size, key, location: url = '' } = req.file;
     // console.log(req.file)

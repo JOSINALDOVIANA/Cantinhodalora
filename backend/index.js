@@ -1,17 +1,19 @@
 import express from 'express';
 import * as dotenv from 'dotenv';
 dotenv.config();
-import { Router } from 'express';
-import bodyParser from 'body-parser';
 import { fileURLToPath } from 'url';
-import path from 'path';
-import requestIP from 'request-ip';
+import path, { parse } from 'path';
 import cors from 'cors';
 import usersRoutes from './src/routes/usersRoutes.js';
 import productsRoutes from './src/routes/productsRoutes.js';
 import categoriesRoutes from './src/routes/categoriesRoutes.js';
 import clientsRoutes from './src/routes/clientsRoutes.js';
 import imagesRoutes from './src/routes/imagesRoutes.js';
+import jwt from "jsonwebtoken";
+import cookieParser from "cookie-parser";
+import swaggerJSDoc from 'swagger-jsdoc';
+import swaggerUi from 'swagger-ui-express';
+import bodyParser from 'body-parser';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -19,55 +21,69 @@ const __dirname = path.dirname(__filename);
 const api = express();
 
 // Middleware para parsing JSON e URL-encoded
-api.use(bodyParser.json());
-api.use(bodyParser.urlencoded({ extended: true }));
+api.use(bodyParser.json({ limit: '50mb' }));
+api.use(bodyParser.urlencoded({ extended: true, limit: '50mb', parameterLimit: 100000 }));
 
-// Middleware de debug para logar todas as requisições
-// api.use((req, res, next) => {
-//   console.log(`[${new Date().toISOString()}] ${req.method} ${req.url} - Body:`, req.body);
-//   next();
-// });
-
-api.use(requestIP.mw());
-
-// Verificar IP autorizado
-const ENABLE_IP_CHECK = process.env.ENABLE_IP_CHECK === 'true';
-const ALLOWED_IPS = (process.env.ALLOWED_IPS || '127.0.0.1,::1,localhost,::ffff:127.0.0.1').split(',').map(ip => ip.trim());
-
-// api.use((req, res, next) => {
-//     const clientIp = req.clientIp;
-//     console.log(`[IP] Requisição de: ${clientIp} | Headers:`, {
-//         'x-forwarded-for': req.headers['x-forwarded-for'],
-//         'x-real-ip': req.headers['x-real-ip'],
-//         'remoteAddress': req.connection.remoteAddress,
-//         'socket.remoteAddress': req.socket.remoteAddress
-//     });
-
-//     if (ENABLE_IP_CHECK) {
-//         if (!ALLOWED_IPS.includes(clientIp)) {
-//             console.log(`⛔ Bloqueado: ${clientIp} não está em [${ALLOWED_IPS.join(', ')}]`);
-//             return res.status(403).json({ error: 'IP não autorizado' });
-//         }
-//         console.log(`✅ Permitido: ${clientIp}`);
-//     }
-//     next();
-// });
+//Middleware cors
+api.use(cors({
+    origin: ['http://localhost:3000', 'https://www.cantinhodalora.info'],
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    exposedHeaders: ["Content-Type", "Authorization"],
+}));
 
 
-api.use(cors({ exposedHeaders: [''] }));
+//Middleware cookie-parser
+api.use(cookieParser());
 
 
-const router = Router();
+
+// Função para gerar tokens
+export function gerarTokens(user) {
+    const accessToken = jwt.sign(user, process.env.ACCESS_SECRET, { expiresIn: "15m" });
+    const refreshToken = jwt.sign(user, process.env.REFRESH_SECRET, { expiresIn: "1d" });
+    return { accessToken, refreshToken };
+}
+// Middleware para verificar Access Token
+export function autenticarJWT(req, res, next) {
+    console.log("Token =>");
+    const token = req.cookies.accessToken;
+    if (!token) return res.status(401).send("Token ausente");
+
+    jwt.verify(token, process.env.ACCESS_SECRET, (err, user) => {
+        if (err) return res.status(403).send("Token inválido");
+        req.user = user;
+        next();
+    });
+}
+
+const options = {
+    definition: {
+        openapi: "3.0.0",
+        info: {
+            title: "API Cantinho da Lora",
+            version: "1.0.0",
+            description: "Documentação da API do Cantinho da Lora"
+        },
+    },
+    apis: ["./src/routes/*.js", "./src/controller/*.js"], // arquivos onde estão suas rotas e controllers
+};
+
+const specs = swaggerJSDoc(options);
 
 
-// Example routes
-router.get('/', (req, res) => {
-    res.json({ message: 'Welcome to the API' });
-});
 
-// Usar o router
+
+
+
+
+// swagger docs
+api.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
+
+//static images
 api.use('/api/static/images', express.static(path.resolve(__dirname, 'tmp', 'uploads')))
-api.use('/', router);
+
 
 // Usar as rotas específicas
 api.use('/api/users', usersRoutes);

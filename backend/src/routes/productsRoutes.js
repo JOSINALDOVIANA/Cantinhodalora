@@ -1,28 +1,19 @@
 import express from 'express';
-import { getAllProducts,  createProduct, updateProduct, deleteProduct } from '../controller/productsController.js';
+import { getAllProducts, createProduct, updateProduct, deleteProduct } from '../controller/productsController.js';
+import { autenticarJWT } from '../../index.js';
 
 const router = express.Router();
 
 // GET /api/products
-router.get('/', async (req, res) => getAllProducts(req,res));
+router.get('/', getAllProducts);
 
 // POST /api/products
-router.post('/', async (req, res) => createProduct(req,res));
-
-// GET /api/products/:id
-// router.get('/:id', async (req, res) => {
-//   try {
-//     const produto = await getProductById(req.params.id);
-//     res.json(produto);
-//   } catch (error) {
-//     res.status(404).json({ error: error.message });
-//   }
-// });
+router.post('/', autenticarJWT, createProduct);
 
 // PUT /api/products/:id
-router.put('/:id', async (req, res) => updateProduct(req,res));
+router.put('/:id', autenticarJWT, updateProduct);
 
 // DELETE /api/products/:id
-router.delete('/:id', async (req, res) => deleteProduct(req,res));
+router.delete('/:id', autenticarJWT, deleteProduct);
 
 export default router;

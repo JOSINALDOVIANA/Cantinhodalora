@@ -18,8 +18,16 @@ export default function LoginPage() {
   const navigate = useNavigate();
   React.useEffect(() => {
     if (Dados.logado) {
-      navigate("/");
+      navigate("/minha-conta");
     }
+    api.post('/api/users/refresh').then((res) => {
+      // console.log("res", res)
+      setDados(a => ({ ...a, logado: true, user: res.data.user }));
+      navigate("/minha-conta");
+    }).catch((err) => {
+      // console.log("err", err)
+
+    });
   }, [Dados.logado, navigate]);
 
   return (
@@ -72,6 +80,7 @@ export default function LoginPage() {
           onClick={async (e) => {
             e.preventDefault();
             await api.post("/api/users/login", { email: Dados.email, password: Dados.senha }).then((res) => {
+
               setDados(a => ({ ...a, email: "", senha: "", logado: true, user: res.data }));
               navigate("/minha-conta");
             }).catch((err) => {
