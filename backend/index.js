@@ -26,7 +26,7 @@ api.use(bodyParser.urlencoded({ extended: true, limit: '50mb', parameterLimit: 1
 
 //Middleware cors
 api.use(cors({
-    origin: ['http://localhost:3000', 'https://www.cantinhodalora.info'],
+    origin: ['http://localhost:3000', 'https://www.cantinhodalora.info','https://cantinhodalora.info'],
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],

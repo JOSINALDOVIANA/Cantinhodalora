@@ -457,7 +457,7 @@ export default function AdminPanel() {
 
                     <Grid sx={{ justifyContent: 'center' }} container spacing={1}>
                         {
-                            Dados?.products?.map((produto, index) => (
+                            Dados?.productsSearch?.map((produto, index) => (
                                 <Grid
                                     xs={6}
                                     md={4}
