@@ -1,5 +1,5 @@
 import axios from 'axios';
-export const url = "https://www.cantinhodalora.info"
+export const url = window.location.origin;
 // "https://www.cantinhodalora.info";
 export const api = axios.create({
     baseURL: url,
