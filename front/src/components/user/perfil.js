@@ -58,6 +58,7 @@ import {
     DeleteForever,
     VisibilityOff,
     Visibility,
+    Wifi,
 
 } from '@mui/icons-material';
 import ListIcon from '@mui/icons-material/List';
@@ -270,7 +271,7 @@ export default function AdminPanel() {
 
 
     return (
-        <Container component={Box} disableGutters sx={{ mt:8,p: 4, display: 'flex', flexDirection: isSmallScreen ? 'column' : 'row', gap: 4, minHeight: '100vh', minWidth: '100%' }}>
+        <Container component={Box} disableGutters sx={{ mt: 8, p: 4, display: 'flex', flexDirection: isSmallScreen ? 'column' : 'row', gap: 4, minHeight: '100vh', minWidth: '100%' }}>
 
             <Box sx={{ display: { xs: 'none', md: 'flex' }, flexDirection: 'column', gap: 2, minWidth: '200px' }}>
                 <Box sx={{ mb: 0 }}>
@@ -342,6 +343,18 @@ export default function AdminPanel() {
                     >
                         <ListItemIcon><Security sx={{ color: purple[500] }} /></ListItemIcon>
                         <ListItemText primary="Segurança" />
+                    </ListItem>
+
+                    {/* wificonfigs */}
+                    <ListItem
+                        button
+                        selected={Dados?.activeTabPerfil === 'security'}
+                        onClick={() => setDados(a => ({ ...a, activeTabPerfil: 'WiFiConfigs' }))}
+                    >
+                        <ListItemIcon>
+                            <Wifi sx={{ color: purple[500] }} />
+                        </ListItemIcon>
+                        <ListItemText primary="WiFi" />
                     </ListItem>
                 </List>
             </Box>
@@ -698,7 +711,7 @@ export default function AdminPanel() {
                                         showConfirmButton: false,
                                         timer: 1500
                                     })
-                                    
+
                                 }).catch((error) => {
                                     console.error('Erro ao editar produto:', error);
                                     Swal.fire({
@@ -710,25 +723,79 @@ export default function AdminPanel() {
                                     handleCloseDialog2();
                                 });
 
-                               await  api.get('/api/products').then((response) => {
-                                        setDados(a => ({ ...a, products: response.data.produtos, ProductDataEdit: null, activeTabPerfil: 'products', productsSearch: response.data.produtos }));
+                                await api.get('/api/products').then((response) => {
+                                    setDados(a => ({ ...a, products: response.data.produtos, ProductDataEdit: null, activeTabPerfil: 'products', productsSearch: response.data.produtos }));
 
 
-                                    }).catch((error) => {
-                                        Swal.fire({
-                                            icon: 'error',
-                                            title: 'Erro ao buscar produtos!',
-                                            showConfirmButton: false,
-                                            timer: 1500
-                                        })
+                                }).catch((error) => {
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'Erro ao buscar produtos!',
+                                        showConfirmButton: false,
+                                        timer: 1500
+                                    })
 
-                                    });
-                                
+                                });
+
                             }} >Salvar</Button>
                         </Box>
                     </Paper>
 
 
+                )}
+
+                {Dados?.activeTabPerfil === 'WiFiConfigs' && (
+                    <Paper sx={{ p: 3 }}>
+                        <TextField label="SSID" fullWidth margin="normal" value={Dados?.wifiConfig?.ssid || ''} onChange={(e) => setDados(a => ({ ...a, wifiConfig: { ...a.wifiConfig, ssid: e.target.value } }))} />
+                        <TextField label="Senha" fullWidth margin="normal" type="text" value={Dados?.wifiConfig?.password || ''} onChange={(e) => setDados(a => ({ ...a, wifiConfig: { ...a.wifiConfig, password: e.target.value } }))} />
+                        <TextField label="Tipo de Criptografia" fullWidth margin="normal" value={Dados?.wifiConfig?.encryption || 'WPA'} onChange={(e) => setDados(a => ({ ...a, wifiConfig: { ...a.wifiConfig, encryption: e.target.value } }))} />
+                        <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 2 }}>
+                            <Button variant="outlined" color="error" startIcon={<Cancel />} onClick={() => setDados(a => ({ ...a, wifiConfig: null }))}>Cancelar</Button>
+                            <Button variant="contained" color="success" startIcon={<Save />} onClick={() => {
+                                if (Dados?.wifiConfig?.id) {
+                                    api.put(`/api/wifi/${Dados.wifiConfig.id}`, Dados.wifiConfig).then(r => {
+                                        Swal.fire({
+                                            icon: 'success',
+                                            title: 'Configuração de WiFi atualizada com sucesso!',
+                                            showConfirmButton: false,
+                                            timer: 1500
+                                        });
+
+                                    }).catch((error) => {
+                                        console.error('Erro ao atualizar configuração de WiFi:', error);
+                                        Swal.fire({
+                                            icon: 'error',
+                                            title: 'Erro ao atualizar configuração de WiFi!',
+                                            showConfirmButton: false,
+                                            timer: 1500
+                                        });
+
+                                    });
+                                } else {
+                                    api.post('/api/wifi', Dados.wifiConfig).then(r => {
+                                        Swal.fire({
+                                            icon: 'success',
+                                            title: 'Configuração de WiFi criada com sucesso!',
+                                            showConfirmButton: false,
+                                            timer: 1500
+                                        });
+
+                                    }).catch((error) => {
+                                        console.error('Erro ao criar configuração de WiFi:', error);
+                                        Swal.fire({
+                                            icon: 'error',
+                                            title: 'Erro ao criar configuração de WiFi!',
+                                            showConfirmButton: false,
+                                            timer: 1500
+                                        });
+
+                                    });
+                                }
+                            }
+                            }
+                            >Salvar</Button>
+                        </Box>
+                    </Paper>
                 )}
 
 
@@ -1175,7 +1242,7 @@ export default function AdminPanel() {
                                     showConfirmButton: false,
                                     timer: 1500
                                 })
-                               
+
                             }).catch((error) => {
                                 console.error('Erro ao editar produto:', error);
                                 Swal.fire({
@@ -1187,18 +1254,18 @@ export default function AdminPanel() {
                                 handleCloseDialog2();
                             });
                             await api.get('/api/products').then((response) => {
-                                    setDados(a => ({ ...a, products: response.data.produtos, ProductDataEdit: null, productsSearch: response.data.produtos }));
-                                    handleCloseDialog2();
-                                }).catch((error) => {
-                                    Swal.fire({
-                                        icon: 'error',
-                                        title: 'Erro ao buscar produtos!',
-                                        showConfirmButton: false,
-                                        timer: 1500
-                                    })
-                                    handleCloseDialog2();
-                                });
-                             
+                                setDados(a => ({ ...a, products: response.data.produtos, ProductDataEdit: null, productsSearch: response.data.produtos }));
+                                handleCloseDialog2();
+                            }).catch((error) => {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Erro ao buscar produtos!',
+                                    showConfirmButton: false,
+                                    timer: 1500
+                                })
+                                handleCloseDialog2();
+                            });
+
                         }} >{Dados?.upProduct ? "Atualizar" : "salvar"}
                         </Button>
                     </Box>

@@ -2,7 +2,7 @@ import React from "react";
 import PrimarySearchAppBar from "./components/AppBar";
 import { alpha, Box, Paper, useTheme } from "@mui/material";
 import { Outlet } from "react-router-dom";
-import AppBar from "./components/AppBar/appbarteste.js";
+
 
 
 

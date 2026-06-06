@@ -53,10 +53,10 @@ export default function ChatDialog() {
     // Receber mensagens
     newSocket.on('chatMessage', (msg) => {
       
+      setMensagens((prev) => [...prev, msg]);
       // só adiciona se for da sala atual
-      if (msg.sala === salaAtual) {
-        setMensagens((prev) => [...prev, msg]);
-      }
+      // if (msg.sala === salaAtual) {
+      // }
     });
 
     // Receber lista de usuários online
@@ -65,7 +65,7 @@ export default function ChatDialog() {
     });
 
     // Registrar usuário
-    newSocket.emit('registrarUsuario', { usuario, cor: corUsuario });
+    newSocket.emit('registrarUsuario', { usuario, cor: corUsuario});
 
     // Entrar na sala global por padrão
     // newSocket.emit('joinRoom', 'global');

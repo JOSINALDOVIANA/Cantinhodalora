@@ -24,8 +24,8 @@ import ListItemText from '@mui/material/ListItemText';
 import { DadosContext, TrocarTheme } from '../../routs';
 import { api } from '../../api/index.js';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Avatar, CssBaseline, Paper } from '@mui/material';
-import { ArrowBack, Call, Dashboard, FolderSpecial, Home, Logout, People, Security, Settings } from '@mui/icons-material';
+import { Avatar, CssBaseline, Dialog, Paper } from '@mui/material';
+import { ArrowBack, Call, Dashboard, DialerSip, FolderSpecial, Home, Logout, People, Security, Settings, Wifi } from '@mui/icons-material';
 import LoginIcon from '@mui/icons-material/Login';
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { deepOrange, green, blue, red, purple, teal } from '@mui/material/colors';
@@ -33,6 +33,7 @@ import ChatDialog from '../Chat/index.js';
 import logo from '../../images/logo.png';
 import SportsBarOutlinedIcon from '@mui/icons-material/SportsBarOutlined';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import { QRCodeCanvas } from "qrcode.react";
 
 const Search = styled('div')(({ theme }) => ({
   position: 'relative',
@@ -84,6 +85,18 @@ export default function PrimarySearchAppBar() {
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("md"));
 
+  React.useEffect(() => {
+    api.get('/api/wifi').then(response => {
+      // console.log('wifiConfig', response.data.wifiConfigs[0]);
+      setDados(a => ({ ...a, wifiConfig: response.data.wifiConfigs[0] }));
+    }).catch(error => {
+      console.error(error);
+    })
+  }, []);
+  console.log(Dados?.wifiConfig);
+  
+
+  
 
 
   const [openMenu, setOpenMenu] = React.useState(false);
@@ -94,6 +107,7 @@ export default function PrimarySearchAppBar() {
   const toggleCloseDrawerMenu = (newOpen) => () => {
     setOpenMenu(newOpen);
   };
+
   // menu atual
   const renderDrawerMenu = (
     <Box >
@@ -194,6 +208,18 @@ export default function PrimarySearchAppBar() {
                   <Call sx={{ color: deepOrange[500] }} />
                 </ListItemIcon>
                 <ListItemText primary={'(96) 98121-8004'} />
+              </ListItemButton>
+            </ListItem>
+
+            <ListItem onClick={() => {
+              setDados(a => ({ ...a, openWifi: true }))
+            }
+            } disablePadding>
+              <ListItemButton>
+                <ListItemIcon>
+                  <Wifi sx={{ color: deepOrange[500] }} />
+                </ListItemIcon>
+                <ListItemText primary={'Conectar'} />
               </ListItemButton>
             </ListItem>
 
@@ -425,7 +451,7 @@ export default function PrimarySearchAppBar() {
               sx={{ display: "flex", alignItems: "center", gap: 0.5 }}
             >
               <AccessTimeIcon fontSize="small" />
-               · 10h até 2h
+              · 10h até 2h
             </Typography>
           </Box>
           {/* <Avatar
@@ -456,10 +482,35 @@ export default function PrimarySearchAppBar() {
           </Box> */}
         </Toolbar>
       </AppBar>
-      {/* {renderDrawerOptions} */}
+
       {renderDrawerMenu}
-      {/* {renderMobileMenu} */}
-      {/* {renderMenu} */}
+
+      <Dialog open={Dados?.openWifi} onClose={() => setDados({ ...Dados, openWifi: false })}>
+        <Paper sx={{ p: 4, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '100vh' }}>
+          <Typography variant="h4" gutterBottom>
+            Conectar ao Wi-Fi
+          </Typography>
+          <Typography variant="body1" gutterBottom>
+            Escaneie o QR Code abaixo para se conectar à rede Wi-Fi do Cantinho da Lora.
+          </Typography>
+          <QRCodeCanvas
+            value={`WIFI:T:${Dados?.wifiConfig?.encryption};S:${Dados?.wifiConfig?.ssid};P:${Dados?.wifiConfig?.password};;`}
+            size={200}
+            bgColor={"#ffffff"}
+            fgColor={"#000000"}
+            level={"H"}
+            includeMargin={true}
+          />
+          <Typography variant="body2" color="textSecondary" sx={{ mt: 2 }}>
+            Rede: {Dados?.wifiConfig?.ssid} <br />
+            Senha: {Dados?.wifiConfig?.password}
+          </Typography>
+          {/* <a href={`intent://WIFI::${Dados?.wifiConfig?.encryption};S:${Dados?.wifiConfig?.ssid};P:${Dados?.wifiConfig?.password};;`}>
+            Conectar ao Wi-Fi
+          </a> */}
+        </Paper>
+      </Dialog>
+
 
     </>
 

@@ -9,6 +9,7 @@ import productsRoutes from './src/routes/productsRoutes.js';
 import categoriesRoutes from './src/routes/categoriesRoutes.js';
 import clientsRoutes from './src/routes/clientsRoutes.js';
 import imagesRoutes from './src/routes/imagesRoutes.js';
+import wifiRoutes from './src/routes/wifiRouts.js';
 import chatRoutes from './src/routes/chatRoutes.js';
 import jwt from "jsonwebtoken";
 import cookieParser from "cookie-parser";
@@ -61,7 +62,7 @@ export function gerarTokens(user) {
 }
 // Middleware para verificar Access Token
 export function autenticarJWT(req, res, next) {
-    console.log("Token =>");
+    // console.log("Token =>", req.cookies.accessToken);
     const token = req.cookies.accessToken;
     if (!token) return res.status(401).send("Token ausente");
 
@@ -105,6 +106,7 @@ api.use('/api/products', productsRoutes);
 api.use('/api/categories', categoriesRoutes);
 api.use('/api/clients', clientsRoutes);
 api.use('/api/images', imagesRoutes);
+api.use('/api/wifi', wifiRoutes);
 api.use('/api/chat', chatRoutes); // ✅ nova rota
 
 // 🔥 Eventos do Socket.IO
