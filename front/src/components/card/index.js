@@ -9,7 +9,7 @@ import {
 
 
 import { Url_img } from '../../routs.js';
-import { useTheme } from "@mui/material/styles";
+import { alpha, useTheme } from "@mui/material/styles";
 import { red } from '@mui/material/colors';
 
 export default function ProductCard({ produto, ...props }) {
@@ -28,6 +28,7 @@ export default function ProductCard({ produto, ...props }) {
         boxShadow: 3,
         borderRadius: 2,
         justifyContent: 'space-between',
+        background: `linear-gradient(135deg, ${alpha(theme.palette.primary.dark, 0.25)}, ${theme.palette.background.default} 50%, ${alpha(theme.palette.secondary.dark, 0.25)})`,
 
       }}
     >

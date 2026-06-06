@@ -270,7 +270,7 @@ export default function AdminPanel() {
 
 
     return (
-        <Container component={Box} disableGutters sx={{ p: 4, display: 'flex', flexDirection: isSmallScreen ? 'column' : 'row', gap: 4, minHeight: '100vh', minWidth: '100%' }}>
+        <Container component={Box} disableGutters sx={{ mt:8,p: 4, display: 'flex', flexDirection: isSmallScreen ? 'column' : 'row', gap: 4, minHeight: '100vh', minWidth: '100%' }}>
 
             <Box sx={{ display: { xs: 'none', md: 'flex' }, flexDirection: 'column', gap: 2, minWidth: '200px' }}>
                 <Box sx={{ mb: 0 }}>
@@ -698,8 +698,20 @@ export default function AdminPanel() {
                                         showConfirmButton: false,
                                         timer: 1500
                                     })
-                                    api.get('/api/products').then((response) => {
-                                        setDados(a => ({ ...a, products: response.data.produtos, ProductDataEdit: null, activeTabPerfil: 'products' }));
+                                    
+                                }).catch((error) => {
+                                    console.error('Erro ao editar produto:', error);
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'Erro ao editar produto!',
+                                        showConfirmButton: false,
+                                        timer: 1500
+                                    })
+                                    handleCloseDialog2();
+                                });
+
+                               await  api.get('/api/products').then((response) => {
+                                        setDados(a => ({ ...a, products: response.data.produtos, ProductDataEdit: null, activeTabPerfil: 'products', productsSearch: response.data.produtos }));
 
 
                                     }).catch((error) => {
@@ -711,18 +723,7 @@ export default function AdminPanel() {
                                         })
 
                                     });
-                                }).catch((error) => {
-                                    console.error('Erro ao editar produto:', error);
-                                    Swal.fire({
-                                        icon: 'error',
-                                        title: 'Erro ao editar produto!',
-                                        showConfirmButton: false,
-                                        timer: 1500
-                                    })
-                                    handleCloseDialog2();
-                                });
-                                // /api/products/editProduct.id
-                                // enviar editeProduto para o backend, para atualizar o produto, e depois atualizar a lista de produtos no frontend, e fechar o dialog }} 
+                                
                             }} >Salvar</Button>
                         </Box>
                     </Paper>
@@ -1174,18 +1175,7 @@ export default function AdminPanel() {
                                     showConfirmButton: false,
                                     timer: 1500
                                 })
-                                api.get('/api/products').then((response) => {
-                                    setDados(a => ({ ...a, products: response.data.produtos }));
-                                    handleCloseDialog2();
-                                }).catch((error) => {
-                                    Swal.fire({
-                                        icon: 'error',
-                                        title: 'Erro ao buscar produtos!',
-                                        showConfirmButton: false,
-                                        timer: 1500
-                                    })
-                                    handleCloseDialog2();
-                                });
+                               
                             }).catch((error) => {
                                 console.error('Erro ao editar produto:', error);
                                 Swal.fire({
@@ -1196,8 +1186,19 @@ export default function AdminPanel() {
                                 })
                                 handleCloseDialog2();
                             });
-                            // /api/products/editProduct.id
-                            // enviar editeProduto para o backend, para atualizar o produto, e depois atualizar a lista de produtos no frontend, e fechar o dialog }} 
+                            await api.get('/api/products').then((response) => {
+                                    setDados(a => ({ ...a, products: response.data.produtos, ProductDataEdit: null, productsSearch: response.data.produtos }));
+                                    handleCloseDialog2();
+                                }).catch((error) => {
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'Erro ao buscar produtos!',
+                                        showConfirmButton: false,
+                                        timer: 1500
+                                    })
+                                    handleCloseDialog2();
+                                });
+                             
                         }} >{Dados?.upProduct ? "Atualizar" : "salvar"}
                         </Button>
                     </Box>

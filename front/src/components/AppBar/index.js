@@ -24,11 +24,15 @@ import ListItemText from '@mui/material/ListItemText';
 import { DadosContext, TrocarTheme } from '../../routs';
 import { api } from '../../api/index.js';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { CssBaseline, Paper } from '@mui/material';
+import { Avatar, CssBaseline, Paper } from '@mui/material';
 import { ArrowBack, Call, Dashboard, FolderSpecial, Home, Logout, People, Security, Settings } from '@mui/icons-material';
 import LoginIcon from '@mui/icons-material/Login';
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { deepOrange, green, blue, red, purple, teal } from '@mui/material/colors';
+import ChatDialog from '../Chat/index.js';
+import logo from '../../images/logo.png';
+import SportsBarOutlinedIcon from '@mui/icons-material/SportsBarOutlined';
+import AccessTimeIcon from '@mui/icons-material/AccessTime';
 
 const Search = styled('div')(({ theme }) => ({
   position: 'relative',
@@ -54,6 +58,7 @@ const SearchIconWrapper = styled('div')(({ theme }) => ({
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
+
 }));
 
 const StyledInputBase = styled(InputBase)(({ theme }) => ({
@@ -76,7 +81,7 @@ export default function PrimarySearchAppBar() {
   const location = useLocation();
   const theme = useTheme();
   const navegation = useNavigate();
-
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("md"));
 
 
@@ -325,11 +330,10 @@ export default function PrimarySearchAppBar() {
                 sx={{ mb: 1, borderRadius: 2, cursor: 'pointer' }}
 
                 key={categoria.id}
-
                 onClick={() => {
                   let prod = Dados?.products?.filter(p => p.categories?.find(c => c.id === categoria.id))
 
-                  console.log('selectCategorie', prod)
+                  // console.log('selectCategorie', prod)
                   setDados(a => ({ ...a, productsSearch: [...prod] }))
 
 
@@ -338,7 +342,12 @@ export default function PrimarySearchAppBar() {
               >
                 <ListItemButton>
                   <ListItemIcon>
-                    <ArrowBack sx={{ color: purple[500] }} />
+                    {/* {(() => {
+                      const icons = [Home, Dashboard, FolderSpecial, People, Security, Settings, Call, AddchartIcon];
+                      const Icon = icons[index % icons.length];
+                      return <Icon sx={{ color: purple[500] }} />;
+                    })()} */}
+                    <SportsBarOutlinedIcon sx={{ color: purple[100] }} />
                   </ListItemIcon>
                   <ListItemText primary={categoria.description} />
                 </ListItemButton>
@@ -365,9 +374,9 @@ export default function PrimarySearchAppBar() {
         elevation={0}
         sx={{
           // background: 'rgba(236, 59, 59, 0.65)',
-          backdropFilter: 'blur(12px)',
-          borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
-
+          // backdropFilter: 'blur(12px)',
+          // borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
+          // background: `linear-gradient(135deg, ${alpha(theme.palette.primary.dark, 0.25)}, ${theme.palette.background.default} 50%, ${alpha(theme.palette.secondary.dark, 0.25)})`,
         }}
         position="fixed">
         <Toolbar>
@@ -381,15 +390,19 @@ export default function PrimarySearchAppBar() {
           >
             <ListIcon />
           </IconButton>
-          <Typography
-            variant="h6"
-            noWrap
-            component="div"
-            sx={{ display: { sm: 'block' } }}
-          >
-            Cantinho da Lora
-          </Typography>
-          <Search sx={{ display: { xs: 'none', md: 'block' } }}>
+          <ChatDialog />
+
+
+
+
+          <TrocarTheme />
+
+
+
+
+
+
+          <Search sx={{ borderRadius: 999, display: { xs: 'none', md: 'flex' }, flexGrow: 1, maxWidth: 460, mx: 'auto' }}>
             <SearchIconWrapper>
               <SearchIcon />
             </SearchIconWrapper>
@@ -401,41 +414,33 @@ export default function PrimarySearchAppBar() {
           <Box sx={{ flexGrow: 1 }} />
 
           {/* tela grande */}
-          <Box sx={{
-            display: {
-              xs: 'none',
-              md: 'flex'
-            }
-          }}>
 
-
-
-            <TrocarTheme />
-
-            {/* <IconButton
-              size="large"
-              aria-label="show 17 new notifications"
-              color="inherit"
+          <Box sx={{ flexShrink: 0, display: {}, flexDirection: 'column', alignItems: 'flex-end' }}>
+            <Typography variant={isMobile ? "body1" : "h4"} sx={{ lineHeight: 1.1, }}>
+              Cantinho da Lora
+            </Typography>
+            <Typography
+              variant={isMobile ? "caption" : "subtitle1"}
+              color="text.secondary"
+              sx={{ display: "flex", alignItems: "center", gap: 0.5 }}
             >
-              <Badge badgeContent={17} color="error">
-                <NotificationsIcon />
-              </Badge>
-            </IconButton> */}
-            {/* {Dados?.logado ?
-              <Avatar onClick={handleProfileMenuOpen} alt='csccaasc' src={Dados.user?.url} ></Avatar>
-              : <IconButton
-                size="large"
-                edge="end"
-                aria-label="account of current user"
-                aria-controls={menuId}
-                aria-haspopup="true"
-                onClick={handleProfileMenuOpen}
-                color="inherit"
-              >
-                <AccountCircle />
-              </IconButton>} */}
-
+              <AccessTimeIcon fontSize="small" />
+               · 10h até 2h
+            </Typography>
           </Box>
+          {/* <Avatar
+            variant="circular"
+            sx={{
+              ml: 2,
+              background: `linear-gradient(135deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
+              width: 44,
+              height: 44,
+              boxShadow: `0 6px 18px ${alpha(theme.palette.primary.main, 0.35)}`,
+            }}
+          >
+            <img src={logo} alt="Logo" style={{ width: "100%", height: "100%" }} />
+          </Avatar> */}
+
 
           {/* <Box sx={{ display: { xs: 'flex', md: 'none' } }}>
             <IconButton
