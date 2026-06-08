@@ -50,7 +50,13 @@ export default function Chat() {
 
 
   useEffect(() => {
-    const socket = io(url);
+    const socket = io("wss://cantinhodalora.info/socket.io", {
+  transports: ["websocket"],   // força uso de WebSocket
+  secure: true,                // garante SSL/TLS
+  reconnection: true,          // tenta reconectar se cair
+  reconnectionAttempts: 5,     // número de tentativas
+  reconnectionDelay: 2000      // intervalo entre tentativas
+});
     setSocketIo(socket);
 
     socket.on('connect', () => {
