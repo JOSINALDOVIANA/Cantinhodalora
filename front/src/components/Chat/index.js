@@ -50,7 +50,7 @@ export default function Chat() {
 
 
   useEffect(() => {
-    const socket = io("wss://cantinhodalora.info/socket.io", {
+    const socket = io("wss://cantinhodalora.info", {
   transports: ["websocket"],   // força uso de WebSocket
   secure: true,                // garante SSL/TLS
   reconnection: true,          // tenta reconectar se cair

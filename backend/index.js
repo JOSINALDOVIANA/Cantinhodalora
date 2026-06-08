@@ -95,7 +95,7 @@ const specs = swaggerJSDoc(options);
 
 
 // swagger docs
-api.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
+api.use('/api/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
 
 //static images
 api.use('/api/static/images', express.static(path.resolve(__dirname, 'tmp', 'uploads')))
