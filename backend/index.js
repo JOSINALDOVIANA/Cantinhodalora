@@ -147,6 +147,6 @@ io.on('connection', (socket) => {
 
 // Porta
 const port = process.env.PORT || 3001;
-server.listen(port, () => { // 🔑 agora usa server.listen
+server.listen(port,'0.0.0.0', () => { // 🔑 agora usa server.listen
     console.log(`Servidor rodando na porta ${port}`);
 });
