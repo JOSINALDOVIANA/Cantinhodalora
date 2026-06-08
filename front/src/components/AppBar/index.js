@@ -1,19 +1,12 @@
 import * as React from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { styled, alpha, useTheme } from '@mui/material/styles';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
-import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import InputBase from '@mui/material/InputBase';
-import SearchIcon from '@mui/icons-material/Search';
 import AddchartIcon from '@mui/icons-material/Addchart';
-
-import ListIcon from '@mui/icons-material/List';
-import WhatsAppIcon from '@mui/icons-material/WhatsApp';
-import InstagramIcon from '@mui/icons-material/Instagram';
-import FacebookIcon from '@mui/icons-material/Facebook';
-
 import Drawer from '@mui/material/Drawer';
 import List from '@mui/material/List';
 import Divider from '@mui/material/Divider';
@@ -21,18 +14,26 @@ import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
-import { DadosContext, TrocarTheme } from '../../routs';
-import { api } from '../../api/index.js';
-import { useLocation, useNavigate } from 'react-router-dom';
-import { Avatar, CssBaseline, Dialog, Paper } from '@mui/material';
-import { ArrowBack, Call, Dashboard, DialerSip, FolderSpecial, Home, Logout, People, Security, Settings, Wifi } from '@mui/icons-material';
-import LoginIcon from '@mui/icons-material/Login';
 import useMediaQuery from "@mui/material/useMediaQuery";
+import { Avatar, CssBaseline, Dialog, Paper } from '@mui/material';
 import { deepOrange, green, blue, red, purple, teal } from '@mui/material/colors';
-import ChatDialog from '../Chat/index.js';
-import logo from '../../images/logo.png';
+
+import IconButton from '@mui/material/IconButton';
+import SearchIcon from '@mui/icons-material/Search';
+import ListIcon from '@mui/icons-material/List';
+import WhatsAppIcon from '@mui/icons-material/WhatsApp';
+import InstagramIcon from '@mui/icons-material/Instagram';
+import FacebookIcon from '@mui/icons-material/Facebook';
+import LoginIcon from '@mui/icons-material/Login';
+import ForumIcon from '@mui/icons-material/Forum';
 import SportsBarOutlinedIcon from '@mui/icons-material/SportsBarOutlined';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import { ArrowBack, Call, Dashboard, DialerSip, FolderSpecial, Home, Logout, People, Security, Settings, Wifi } from '@mui/icons-material';
+
+
+import { DadosContext, TrocarTheme } from '../../routs';
+import { api } from '../../api/index.js';
+import logo from '../../images/logo.png';
 import { QRCodeCanvas } from "qrcode.react";
 
 const Search = styled('div')(({ theme }) => ({
@@ -83,7 +84,7 @@ export default function PrimarySearchAppBar() {
   const theme = useTheme();
   const navegation = useNavigate();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-  const isSmallScreen = useMediaQuery(theme.breakpoints.down("md"));
+  
 
   React.useEffect(() => {
     api.get('/api/wifi').then(response => {
@@ -93,7 +94,7 @@ export default function PrimarySearchAppBar() {
       console.error(error);
     })
   }, []);
-  console.log(Dados?.wifiConfig);
+ 
   
 
   
@@ -223,7 +224,7 @@ export default function PrimarySearchAppBar() {
               </ListItemButton>
             </ListItem>
 
-            {Dados?.logado && isSmallScreen && <Divider />}
+            {Dados?.logado && isMobile && <Divider />}
 
 
             {/* Dashboard */}
@@ -406,6 +407,7 @@ export default function PrimarySearchAppBar() {
         }}
         position="fixed">
         <Toolbar>
+          
           <IconButton
             size="large"
             edge="start"
@@ -416,18 +418,16 @@ export default function PrimarySearchAppBar() {
           >
             <ListIcon />
           </IconButton>
-          <ChatDialog />
 
+          <IconButton
+          onClick={() => { navegation('/chat') }}
+            
+            edge="start">
+              <ForumIcon sx={{  mr: 1, color: deepOrange[500] }} />
+            </IconButton>
 
-
-
+          
           <TrocarTheme />
-
-
-
-
-
-
           <Search sx={{ borderRadius: 999, display: { xs: 'none', md: 'flex' }, flexGrow: 1, maxWidth: 460, mx: 'auto' }}>
             <SearchIconWrapper>
               <SearchIcon />

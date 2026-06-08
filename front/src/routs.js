@@ -1,34 +1,21 @@
 import * as React from 'react';
-
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+
 import { useTheme, ThemeProvider, createTheme } from '@mui/material/styles';
-import Load from './components/load';
 import { IconButton, Typography } from '@mui/material';
-import App from './App.js'
 import { Brightness6, Brightness7 } from '@mui/icons-material';
 
 
-
-
+import App from './App.js'
+import Load from './components/load';
 const ProductGrid = React.lazy(() => import('./components/card/grid.js'));
-// const Produtos = React.lazy(() => import('./components/produtos/index.js'));
 const Login = React.lazy(() => import('./components/Login/index.js'));
 const Teste = React.lazy(() => import('./components/teste/index.js'));
 const MinhaConta = React.lazy(() => import('./components/user/perfil.js'));
-// const Produtosedit = React.lazy(() => import('./components/adm/produtos/editar.js'));
-// const Useredit = React.lazy(() => import('./components/adm/user/useredit.js'));
-// const Produtoscad = React.lazy(() => import('./components/adm/produtos/cadastro.js'));
-// const Fcaixa = React.lazy(() => import('./components/adm/fechamento/index.js'));
-// const Relatorios = React.lazy(() => import('./components/adm/relatorios/index.js'));
-// const Imagenscli = React.lazy(() => import('./components/adm/imagens/imagenscli.js'));
-// const Imagensprod = React.lazy(() => import('./components/adm/imagens/imagenspro.js'));
-// const Promo = React.lazy(() => import('./components/adm/promo/index.js'));
-// const Perfil = React.lazy(() => import('./components/adm/index.js'));
-// const TelaIncialCliente = React.lazy(() => import('./components/cliente/index.js'));
-// const CadastroCliente = React.lazy(() => import('./components/cliente/cadastro.js'));
-// const ClienteDados = React.lazy(() => import('./components/cliente/dadoscliente.js'));
-// const ListaClientes = React.lazy(() => import('./components/adm/user/ClientesList.js'));
-// const Teste = React.lazy(() => import('./components/teste/index.js'));
+const Chat = React.lazy(() => import('./components/Chat/index.js'));
+
+
+
 
 
 
@@ -96,6 +83,7 @@ export function Rotas() {
                                         <Route index element={<ProductGrid />}></Route>
                                         <Route path="/login" element={<Login />}></Route>
                                         <Route path="/minha-conta" element={<MinhaConta />}></Route>
+                                        <Route path="/chat" element={<Chat />}></Route>
                                     </Route>
                                     {/* <Route path="/login" element={<Login />} /> */}
                                     {/* <Route path="/cadastro/cliente" element={<CadastroCliente />} /> */}
