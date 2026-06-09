@@ -18,14 +18,14 @@ import swaggerUi from 'swagger-ui-express';
 import bodyParser from 'body-parser';
 import http from 'http';
 import { Server } from 'socket.io';
-import db from './src/database/conexao.js';
-import { Socket } from 'socket.io-client';
+
 
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const api = express();
+api.set('trust proxy', 1);
 const server = http.createServer(api); // 🔑 servidor HTTP
 
 // Configuração do Socket.IO
@@ -115,12 +115,12 @@ let usuariosOnline = [];
 let mensagens = [];
 io.on('connection', (socket) => {
     console.log('Novo usuário conectado:', socket.id);
-    
+
     // se registra e é adicionado à lista de onlines, e recebe a lista atualizada
     socket.on('registrarUsuario', (user) => {
         usuariosOnline.push({ ...user, id: socket.id });
         io.emit('usuariosOnline', usuariosOnline);
-        io.emit('chatMessage',{ text: `${user?.name || 'Um usuário'} entrou do chat`, Origem: { name: 'Sistema', id: 'sistema', cor: 'text.secondary' }, destino: 'all',from:'public' })
+        io.emit('chatMessage', { text: `${user?.name || 'Um usuário'} entrou do chat`, Origem: { name: 'Sistema', id: 'sistema', cor: 'text.secondary' }, destino: 'all', from: 'public' })
         // socket.join('global');
     });
 
@@ -128,18 +128,18 @@ io.on('connection', (socket) => {
     //     socket.join(room);
     // });
     socket.on('chatMessage', (msg) => {
-        mensagens.push(msg);    
+        mensagens.push(msg);
         // se for mensagem global, envia para todos, senão só para a sala
         // if (msg.sala === 'global') {
-            io.emit('chatMessage', msg);
+        io.emit('chatMessage', msg);
         // }
     });
 
     socket.on('disconnect', (a) => {
         let u = usuariosOnline.filter(u => u.id === socket.id)[0];
-        
+
         usuariosOnline = usuariosOnline.filter(u => u.id !== socket.id);
-        io.emit('chatMessage', { text: `${u?.name || 'Um usuário'} saiu do chat`, Origem: { name: 'Sistema', id: 'sistema', cor: 'text.secondary' }, destino: 'all',from:'public' });
+        io.emit('chatMessage', { text: `${u?.name || 'Um usuário'} saiu do chat`, Origem: { name: 'Sistema', id: 'sistema', cor: 'text.secondary' }, destino: 'all', from: 'public' });
         io.emit('usuariosOnline', usuariosOnline);
         console.log('Usuário desconectado:', socket.id);
     });
@@ -148,6 +148,6 @@ io.on('connection', (socket) => {
 
 // Porta
 const port = process.env.PORT || 3001;
-server.listen(port,'0.0.0.0', () => { // 🔑 agora usa server.listen
+server.listen(port, '0.0.0.0', () => { // 🔑 agora usa server.listen
     console.log(`Servidor rodando na porta ${port}`);
 });
