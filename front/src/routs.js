@@ -40,12 +40,12 @@ export const Url_img = "http://localhost:3001/api/static/images/03e39636ea98a636
 export function Rotas() {
     const [search, setSearch] = React.useState("")
     const [Dados, setDados] = React.useState({ logado: false, activeTabPerfil: "", user: {} });
-    const [mode, setMode] = React.useState(() => {
-        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-            return "dark"
-        } else {
-            return "light"
-        }
+    const [mode, setMode] = React.useState(() => { return 'dark'
+        // if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        //     return "dark"
+        // } else {
+        //     return "light"
+        // }
     });
     const colorMode = React.useMemo(
         () => ({

@@ -120,6 +120,7 @@ io.on('connection', (socket) => {
     socket.on('registrarUsuario', (user) => {
         usuariosOnline.push({ ...user, id: socket.id });
         io.emit('usuariosOnline', usuariosOnline);
+        io.emit('chatMessage',{ text: `${user?.name || 'Um usuário'} entrou do chat`, Origem: { name: 'Sistema', id: 'sistema', cor: 'text.secondary' }, destino: 'all',from:'public' })
         // socket.join('global');
     });
 

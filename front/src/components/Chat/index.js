@@ -46,17 +46,42 @@ export default function Chat() {
   const [openDialog, setOpenDialog] = useState(true);
   const navigate = useNavigate();
   const theme = useTheme();
+ const PersonalCores = {
+  palette: {
+    primary: {
+      main: '#a09d9d', // Azul claro
+    },
+    secondary: {
+      main: '#f3ecec', // Verde menta
+    },
+    background: {
+      default: '#F5F5F5', // Fundo suave
+      paper: '#FFFFFF',
+    },
+    text: {
+      primary: '#424242', // Texto escuro
+      secondary: '#757575',
+    },
+    warning: {
+      main: '#FFCCBC', // Pêssego suave
+    },
+  },
+};
 
 
 
   useEffect(() => {
-    const socket = io("wss://cantinhodalora.info", {
+    // vps
+  const socket = io("wss://cantinhodalora.info", {
   transports: ["websocket"],   // força uso de WebSocket
   secure: true,                // garante SSL/TLS
   reconnection: true,          // tenta reconectar se cair
   reconnectionAttempts: 5,     // número de tentativas
   reconnectionDelay: 2000      // intervalo entre tentativas
 });
+
+//localhost
+// const socket = io(url);
     setSocketIo(socket);
 
     socket.on('connect', () => {
@@ -93,7 +118,7 @@ export default function Chat() {
     }
   }, [Dados.chat?.mensagens]);
 
-  console.log(Dados.chat);
+  // console.log(Dados.chat);
 
 
 
@@ -113,24 +138,24 @@ export default function Chat() {
 
 
   return (
-    <Box sx={{ mt: 10, display: 'flex', justifyContent: 'center', minHeight: '100vh', maxHeight: '100vh' }}>
-      <Paper sx={{ width: '100%', maxWidth: 920, height: '98vh', display: 'flex', flexDirection: 'column' }} elevation={6}>
-        <Box sx={{ p: 2, borderBottom: '1px solid', borderColor: 'divider', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <Box sx={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 1 }}>
+    <Box  sx={{ mt:10, display: 'flex', justifyContent: 'center', minHeight: '100vh', maxHeight: '100vh' }}>
+      <Paper sx={{ width: '90%', maxHeight: '90vh', display: 'flex', flexDirection: 'column',borderRadius: 5}} elevation={1}>
+        
+          <Box component={Paper} elevation={2} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 1,p: 2, borderBottom: '1px solid', borderColor: 'divider',borderRadius: '20px 20px 0 0' }}>
+            <Box>
+              <Typography  variant="subtitle1">Bem vindo ao Chat</Typography>
+              <Typography variant="caption" >{Dados.chat?.user?.name || 'Visitante'}</Typography>
+
+            </Box>
             <AvatarGroup max={4}>
               {Dados.chat?.usuariosOnline?.map((u) => (
                 <Avatar key={u.id} sx={{ bgcolor: u.cor || 'primary.main' }}>{u.name[0].toUpperCase()}</Avatar>
               ))}
             </AvatarGroup>
-            <Box>
-              <Typography variant="subtitle1">Bem vindo ao Chat</Typography>
-              <Typography variant="caption" color="text.secondary">{Dados.chat?.user?.name || 'Visitante'}</Typography>
-
-            </Box>
           </Box>
-        </Box>
+       
 
-        <Box ref={listRef} sx={{ flex: 1, overflowY: 'auto', p: 2, backgroundColor: 'background.default' }}>
+        <Box ref={listRef} sx={{ flex: 1, overflowY: 'auto', p: 2, backgroundColor:'#d5d5d5'}}>
           <List sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
             {Dados.chat?.mensagens?.map((m) => (
               <ListItem key={uuidv4()}
@@ -143,27 +168,29 @@ export default function Chat() {
 
                   {/* // mensagens publicas */}
                 {(m.from === 'public' || m.from === 'private' && m.Origem.id === Dados.chat.user.id) && (
-                  <Paper e
-                    levation={m.Origem.id === Dados.chat.user.id ? 3 : 1}
+                  <Paper 
+                    elevation={2}
                     sx={{
+                      overflow:'hidden',
                       p: 1.5,
                       maxWidth: '80%',
                       borderRadius: 2,
+                      backgroundColor:m.from==="private"?"#b11616":null
                       // backgroundColor: m.destino.id === Dados.chat.user.id ? 'primary.main' : 'background.paper',
                       // background: `linear-gradient(135deg, ${alpha(theme.palette.primary.dark, 0.25)}, ${theme.palette.background.default} 50%, ${alpha(theme.palette.secondary.dark, 0.25)})`,
                     }}>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5,flex:1 }}>
                       <Typography variant="body2"
                       sx={{
                         fontWeight: 'bold',
                       }}>
-                      {m.Origem?.name?.toUpperCase() || 'Desconecido'}  Para {m.destino === 'all' ? 'Todos' : m.destino.name.toUpperCase() || 'Desconecido'}
+                      {m.Origem?.name?.toUpperCase() || 'Desconecido'} {m.from==='private'?'privado':null}  Para {m.destino === 'all' ? 'Todos' : m.destino.name.toUpperCase() || 'Desconecido'} 
                     </Typography>
                     {m.Origem.id!==Dados?.chat?.user?.id && <LockIcon onClick={()=>{
                       setNewMensagem({ from: 'private', destino: m.Origem, Origem: Dados.chat.user });
                     }}  fontSize="small" sx={{ cursor: 'pointer', verticalAlign: 'middle', color: 'text.secondary' }} />}
                     </Box>
-                    <Typography variant="body1">{m.text}</Typography>
+                    <Typography sx={{ flex: 1, wordBreak: 'break-word', overflowWrap: 'anywhere' }} variant="body1">{m.text}</Typography>
                     <Typography variant="caption" sx={{ display: 'block', textAlign: 'right', mt: 0.5, color: 'text.secondary' }}>
                       {new Date().toLocaleTimeString()}
                     </Typography>
@@ -175,14 +202,15 @@ export default function Chat() {
                   <Paper 
                   elevation={m.Origem.id === Dados.chat.user.id ? 3 : 1} 
                   sx={{ 
+                    overflow: 'hidden', // evita transbordo interno
                     p: 1.5, 
                     maxWidth: '70%', 
                     borderRadius: 2, 
-                    background: `linear-gradient(135deg, ${alpha(red[500], 50)}, ${red[500]} 0.25%, ${alpha(red[500], 0.25)})`,
+                    background: `linear-gradient(135deg, ${alpha(red[500], 0.25)}, ${red[500]} 0.25%, ${alpha(red[500], 0.25)})`,
                      }}>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
                       <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
-                      {m.Origem?.name?.toUpperCase() || 'Desconecido'}  Para {m.destino === 'all' ? 'Todos' : m.destino.name.toUpperCase() || 'Desconecido'}
+                      {m.Origem?.name?.toUpperCase() || 'Desconecido'} {m.from==='private'?'privado':null}  Para {m.destino === 'all' ? 'Todos' : m.destino.name.toUpperCase() || 'Desconecido'}
                     </Typography>
                       <LockIcon 
                       onClick={()=>{
@@ -192,7 +220,7 @@ export default function Chat() {
                       sx={{ verticalAlign: 'middle', color: 'text.secondary' }} 
                       />
                     </Box>
-                    <Typography variant="body1">{m.text}</Typography>
+                    <Typography sx={{ flex: 1, wordBreak: 'break-word', overflowWrap: 'anywhere' }} variant="body1">{m.text}</Typography>
                     <Typography variant="caption" sx={{ display: 'block', textAlign: 'right', mt: 0.5, color: 'text.secondary' }}>
                       {new Date().toLocaleTimeString()}
                     </Typography>
@@ -204,7 +232,7 @@ export default function Chat() {
           </List>
         </Box>
 
-        <Box sx={{ p: 1, borderTop: '1px solid', borderColor: 'divider', display: 'flex', gap: 1, alignItems: 'center' }}>
+        <Box sx={{ p: 1, borderTop: '1px solid', borderColor: 'divider', display: 'flex', gap: 1, alignItems: 'center'}}>
           <IconButton aria-label="attach">
             {newMensagem.from === 'private' ? <LockIcon onClick={() => {
               setNewMensagem({ from: 'public', destino: 'all', Origem: Dados.chat.user });
@@ -232,23 +260,58 @@ export default function Chat() {
           </IconButton>
         </Box>
       </Paper>
-      <Dialog open={openDialog} onClose={() => {
-        !!Dados?.chat?.user ? setOpenDialog(false) : alert("Por favor, insira suas credenciais para acessar o chat.")
-      }}>
-        <DialogTitle>Insira suas credenciais para entrar no chat.</DialogTitle>
-        <DialogContent>
-          <TextField onChange={e => {
-            setDados(a => ({ ...a, chat: { ...a.chat, user: { ...a.chat?.user, name: e.target.value } } }))
-          }} autoFocus margin="dense" label="Nome/Apelido" type="text" fullWidth variant="standard" />
-          <TextField onChange={e => {
-            setDados(a => ({ ...a, chat: { ...a.chat, user: { ...a.chat?.user, cpf: e.target.value } } }))
-          }} margin="dense" label="cpf" type="CPF" fullWidth variant="standard" />
-        </DialogContent>
-        <DialogActions>
-          <Box sx={{ display: 'flex', gap: 1, p: 2 }}>
-            <Button onClick={() => {
+     
+      <Dialog
+      open={openDialog}
+      onClose={()=>{
+        setOpenDialog(false)
+      }}
+      PaperProps={{
+        sx: {
+          borderRadius: 3,
+          p: 2,
+          minWidth: 400,
+          minHeight:500,
+          background: 'linear-gradient(135deg, #E3F2FD, #FCE4EC)',
+        },
+      }}
+    >
+      <DialogTitle>
+        <Typography variant="h6" sx={{ fontWeight: 'bold', textAlign: 'center' }}>
+          Entrar
+        </Typography>
+      </DialogTitle>
+
+      <DialogContent>
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+          <TextField
+            helperText="Pode ser um nome fictício "
+            label="Nome/apelido"
+            type="tsxt"
+            fullWidth
+            value={Dados?.chat?.user?.name}
+            onChange={(e) => {
+              setDados(a => ({ ...a, chat: { ...a.chat, user: { ...a.chat?.user, name: e.target.value } } }))
+            }}
+          />
+          {/* <TextField
+          helperText="Este documento é solicitado apenas para validação e não será mostrado a ninguém."
+            label="Cpf"
+            type="password"
+            fullWidth
+            value={''}
+            onChange={(e) => {e.preventDefault()}}
+          /> */}
+        </Box>
+      </DialogContent>
+
+      <DialogActions sx={{ justifyContent: 'center', pb: 2 }}>
+        <Button
+         variant="contained" 
+         color="primary"
+         onClick={() => {
               // setDados(a => ({ ...a, chat: { user: { name: "Usuário", cpf: "000.000.000-00" } } }))
-              if (!!Dados?.chat?.user?.name && !!Dados?.chat?.user?.cpf) {
+              if (!!Dados?.chat?.user?.name) {
                 socketIo?.emit('registrarUsuario', Dados?.chat?.user);
                 socketIo?.on('usuariosOnline', (usuarios) => {
                   setDados(a => ({ ...a, chat: { ...a.chat, usuariosOnline: usuarios, user: { ...a.chat?.user, id: socketIo?.id } } }));
@@ -258,13 +321,15 @@ export default function Chat() {
               } else {
                 alert("Por favor, preencha ambos os campos para entrar no chat.")
               }
-            }} variant="contained">Entrar</Button>
-            <Button onClick={() => navigate("/")} variant="contained" color="error">
-              Cancelar
-            </Button>
-          </Box>
-        </DialogActions>
-      </Dialog>
+            }}
+         >
+          Entrar
+        </Button>
+        <Button onClick={(e)=>{e.preventDefault();setOpenDialog(false)}} color="secondary">
+          Cancelar
+        </Button>
+      </DialogActions>
+    </Dialog>
     </Box>
   );
 }
