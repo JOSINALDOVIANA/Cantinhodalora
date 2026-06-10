@@ -23,6 +23,13 @@ import { Server } from 'socket.io';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+const swaggerOptions = {
+    customCssUrl: 'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.15.5/swagger-ui.min.css',
+    customJs: [
+        'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.15.5/swagger-ui-bundle.js',
+        'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.15.5/swagger-ui-standalone-preset.js'
+    ]
+};
 
 const api = express();
 api.set('trust proxy', 1);
@@ -95,7 +102,7 @@ const specs = swaggerJSDoc(options);
 
 
 // swagger docs
-api.use('/api/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
+api.use('/api/api-docs', swaggerUi.serve, swaggerUi.setup(specs, swaggerOptions));
 
 //static images
 api.use('/api/static/images', express.static(path.resolve(__dirname, 'tmp', 'uploads')))
