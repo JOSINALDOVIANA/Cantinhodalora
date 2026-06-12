@@ -120,7 +120,7 @@ export default function Chat() {
     }
   }, [Dados.chat?.mensagens]);
 
-  console.log(Dados.chat);
+  // console.log(Dados.chat);
 
 
 
