@@ -73,16 +73,13 @@ export default function Chat() {
 
   useEffect(() => {
     // vps
-    const socket = io("wss://cantinhodalora.info", {
+    const socket = window.location.origin.includes('localhost')?io(url):io("wss://cantinhodalora.info", {
       transports: ["websocket"],   // força uso de WebSocket
       secure: true,                // garante SSL/TLS
       reconnection: true,          // tenta reconectar se cair
       reconnectionAttempts: 5,     // número de tentativas
       reconnectionDelay: 2000      // intervalo entre tentativas
-    });
-
-    //localhost
-    // const socket = io(url);
+    });    
 
     setSocketIo(socket);
 
@@ -296,8 +293,12 @@ export default function Chat() {
 
       <Dialog
         open={openDialog}
-        onClose={() => {
-          setOpenDialog(false)
+        onClose={(event, reason) => {
+          // Impede fechar ao clicar fora ou apertar ESC
+    if (reason === "backdropClick" || reason === "escapeKeyDown") {
+      return;
+    }
+    setOpenDialog(false);
         }}
 
         PaperProps={{
