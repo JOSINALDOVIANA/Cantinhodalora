@@ -140,8 +140,8 @@ export default function AdminPanel() {
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                backgroundColor: theme.palette.mode === 'dark' ? theme.palette.primary.dark : theme.palette.grey[50],
-                border: `1px solid ${theme.palette.divider}`,
+                // backgroundColor: theme.palette.mode === 'dark' ? theme.palette.primary.dark : theme.palette.grey[50],
+                border: `1px solid ${theme.palette.primary.main}`,
                 boxShadow: theme.shadows[1],
             }}>
                 <CardContent sx={{
@@ -287,7 +287,7 @@ export default function AdminPanel() {
                             selected={Dados?.activeTabPerfil === 'dashboard'}
                             onClick={() => setDados(a => ({ ...a, activeTabPerfil: 'dashboard' }))}
                         >
-                            <ListItemIcon><Dashboard sx={{ color: blue[500] }} /></ListItemIcon>
+                            <ListItemIcon><Dashboard sx={{ color:theme.palette.primary.main }} /></ListItemIcon>
                             <ListItemText primary="Dashboard" />
                         </ListItem> : null}
 
@@ -297,7 +297,7 @@ export default function AdminPanel() {
                             selected={Dados?.activeTabPerfil === 'users'}
                             onClick={() => setDados(a => ({ ...a, activeTabPerfil: 'users' }))}
                         >
-                            <ListItemIcon><People sx={{ color: green[500] }} /></ListItemIcon>
+                            <ListItemIcon><People sx={{ color:theme.palette.primary.main }} /></ListItemIcon>
                             <ListItemText primary="Usuários" />
                         </ListItem> : null}
 
@@ -306,7 +306,7 @@ export default function AdminPanel() {
                         selected={Dados?.activeTabPerfil === 'settings'}
                         onClick={() => setDados(a => ({ ...a, activeTabPerfil: 'settings' }))}
                     >
-                        <ListItemIcon><Settings sx={{ color: red[500] }} /></ListItemIcon>
+                        <ListItemIcon><Settings sx={{ color:theme.palette.primary.main }} /></ListItemIcon>
                         <ListItemText primary="Meus Dados" />
                     </ListItem>
 
@@ -316,7 +316,7 @@ export default function AdminPanel() {
                             selected={Dados?.activeTabPerfil === 'products'}
                             onClick={() => setDados(a => ({ ...a, activeTabPerfil: 'products' }))}
                         >
-                            <ListItemIcon><ListIcon sx={{ color: deepOrange[500] }} /></ListItemIcon>
+                            <ListItemIcon><ListIcon sx={{ color:theme.palette.primary.main }} /></ListItemIcon>
                             <ListItemText primary="Produtos" />
                         </ListItem> : null}
 
@@ -330,7 +330,7 @@ export default function AdminPanel() {
                             }}
                         >
                             <ListItemIcon>
-                                <AddchartIcon sx={{ color: green[500] }} />
+                                <AddchartIcon sx={{ color:theme.palette.primary.main }} />
                             </ListItemIcon>
                             <ListItemText primary="AddProduto" />
                         </ListItem> : null
@@ -341,7 +341,7 @@ export default function AdminPanel() {
                         selected={Dados?.activeTabPerfil === 'security'}
                         onClick={() => setDados(a => ({ ...a, activeTabPerfil: 'security' }))}
                     >
-                        <ListItemIcon><Security sx={{ color: purple[500] }} /></ListItemIcon>
+                        <ListItemIcon><Security sx={{ color:theme.palette.primary.main }} /></ListItemIcon>
                         <ListItemText primary="Segurança" />
                     </ListItem>
 
@@ -352,7 +352,7 @@ export default function AdminPanel() {
                         onClick={() => setDados(a => ({ ...a, activeTabPerfil: 'WiFiConfigs' }))}
                     >
                         <ListItemIcon>
-                            <Wifi sx={{ color: purple[500] }} />
+                            <Wifi sx={{ color:theme.palette.primary.main }} />
                         </ListItemIcon>
                         <ListItemText primary="WiFi" />
                     </ListItem>

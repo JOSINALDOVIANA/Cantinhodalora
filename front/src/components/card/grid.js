@@ -103,7 +103,7 @@ export default function ProductGrid() {
           <Tabs
             value={activeCat}
             onChange={(_, v) => {
-              console.log('cat', v);
+              // console.log('cat', v);
               setActiveCat(v);
               if (v === 100) {
                 setDados(a => ({ ...a, productsSearch: a.products }))

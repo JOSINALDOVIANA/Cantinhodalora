@@ -126,7 +126,7 @@ export default function PrimarySearchAppBar() {
                   <ListItemIcon>
                     <LoginIcon 
                     sx={{ 
-                      color: red[500] 
+                       color:theme.palette.primary.main
                       }} />
                   </ListItemIcon>
                   <ListItemText primary='Login' />
@@ -148,7 +148,7 @@ export default function PrimarySearchAppBar() {
               }} disablePadding>
                 <ListItemButton>
                   <ListItemIcon>
-                    <Logout sx={{ color: red[500] }} />
+                    <Logout sx={{ color:theme.palette.primary.main }} />
                   </ListItemIcon>
                   <ListItemText primary={'Sair'} />
                 </ListItemButton>
@@ -160,7 +160,7 @@ export default function PrimarySearchAppBar() {
               <ListItem onClick={() => { navegation('/') }} disablePadding>
                 <ListItemButton>
                   <ListItemIcon>
-                    <Home sx={{ color: blue[500] }} />
+                    <Home sx={{ color:theme.palette.primary.main }} />
                   </ListItemIcon>
                   <ListItemText primary={'Home'} />
                 </ListItemButton>
@@ -172,7 +172,7 @@ export default function PrimarySearchAppBar() {
               <ListItem onClick={() => { navegation('/minha-conta') }} disablePadding>
                 <ListItemButton>
                   <ListItemIcon>
-                    <FolderSpecial sx={{ color: teal[500] }} />
+                    <FolderSpecial sx={{ color:theme.palette.primary.main }} />
                   </ListItemIcon>
                   <ListItemText primary={'Minha conta'} />
                 </ListItemButton>
@@ -223,7 +223,7 @@ export default function PrimarySearchAppBar() {
             } disablePadding>
               <ListItemButton>
                 <ListItemIcon>
-                  <Wifi sx={{ color: deepOrange[500] }} />
+                  <Wifi sx={{ color:theme.palette.primary.main }} />
                 </ListItemIcon>
                 <ListItemText primary={'Conectar'} />
               </ListItemButton>
@@ -241,7 +241,7 @@ export default function PrimarySearchAppBar() {
                 onClick={() => setDados({ ...Dados, activeTabPerfil: 'dashboard' })}
               >
                 <ListItemIcon>
-                  <Dashboard sx={{ color: blue[500] }} />
+                  <Dashboard sx={{ color:theme.palette.primary.main }} />
                 </ListItemIcon>
                 <ListItemText primary="Dashboard" />
               </ListItem>
@@ -257,7 +257,7 @@ export default function PrimarySearchAppBar() {
                 sx={{ display: { md: "none" }, mb: 1, borderRadius: 2 }}
               >
                 <ListItemIcon>
-                  <People sx={{ color: green[500] }} />
+                  <People sx={{ color:theme.palette.primary.main }} />
                 </ListItemIcon>
                 <ListItemText primary="Usuários" />
               </ListItem>
@@ -272,7 +272,7 @@ export default function PrimarySearchAppBar() {
                 onClick={() => setDados({ ...Dados, activeTabPerfil: 'settings' })}
               >
                 <ListItemIcon>
-                  <Settings sx={{ color: red[500] }} />
+                  <Settings sx={{ color:theme.palette.primary.main }} />
                 </ListItemIcon>
                 <ListItemText primary="Meus Dados" />
               </ListItem>
@@ -287,7 +287,7 @@ export default function PrimarySearchAppBar() {
                 onClick={() => setDados({ ...Dados, activeTabPerfil: 'products' })}
               >
                 <ListItemIcon>
-                  <ListIcon sx={{ color: deepOrange[500] }} />
+                  <ListIcon sx={{ color:theme.palette.primary.main }} />
                 </ListItemIcon>
                 <ListItemText primary="Produtos" />
               </ListItem>
@@ -320,7 +320,7 @@ export default function PrimarySearchAppBar() {
                 }}
               >
                 <ListItemIcon>
-                  <AddchartIcon sx={{ color: teal[500] }} />
+                  <AddchartIcon sx={{ color:theme.palette.primary.main }} />
                 </ListItemIcon>
                 <ListItemText primary="AddProduto" />
               </ListItem>
@@ -335,7 +335,7 @@ export default function PrimarySearchAppBar() {
                 onClick={() => setDados({ ...Dados, activeTabPerfil: 'security' })}
               >
                 <ListItemIcon>
-                  <Security sx={{ color: purple[500] }} />
+                  <Security sx={{ color:theme.palette.primary.main }} />
                 </ListItemIcon>
                 <ListItemText primary="Segurança" />
               </ListItem>
