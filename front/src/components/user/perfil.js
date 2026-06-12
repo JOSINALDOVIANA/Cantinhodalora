@@ -62,7 +62,7 @@ import {
 
 } from '@mui/icons-material';
 import ListIcon from '@mui/icons-material/List';
-import { DadosContext, Url_img } from '../../routs.js';
+import { DadosContext } from '../../routs.js';
 import { api } from '../../api/index.js';
 import ProductCard from '../card/index.js';
 
@@ -557,7 +557,7 @@ export default function AdminPanel() {
 
                                             }}
                                             key={index}
-                                            src={img.url || Url_img}
+                                            src={img?.url}
                                             sx={{ width: 50, height: 50, border: img.id === Dados?.ProductDataEdit?.image_id ? "2px solid red !important" : undefined }} />
                                     ))}
                                 </AvatarGroup>
@@ -1042,7 +1042,7 @@ export default function AdminPanel() {
 
                                     }}
                                     key={index}
-                                    src={img.url || Url_img}
+                                    src={img?.url}
                                     sx={{ width: 50, height: 50, border: img.id === Dados?.ProductDataEdit?.image_id ? "2px solid red !important" : undefined }} />
                             ))}
                         </AvatarGroup>

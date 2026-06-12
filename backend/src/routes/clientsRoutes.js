@@ -1,5 +1,5 @@
 import express from 'express';
-import {autenticarJWT} from '../../index.js';
+import {autenticarJWT} from '../functions/TokenJWT.js';
 import { getAllClients, getClientById, createClient, updateClient, deleteClient } from '../controller/clientsController.js';
 
 const router = express.Router();

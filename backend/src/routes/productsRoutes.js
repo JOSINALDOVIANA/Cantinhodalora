@@ -1,6 +1,6 @@
 import express from 'express';
 import { getAllProducts, createProduct, updateProduct, deleteProduct } from '../controller/productsController.js';
-import { autenticarJWT } from '../../index.js';
+import { autenticarJWT } from '../functions/TokenJWT.js';
 
 const router = express.Router();
 

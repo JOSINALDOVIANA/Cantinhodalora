@@ -10,7 +10,7 @@ import {
 
 import { Url_img } from '../../routs.js';
 import { alpha, useTheme } from "@mui/material/styles";
-import { red } from '@mui/material/colors';
+import { purple, red } from '@mui/material/colors';
 
 export default function ProductCard({ produto, ...props }) {
   const theme = useTheme()
@@ -28,7 +28,7 @@ export default function ProductCard({ produto, ...props }) {
         boxShadow: 3,
         borderRadius: 2,
         justifyContent: 'space-between',
-        background: `linear-gradient(135deg, ${alpha(theme.palette.primary.dark, 0.25)}, ${theme.palette.background.default} 50%, ${alpha(theme.palette.secondary.dark, 0.25)})`,
+        // background: `linear-gradient(135deg, ${alpha(theme.palette.primary.dark, 0.25)}, ${theme.palette.background.default} 50%, ${alpha(theme.palette.secondary.dark, 0.25)})`,
 
       }}
     >
@@ -42,8 +42,8 @@ export default function ProductCard({ produto, ...props }) {
           maxWidth: '100%',
           minHeight: 150,
           maxHeight: 150,
-          WebkitMaskImage: `linear-gradient(to top, transparent 0.1%, ${theme.palette.mode === "dark" ? "#000" : "#fff"
-            } 10%)`
+          // WebkitMaskImage: `linear-gradient(to top, transparent 0.1%, ${theme.palette.mode === "dark" ? "#000" : "#fff"
+          // } 10%)`
         }}
       />
       <CardContent
@@ -64,7 +64,10 @@ export default function ProductCard({ produto, ...props }) {
         </Typography>
 
 
-        <Typography component='p' sx={{ fontSize: { xs: "0.7rem", sm: "0.8rem", md: "0.9rem" }, color: red[500], fontWeight: 'bold' }}>
+        <Typography component='p' sx={{
+          fontSize: { xs: "0.7rem", sm: "0.8rem", md: "0.9rem" }, color: theme.palette.primary.main,
+           fontWeight: 'bold'
+        }}>
           R$ {produto?.price.toFixed(2)}
         </Typography>
       </CardContent>

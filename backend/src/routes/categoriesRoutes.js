@@ -1,6 +1,6 @@
 import express from 'express';
 import { getAllCategories, getCategoryById, createCategory, updateCategory, deleteCategory } from '../controller/categoriesController.js';
-import { autenticarJWT } from '../../index.js';
+import { autenticarJWT } from '../functions/TokenJWT.js';
 
 const router = express.Router();
 

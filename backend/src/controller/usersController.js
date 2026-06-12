@@ -1,4 +1,4 @@
-import { gerarTokens } from '../../index.js';
+import { gerarTokens } from '../functions/TokenJWT.js';
 import conexao from '../database/conexao.js';
 import jwt from 'jsonwebtoken';
 

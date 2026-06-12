@@ -84,7 +84,7 @@ export default function PrimarySearchAppBar() {
   const theme = useTheme();
   const navegation = useNavigate();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-  
+
 
   React.useEffect(() => {
     api.get('/api/wifi').then(response => {
@@ -94,10 +94,12 @@ export default function PrimarySearchAppBar() {
       console.error(error);
     })
   }, []);
- 
-  
 
-  
+  // console.log(theme)
+
+
+
+
 
 
   const [openMenu, setOpenMenu] = React.useState(false);
@@ -112,7 +114,7 @@ export default function PrimarySearchAppBar() {
   // menu atual
   const renderDrawerMenu = (
     <Box >
-      {/* <Button onClick={toggleDrawer(true)}>Open drawer</Button> */}
+      
       <Drawer sx={{}} open={openMenu} onClose={toggleOpenDrawerMenu(false)}>
         <Box sx={{ width: 250, minHeight: '100vh', maxHeight: '100vh' }} role="presentation" onClick={toggleOpenDrawerMenu(false)} onKeyDown={toggleOpenDrawerMenu(false)}>
 
@@ -122,9 +124,12 @@ export default function PrimarySearchAppBar() {
               <ListItem onClick={() => { navegation('/login') }} disablePadding>
                 <ListItemButton>
                   <ListItemIcon>
-                    <LoginIcon sx={{ color: red[500] }} />
+                    <LoginIcon 
+                    sx={{ 
+                      color: red[500] 
+                      }} />
                   </ListItemIcon>
-                  <ListItemText primary={'Login'} />
+                  <ListItemText primary='Login' />
                 </ListItemButton>
               </ListItem>
             }
@@ -337,49 +342,9 @@ export default function PrimarySearchAppBar() {
             }
 
             <Divider></Divider>
-            {/* categorias */}
-            <ListItem
+           
 
-              sx={{ mb: 1, borderRadius: 2, cursor: 'pointer' }}
-
-              onClick={() => { setDados(a => ({ ...a, productsSearch: [...a.products] })) }}
-            >
-              <ListItemButton>
-                <ListItemIcon>
-                  <ArrowBack sx={{ color: purple[500] }} />
-                </ListItemIcon>
-                <ListItemText primary={'Todos os Produtos'} />
-              </ListItemButton>
-            </ListItem>
-
-            {Dados?.categories?.map((categoria, index) => (
-              <ListItem
-                sx={{ mb: 1, borderRadius: 2, cursor: 'pointer' }}
-
-                key={categoria.id}
-                onClick={() => {
-                  let prod = Dados?.products?.filter(p => p.categories?.find(c => c.id === categoria.id))
-
-                  // console.log('selectCategorie', prod)
-                  setDados(a => ({ ...a, productsSearch: [...prod] }))
-
-
-                }
-                }
-              >
-                <ListItemButton>
-                  <ListItemIcon>
-                    {/* {(() => {
-                      const icons = [Home, Dashboard, FolderSpecial, People, Security, Settings, Call, AddchartIcon];
-                      const Icon = icons[index % icons.length];
-                      return <Icon sx={{ color: purple[500] }} />;
-                    })()} */}
-                    <SportsBarOutlinedIcon sx={{ color: purple[100] }} />
-                  </ListItemIcon>
-                  <ListItemText primary={categoria.description} />
-                </ListItemButton>
-              </ListItem>
-            ))}
+            
           </List>
 
 
@@ -399,19 +364,13 @@ export default function PrimarySearchAppBar() {
       <CssBaseline />
       <AppBar
         elevation={0}
-        sx={{
-          // background: 'rgba(236, 59, 59, 0.65)',
-          // backdropFilter: 'blur(12px)',
-          // borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
-          // background: `linear-gradient(135deg, ${alpha(theme.palette.primary.dark, 0.25)}, ${theme.palette.background.default} 50%, ${alpha(theme.palette.secondary.dark, 0.25)})`,
-        }}
         position="fixed">
         <Toolbar>
-          
+
           <IconButton
             size="large"
             edge="start"
-            // color="inherit"
+
             aria-label="open drawer"
             sx={{ mr: 2 }}
             onClick={toggleOpenDrawerMenu(true)}
@@ -420,13 +379,13 @@ export default function PrimarySearchAppBar() {
           </IconButton>
 
           <IconButton
-          onClick={() => { navegation('/chat') }}
-            
-            edge="start">
-              <ForumIcon sx={{  mr: 1, color: deepOrange[500] }} />
-            </IconButton>
+            onClick={() => { navegation('/chat') }}
+            edge="start"
+          >
+            <ForumIcon  />
+          </IconButton>
 
-          
+
           <TrocarTheme />
           <Search sx={{ borderRadius: 999, display: { xs: 'none', md: 'flex' }, flexGrow: 1, maxWidth: 460, mx: 'auto' }}>
             <SearchIconWrapper>
@@ -442,9 +401,7 @@ export default function PrimarySearchAppBar() {
           {/* tela grande */}
 
           <Box sx={{ flexShrink: 0, display: {}, flexDirection: 'column', alignItems: 'flex-end' }}>
-            <Typography variant={isMobile ? "body1" : "h4"} sx={{ lineHeight: 1.1, }}>
-              Cantinho da Lora
-            </Typography>
+           
             <Typography
               variant={isMobile ? "caption" : "subtitle1"}
               color="text.secondary"
@@ -454,32 +411,7 @@ export default function PrimarySearchAppBar() {
               · 10h até 2h
             </Typography>
           </Box>
-          {/* <Avatar
-            variant="circular"
-            sx={{
-              ml: 2,
-              background: `linear-gradient(135deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
-              width: 44,
-              height: 44,
-              boxShadow: `0 6px 18px ${alpha(theme.palette.primary.main, 0.35)}`,
-            }}
-          >
-            <img src={logo} alt="Logo" style={{ width: "100%", height: "100%" }} />
-          </Avatar> */}
-
-
-          {/* <Box sx={{ display: { xs: 'flex', md: 'none' } }}>
-            <IconButton
-              size="large"
-              aria-label="show more"
-              aria-controls={mobileMenuId}
-              aria-haspopup="true"
-              onClick={handleMobileMenuOpen}
-              color="inherit"
-            >
-              <MoreIcon />
-            </IconButton>
-          </Box> */}
+          
         </Toolbar>
       </AppBar>
 

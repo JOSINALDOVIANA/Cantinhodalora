@@ -8,9 +8,10 @@ import { Brightness6, Brightness7 } from '@mui/icons-material';
 
 import App from './App.js'
 import Load from './components/load';
+import { themeDarck, themeLight } from './functions/theme/theme.js';
 const ProductGrid = React.lazy(() => import('./components/card/grid.js'));
 const Login = React.lazy(() => import('./components/Login/index.js'));
-const Teste = React.lazy(() => import('./components/teste/index.js'));
+// const Teste = React.lazy(() => import('./functions/teste/index.js'));
 const MinhaConta = React.lazy(() => import('./components/user/perfil.js'));
 const Chat = React.lazy(() => import('./components/Chat/index.js'));
 
@@ -29,23 +30,23 @@ export function TrocarTheme(props) {
     return (
 
 
-        <IconButton {...props} onClick={colorMode.toggleColorMode} color="inherit">
+        <IconButton {...props} onClick={colorMode.toggleColorMode}>
             {theme.palette.mode === 'dark' ? <Brightness6 /> : <Brightness7 />}
         </IconButton>
 
     );
 }
-export const Url_img = "http://localhost:3001/api/static/images/03e39636ea98a63614e342a0527160f4-cantinhodalora.jpg"
 
 export function Rotas() {
     const [search, setSearch] = React.useState("")
     const [Dados, setDados] = React.useState({ logado: false, activeTabPerfil: "", user: {} });
-    const [mode, setMode] = React.useState(() => { return 'dark'
-        // if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-        //     return "dark"
-        // } else {
-        //     return "light"
-        // }
+    const [mode, setMode] = React.useState(() => {
+        // return 'dark'
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            return "dark"
+        } else {
+            return "light"
+        }
     });
     const colorMode = React.useMemo(
         () => ({
@@ -58,11 +59,9 @@ export function Rotas() {
 
     const theme = React.useMemo(
         () =>
-            createTheme({
-                palette: {
-                    mode,
-                },
-            }),
+            createTheme(
+                mode==='dark'?themeDarck:themeLight
+            ),
         [mode],
     );
 
@@ -78,7 +77,7 @@ export function Rotas() {
 
                                 <Routes>
                                     <Route path="/*" element={<Typography>DESCULPE!! este recuso esta indisponivel ou em desenvolvimento</Typography>} />
-                                    <Route path="/teste" element={<Teste />} />
+                                    {/* <Route path="/teste" element={<Teste />} /> */}
                                     <Route path="/" element={<App />} >
                                         <Route index element={<ProductGrid />}></Route>
                                         <Route path="/login" element={<Login />}></Route>

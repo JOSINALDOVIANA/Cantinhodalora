@@ -1,6 +1,6 @@
 import express from 'express';
 import { getAllUsers, createUser, updateUser, deleteUser, userLogin, userRefresh, userLogout } from '../controller/usersController.js';
-import { autenticarJWT } from '../../index.js';
+import { autenticarJWT } from '../functions/TokenJWT.js';
 
 const router = express.Router();
 

@@ -36,7 +36,6 @@ export default function ProductGrid() {
           overflow: "hidden",
           borderBottom: 1,
           borderColor: "divider",
-          background: `linear-gradient(135deg, ${alpha(theme.palette.primary.dark, 0.25)}, ${theme.palette.background.default} 50%, ${alpha(theme.palette.secondary.dark, 0.25)})`,
         }}
       >
         <Box
@@ -51,19 +50,8 @@ export default function ProductGrid() {
             filter: "blur(80px)",
           }}
         />
-        <Box
-          sx={{
-            position: "absolute",
-            left: "30%",
-            bottom: -80,
-            width: 320,
-            height: 320,
-            borderRadius: "50%",
-            bgcolor: alpha(theme.palette.secondary.main, 0.2),
-            filter: "blur(80px)",
-          }}
-        />
-        <Container maxWidth="lg" sx={{ position: "relative", py: { xs: 6, sm: 9 } }}>
+       
+        <Container maxWidth="lg" sx={{ position: "relative", py: { xs: 9, sm: 9 } }}>
           <Typography
             variant="overline"
             sx={{ letterSpacing: 4, color: "primary.light", display: "block", mb: 1 }}
@@ -94,7 +82,7 @@ export default function ProductGrid() {
           </Typography>
           <Typography variant="body1" color="text.secondary" sx={{ mt: 2, maxWidth: 640 }}>
             Confira nossos produtos, filtre por categorias ou pesquise pelo nome do produto. 
-            Peça ao bartenders(a) que ele(a) cuida do resto. Beba com moderação.
+            Peça aos bartenders que eles cuidam do resto. Beba com moderação.
           </Typography>
         </Container>
       </Box>
@@ -103,8 +91,8 @@ export default function ProductGrid() {
           position: "sticky",
           top: 55,
           zIndex: 5,
-          // bgcolor: alpha(theme.palette.background.default, 0.9),
-          background: `linear-gradient(135deg, ${alpha(theme.palette.primary.dark, 0.25)}, ${theme.palette.background.default} 50%, ${alpha(theme.palette.secondary.dark, 0.25)})`,
+          
+          // background: `linear-gradient(135deg, ${alpha(theme.palette.primary.dark, 0.25)}, ${theme.palette.background.default} 50%, ${alpha(theme.palette.secondary.dark, 0.25)})`,
           backdropFilter: "blur(8px)",
           borderBottom: 1,
           borderColor: "divider",
