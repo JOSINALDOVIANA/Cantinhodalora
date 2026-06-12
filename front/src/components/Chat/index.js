@@ -83,7 +83,8 @@ export default function Chat() {
 
     //localhost
     // const socket = io(url);
-    // setSocketIo(socket);
+
+    setSocketIo(socket);
 
     socket.on('connect', () => {
 
