@@ -1,344 +1,446 @@
-import React, { useState, useEffect, useContext } from 'react';
-import {
-    AppBar,
-    Toolbar,
-    IconButton,
-    Typography,
-    Drawer,
-    List,
-    ListItem,
-    ListItemText,
-    ListItemIcon,
-    Box,
-    Container,
-    Grid,
-    Card,
-    CardMedia,
-    CardContent,
-    ListItemButton,
-    Divider,
-    InputBase,
-    ThemeProvider,
-    CssBaseline
-} from '@mui/material';
-import { styled, alpha, useTheme, createTheme } from '@mui/material/styles';
-
-import MenuIcon from '@mui/icons-material/Menu';
-import SearchIcon from '@mui/icons-material/Search';
-import Home from '@mui/icons-material/Home';
-import LoginIcon from '@mui/icons-material/Login';
-import Logout from '@mui/icons-material/Logout';
-import FolderSpecial from '@mui/icons-material/FolderSpecial';
-import Dashboard from '@mui/icons-material/Dashboard';
-import People from '@mui/icons-material/People';
-import Settings from '@mui/icons-material/Settings';
-import ListIcon from '@mui/icons-material/List';
-import Security from '@mui/icons-material/Security';
-import AddchartIcon from '@mui/icons-material/Addchart';
-import WhatsAppIcon from '@mui/icons-material/WhatsApp';
-import FacebookIcon from '@mui/icons-material/Facebook';
-import InstagramIcon from '@mui/icons-material/Instagram';
-import Call from '@mui/icons-material/Call';
-
-import { api } from '../../api/index.js';
-import { DadosContext, Url_img, TrocarTheme } from '../../routs.js';
-import { useNavigate, useLocation } from 'react-router-dom';
-
-const elegantTheme = createTheme({
-    palette: {
-        mode: 'dark',
-        primary: { main: '#bb86fc' },
-        background: { default: '#121212', paper: '#1e1e1e' },
-    },
-    typography: { fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif' },
-});
-
-const Search = styled('div')(({ theme }) => ({
-    position: 'relative',
-    borderRadius: theme.shape.borderRadius,
-    backgroundColor: alpha(theme.palette.common.white, 0.15),
-    '&:hover': {
-        backgroundColor: alpha(theme.palette.common.white, 0.25),
-    },
-    marginRight: theme.spacing(2),
-    marginLeft: 0,
-    width: '100%',
-    [theme.breakpoints.up('sm')]: {
-        marginLeft: theme.spacing(3),
-        width: 'auto',
-    },
-}));
-
-const SearchIconWrapper = styled('div')(({ theme }) => ({
-    padding: theme.spacing(0, 2),
-    height: '100%',
-    position: 'absolute',
-    pointerEvents: 'none',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-}));
-
-const StyledInputBase = styled(InputBase)(({ theme }) => ({
-    color: 'inherit',
-    '& .MuiInputBase-input': {
-        padding: theme.spacing(1, 1, 1, 0),
-        paddingLeft: `calc(1em + ${theme.spacing(4)})`,
-        transition: theme.transitions.create('width'),
-        width: '100%',
-        [theme.breakpoints.up('md')]: {
-            width: '20ch',
+const theme={
+    "breakpoints": {
+        "keys": [
+            "xs",
+            "sm",
+            "md",
+            "lg",
+            "xl"
+        ],
+        "values": {
+            "xs": 0,
+            "sm": 600,
+            "md": 900,
+            "lg": 1200,
+            "xl": 1536
         },
+        "unit": "px",
+        "internal_mediaKeys": [
+            "@media (min-width:0px)",
+            "@media (min-width:600px)",
+            "@media (min-width:900px)",
+            "@media (min-width:1200px)",
+            "@media (min-width:1536px)"
+        ]
     },
-}));
-
-const Teste = () => {
-    const [Dados, setDados] = useContext(DadosContext) || [{}, () => { }];
-    const navegation = useNavigate();
-    const location = useLocation();
-    const muiTheme = useTheme();
-
-    const [drawerOpen, setDrawerOpen] = useState(false);
-    const [products, setProducts] = useState([]);
-
-    useEffect(() => {
-        // Busca de produtos idêntica ao grid.js original
-        api.get('/api/products')
-            .then(response => {
-                setProducts(response.data.produtos || []);
-                if (setDados) setDados(a => ({ ...a, products: response.data.produtos }));
-            })
-            .catch(err => console.log('Erro ao carregar produtos', err));
-    }, [setDados]);
-
-    const toggleDrawer = (open) => (event) => {
-        if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
-            return;
+    "direction": "ltr",
+    "components": {},
+    "palette": {
+        "mode": "dark",
+        "primary": {
+            "main": "#ee59c3",
+            "light": "rgb(241, 122, 207)",
+            "dark": "rgb(166, 62, 136)",
+            "contrastText": "#fff"
+        },
+        "secondary": {
+            "main": "#612be9",
+            "light": "rgb(128, 85, 237)",
+            "dark": "rgb(67, 30, 163)",
+            "contrastText": "#fff"
+        },
+        "background": {
+            "default": "#08040b",
+            "paper": "#08040b"
+        },
+        "common": {
+            "black": "#000",
+            "white": "#fff"
+        },
+        "error": {
+            "main": "#f44336",
+            "light": "#e57373",
+            "dark": "#d32f2f",
+            "contrastText": "#fff"
+        },
+        "warning": {
+            "main": "#ffa726",
+            "light": "#ffb74d",
+            "dark": "#f57c00",
+            "contrastText": "rgba(0, 0, 0, 0.87)"
+        },
+        "info": {
+            "main": "#29b6f6",
+            "light": "#4fc3f7",
+            "dark": "#0288d1",
+            "contrastText": "rgba(0, 0, 0, 0.87)"
+        },
+        "success": {
+            "main": "#66bb6a",
+            "light": "#81c784",
+            "dark": "#388e3c",
+            "contrastText": "rgba(0, 0, 0, 0.87)"
+        },
+        "grey": {
+            "50": "#fafafa",
+            "100": "#f5f5f5",
+            "200": "#eeeeee",
+            "300": "#e0e0e0",
+            "400": "#bdbdbd",
+            "500": "#9e9e9e",
+            "600": "#757575",
+            "700": "#616161",
+            "800": "#424242",
+            "900": "#212121",
+            "A100": "#f5f5f5",
+            "A200": "#eeeeee",
+            "A400": "#bdbdbd",
+            "A700": "#616161"
+        },
+        "contrastThreshold": 3,
+        "tonalOffset": 0.2,
+        "text": {
+            "primary": "#fff",
+            "secondary": "rgba(255, 255, 255, 0.7)",
+            "disabled": "rgba(255, 255, 255, 0.5)",
+            "icon": "rgba(255, 255, 255, 0.5)"
+        },
+        "divider": "rgba(255, 255, 255, 0.12)",
+        "action": {
+            "active": "#fff",
+            "hover": "rgba(255, 255, 255, 0.08)",
+            "hoverOpacity": 0.08,
+            "selected": "rgba(255, 255, 255, 0.16)",
+            "selectedOpacity": 0.16,
+            "disabled": "rgba(255, 255, 255, 0.3)",
+            "disabledBackground": "rgba(255, 255, 255, 0.12)",
+            "disabledOpacity": 0.38,
+            "focus": "rgba(255, 255, 255, 0.12)",
+            "focusOpacity": 0.12,
+            "activatedOpacity": 0.24
         }
-        setDrawerOpen(open);
-    };
-
-    return (
-        <ThemeProvider theme={elegantTheme}>
-            <CssBaseline />
-            <Box sx={{ minHeight: '100vh', bgcolor: 'background.default' }}>
-
-                {/* AppBar Elegante integrado com a Barra de Pesquisa Original */}
-                <AppBar
-                    position="fixed"
-                    elevation={0}
-                    sx={{
-                        background: 'rgba(18, 18, 18, 0.65)',
-                        backdropFilter: 'blur(12px)',
-                        borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
-                    }}
-                >
-                    <Toolbar>
-                        <IconButton
-                            size="large"
-                            edge="start"
-                            color="inherit"
-                            aria-label="menu"
-                            sx={{ mr: 2 }}
-                            onClick={toggleDrawer(true)}
-                        >
-                            <MenuIcon />
-                        </IconButton>
-
-                        <Typography variant="h6" component="div" sx={{ flexGrow: 1, display: { xs: 'none', sm: 'block' } }}>
-                            Cantinho da Lora
-                        </Typography>
-
-                        <Search>
-                            <SearchIconWrapper>
-                                <SearchIcon />
-                            </SearchIconWrapper>
-                            <StyledInputBase
-                                placeholder="Pesquisar..."
-                                inputProps={{ 'aria-label': 'search' }}
-                            />
-                        </Search>
-
-                        <Box sx={{ display: { xs: 'none', md: 'flex' }, ml: 2 }}>
-                            {/* O botão real de trocar o tema da sua aplicação */}
-                            <TrocarTheme />
-                        </Box>
-                    </Toolbar>
-                </AppBar>
-
-                {/* Drawer com Lógica Real de Login, Navegação e Permissões Administrativas */}
-                <Drawer
-                    anchor="left"
-                    open={drawerOpen}
-                    onClose={toggleDrawer(false)}
-                >
-                    <Box
-                        sx={{ width: 280 }}
-                        role="presentation"
-                        onClick={toggleDrawer(false)}
-                        onKeyDown={toggleDrawer(false)}
-                    >
-                        <List sx={{ mt: 2 }}>
-                            {!Dados?.logado && location.pathname !== '/login' && (
-                                <ListItem onClick={() => navegation('/login')} disablePadding>
-                                    <ListItemButton>
-                                        <ListItemIcon><LoginIcon /></ListItemIcon>
-                                        <ListItemText primary="Login" />
-                                    </ListItemButton>
-                                </ListItem>
-                            )}
-
-                            {Dados?.logado && (
-                                <ListItem onClick={() => {
-                                    setDados({ ...Dados, logado: false, user: null });
-                                    navegation('/');
-                                }} disablePadding>
-                                    <ListItemButton>
-                                        <ListItemIcon><Logout /></ListItemIcon>
-                                        <ListItemText primary="Sair" />
-                                    </ListItemButton>
-                                </ListItem>
-                            )}
-
-                            {location.pathname !== '/' && (
-                                <ListItem onClick={() => navegation('/')} disablePadding>
-                                    <ListItemButton>
-                                        <ListItemIcon><Home /></ListItemIcon>
-                                        <ListItemText primary="Home" />
-                                    </ListItemButton>
-                                </ListItem>
-                            )}
-
-                            {Dados?.logado && (
-                                <ListItem onClick={() => navegation('/minha-conta')} disablePadding>
-                                    <ListItemButton>
-                                        <ListItemIcon><FolderSpecial /></ListItemIcon>
-                                        <ListItemText primary="Minha conta" />
-                                    </ListItemButton>
-                                </ListItem>
-                            )}
-
-                            <Divider sx={{ my: 1 }} />
-
-                            <ListItem disablePadding>
-                                <ListItemButton>
-                                    <ListItemIcon><WhatsAppIcon /></ListItemIcon>
-                                    <ListItemText primary="Whatsapp" />
-                                </ListItemButton>
-                            </ListItem>
-                            <ListItem disablePadding>
-                                <ListItemButton>
-                                    <ListItemIcon><FacebookIcon /></ListItemIcon>
-                                    <ListItemText primary="Facebook" />
-                                </ListItemButton>
-                            </ListItem>
-                            <ListItem disablePadding>
-                                <ListItemButton>
-                                    <ListItemIcon><InstagramIcon /></ListItemIcon>
-                                    <ListItemText primary="Instagram" />
-                                </ListItemButton>
-                            </ListItem>
-                            <ListItem disablePadding>
-                                <ListItemButton>
-                                    <ListItemIcon><Call /></ListItemIcon>
-                                    <ListItemText primary="(96) 98121-8004" />
-                                </ListItemButton>
-                            </ListItem>
-
-                            {Dados?.logado && <Divider sx={{ my: 1 }} />}
-
-                            {Dados?.logado && (
-                                <>
-                                    <ListItem button selected={Dados?.activeTabPerfil === 'dashboard'} onClick={() => setDados({ ...Dados, activeTabPerfil: 'dashboard' })}>
-                                        <ListItemIcon><Dashboard /></ListItemIcon>
-                                        <ListItemText primary="Dashboard" />
-                                    </ListItem>
-                                    <ListItem button selected={Dados?.activeTabPerfil === 'users'} onClick={() => setDados({ ...Dados, activeTabPerfil: 'users' })}>
-                                        <ListItemIcon><People /></ListItemIcon>
-                                        <ListItemText primary="Usuários" />
-                                    </ListItem>
-                                    <ListItem button selected={Dados?.activeTabPerfil === 'settings'} onClick={() => setDados({ ...Dados, activeTabPerfil: 'settings' })}>
-                                        <ListItemIcon><Settings /></ListItemIcon>
-                                        <ListItemText primary="Configurações" />
-                                    </ListItem>
-                                    <ListItem button selected={Dados?.activeTabPerfil === 'products'} onClick={() => setDados({ ...Dados, activeTabPerfil: 'products' })}>
-                                        <ListItemIcon><ListIcon /></ListItemIcon>
-                                        <ListItemText primary="Produtos" />
-                                    </ListItem>
-                                    <ListItem button selected={Dados?.activeTabPerfil === 'addProduct'} onClick={() => {
-                                        setDados({
-                                            ...Dados,
-                                            activeTabPerfil: 'addProduct',
-                                            editProduct: { id: "", description: "", size: "", price: "", url: "", images: [], image_id: "", name: "", categorias: [] }
-                                        });
-                                    }}>
-                                        <ListItemIcon><AddchartIcon /></ListItemIcon>
-                                        <ListItemText primary="AddProduto" />
-                                    </ListItem>
-                                    <ListItem button selected={Dados?.activeTabPerfil === 'security'} onClick={() => setDados({ ...Dados, activeTabPerfil: 'security' })}>
-                                        <ListItemIcon><Security /></ListItemIcon>
-                                        <ListItemText primary="Segurança" />
-                                    </ListItem>
-                                </>
-                            )}
-                        </List>
-                    </Box>
-                </Drawer>
-
-                {/* Grid de Produtos - Baseado no card/grid.js e card/index.js originais */}
-                <Box component="main" sx={{ pt: 12, pb: 6 }}>
-                    <Container maxWidth="lg">
-                        <Grid container spacing={4} sx={{ justifyContent: 'center' }}>
-                            {products.map((produto, index) => (
-                                <Grid item xs={12} sm={6} md={3} key={index} sx={{ display: 'flex' }}>
-                                    <Card
-                                        elevation={3}
-                                        sx={{
-                                            minWidth: 250,
-                                            maxWidth: 250,
-                                            margin: 'auto',
-                                            display: 'flex',
-                                            flexDirection: 'column',
-                                            transition: 'transform 0.3s, box-shadow 0.3s',
-                                            '&:hover': {
-                                                transform: 'translateY(-5px)',
-                                                boxShadow: '0 8px 20px rgba(0,0,0,0.15)'
-                                            }
-                                        }}
-                                    >
-                                        <CardMedia
-                                            component="img"
-                                            image={produto?.url || Url_img}
-                                            alt={produto?.name}
-                                            sx={{
-                                                width: "100%",
-                                                height: 200,
-                                                WebkitMaskImage: `linear-gradient(to top, transparent 0.1%, ${muiTheme.palette.mode === "dark" ? "#000" : "#fff"} 20%)`
-                                            }}
-                                        />
-                                        <CardContent sx={{ flexGrow: 1 }}>
-                                            <Typography gutterBottom variant="h6" component="div">
-                                                {produto?.name} {produto?.size}
-                                            </Typography>
-                                            <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-                                                Estoque: {produto?.unit || 0} unidades
-                                            </Typography>
-                                            <Typography variant="h6" color="warning.main" sx={{ mt: 1 }}>
-                                                R$ {produto?.price ? produto.price.toFixed(2) : '0.00'}
-                                            </Typography>
-                                        </CardContent>
-                                    </Card>
-                                </Grid>
-                            ))}
-                            {products.length === 0 && (
-                                <Typography color="text.secondary" sx={{ mt: 5 }}>Carregando produtos...</Typography>
-                            )}
-                        </Grid>
-                    </Container>
-                </Box>
-            </Box>
-        </ThemeProvider>
-    );
-};
-
-export default Teste;
+    },
+    "shape": {
+        "borderRadius": 5
+    },
+    "typography": {
+        "fontFamily": "Roboto",
+        "fontSize": 13,
+        "htmlFontSize": 16,
+        "fontWeightLight": 300,
+        "fontWeightRegular": 400,
+        "fontWeightMedium": 500,
+        "fontWeightBold": 700,
+        "h1": {
+            "fontFamily": "Roboto",
+            "fontWeight": 300,
+            "fontSize": "5.571428571428571rem",
+            "lineHeight": 1.167
+        },
+        "h2": {
+            "fontFamily": "Roboto",
+            "fontWeight": 300,
+            "fontSize": "3.482142857142857rem",
+            "lineHeight": 1.2
+        },
+        "h3": {
+            "fontFamily": "Roboto",
+            "fontWeight": 400,
+            "fontSize": "2.7857142857142856rem",
+            "lineHeight": 1.167
+        },
+        "h4": {
+            "fontFamily": "Roboto",
+            "fontWeight": 400,
+            "fontSize": "1.9732142857142858rem",
+            "lineHeight": 1.235
+        },
+        "h5": {
+            "fontFamily": "Roboto",
+            "fontWeight": 400,
+            "fontSize": "1.3928571428571428rem",
+            "lineHeight": 1.334
+        },
+        "h6": {
+            "fontFamily": "Roboto",
+            "fontWeight": 500,
+            "fontSize": "1.1607142857142858rem",
+            "lineHeight": 1.6
+        },
+        "subtitle1": {
+            "fontFamily": "Roboto",
+            "fontWeight": 400,
+            "fontSize": "0.9285714285714286rem",
+            "lineHeight": 1.75
+        },
+        "subtitle2": {
+            "fontFamily": "Roboto",
+            "fontWeight": 500,
+            "fontSize": "0.8125rem",
+            "lineHeight": 1.57
+        },
+        "body1": {
+            "fontFamily": "Roboto",
+            "fontWeight": 400,
+            "fontSize": "0.9285714285714286rem",
+            "lineHeight": 1.5
+        },
+        "body2": {
+            "fontFamily": "Roboto",
+            "fontWeight": 400,
+            "fontSize": "0.8125rem",
+            "lineHeight": 1.43
+        },
+        "button": {
+            "fontFamily": "Roboto",
+            "fontWeight": 500,
+            "fontSize": "0.8125rem",
+            "lineHeight": 1.75,
+            "textTransform": "uppercase"
+        },
+        "caption": {
+            "fontFamily": "Roboto",
+            "fontWeight": 400,
+            "fontSize": "0.6964285714285714rem",
+            "lineHeight": 1.66
+        },
+        "overline": {
+            "fontFamily": "Roboto",
+            "fontWeight": 400,
+            "fontSize": "0.6964285714285714rem",
+            "lineHeight": 2.66,
+            "textTransform": "uppercase"
+        },
+        "inherit": {
+            "fontFamily": "inherit",
+            "fontWeight": "inherit",
+            "fontSize": "inherit",
+            "lineHeight": "inherit",
+            "letterSpacing": "inherit"
+        }
+    },
+    "shadows": [
+        "none",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+    ],
+    "unstable_sxConfig": {
+        "border": {
+            "themeKey": "borders"
+        },
+        "borderTop": {
+            "themeKey": "borders"
+        },
+        "borderRight": {
+            "themeKey": "borders"
+        },
+        "borderBottom": {
+            "themeKey": "borders"
+        },
+        "borderLeft": {
+            "themeKey": "borders"
+        },
+        "borderColor": {
+            "themeKey": "palette"
+        },
+        "borderTopColor": {
+            "themeKey": "palette"
+        },
+        "borderRightColor": {
+            "themeKey": "palette"
+        },
+        "borderBottomColor": {
+            "themeKey": "palette"
+        },
+        "borderLeftColor": {
+            "themeKey": "palette"
+        },
+        "outline": {
+            "themeKey": "borders"
+        },
+        "outlineColor": {
+            "themeKey": "palette"
+        },
+        "borderRadius": {
+            "themeKey": "shape.borderRadius"
+        },
+        "color": {
+            "themeKey": "palette"
+        },
+        "bgcolor": {
+            "themeKey": "palette",
+            "cssProperty": "backgroundColor"
+        },
+        "backgroundColor": {
+            "themeKey": "palette"
+        },
+        "p": {},
+        "pt": {},
+        "pr": {},
+        "pb": {},
+        "pl": {},
+        "px": {},
+        "py": {},
+        "padding": {},
+        "paddingTop": {},
+        "paddingRight": {},
+        "paddingBottom": {},
+        "paddingLeft": {},
+        "paddingX": {},
+        "paddingY": {},
+        "paddingInline": {},
+        "paddingInlineStart": {},
+        "paddingInlineEnd": {},
+        "paddingBlock": {},
+        "paddingBlockStart": {},
+        "paddingBlockEnd": {},
+        "m": {},
+        "mt": {},
+        "mr": {},
+        "mb": {},
+        "ml": {},
+        "mx": {},
+        "my": {},
+        "margin": {},
+        "marginTop": {},
+        "marginRight": {},
+        "marginBottom": {},
+        "marginLeft": {},
+        "marginX": {},
+        "marginY": {},
+        "marginInline": {},
+        "marginInlineStart": {},
+        "marginInlineEnd": {},
+        "marginBlock": {},
+        "marginBlockStart": {},
+        "marginBlockEnd": {},
+        "displayPrint": {
+            "cssProperty": false
+        },
+        "display": {},
+        "overflow": {},
+        "textOverflow": {},
+        "visibility": {},
+        "whiteSpace": {},
+        "flexBasis": {},
+        "flexDirection": {},
+        "flexWrap": {},
+        "justifyContent": {},
+        "alignItems": {},
+        "alignContent": {},
+        "order": {},
+        "flex": {},
+        "flexGrow": {},
+        "flexShrink": {},
+        "alignSelf": {},
+        "justifyItems": {},
+        "justifySelf": {},
+        "gap": {},
+        "rowGap": {},
+        "columnGap": {},
+        "gridColumn": {},
+        "gridRow": {},
+        "gridAutoFlow": {},
+        "gridAutoColumns": {},
+        "gridAutoRows": {},
+        "gridTemplateColumns": {},
+        "gridTemplateRows": {},
+        "gridTemplateAreas": {},
+        "gridArea": {},
+        "position": {},
+        "zIndex": {
+            "themeKey": "zIndex"
+        },
+        "top": {},
+        "right": {},
+        "bottom": {},
+        "left": {},
+        "boxShadow": {
+            "themeKey": "shadows"
+        },
+        "width": {},
+        "maxWidth": {},
+        "minWidth": {},
+        "height": {},
+        "maxHeight": {},
+        "minHeight": {},
+        "boxSizing": {},
+        "font": {
+            "themeKey": "font"
+        },
+        "fontFamily": {
+            "themeKey": "typography"
+        },
+        "fontSize": {
+            "themeKey": "typography"
+        },
+        "fontStyle": {
+            "themeKey": "typography"
+        },
+        "fontWeight": {
+            "themeKey": "typography"
+        },
+        "letterSpacing": {},
+        "textTransform": {},
+        "lineHeight": {},
+        "textAlign": {},
+        "typography": {
+            "cssProperty": false,
+            "themeKey": "typography"
+        }
+    },
+    "internal_cache": {},
+    "mixins": {
+        "toolbar": {
+            "minHeight": 56,
+            "@media (min-width:0px)": {
+                "@media (orientation: landscape)": {
+                    "minHeight": 48
+                }
+            },
+            "@media (min-width:600px)": {
+                "minHeight": 64
+            }
+        }
+    },
+    "transitions": {
+        "easing": {
+            "easeInOut": "cubic-bezier(0.4, 0, 0.2, 1)",
+            "easeOut": "cubic-bezier(0.0, 0, 0.2, 1)",
+            "easeIn": "cubic-bezier(0.4, 0, 1, 1)",
+            "sharp": "cubic-bezier(0.4, 0, 0.6, 1)"
+        },
+        "duration": {
+            "shortest": 150,
+            "shorter": 200,
+            "short": 250,
+            "standard": 300,
+            "complex": 375,
+            "enteringScreen": 225,
+            "leavingScreen": 195
+        }
+    },
+    "zIndex": {
+        "mobileStepper": 1000,
+        "fab": 1050,
+        "speedDial": 1050,
+        "appBar": 1100,
+        "drawer": 1200,
+        "modal": 1300,
+        "snackbar": 1400,
+        "tooltip": 1500
+    },
+    "vars": null
+}

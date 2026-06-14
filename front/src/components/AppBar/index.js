@@ -1,5 +1,7 @@
 import * as React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+
+
 import { styled, alpha, useTheme } from '@mui/material/styles';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
@@ -12,12 +14,14 @@ import List from '@mui/material/List';
 import Divider from '@mui/material/Divider';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
-import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import useMediaQuery from "@mui/material/useMediaQuery";
-import { Avatar, CssBaseline, Dialog, Paper } from '@mui/material';
+import { Avatar, CssBaseline, Dialog, InputAdornment, Paper } from '@mui/material';
+
 import { deepOrange, green, blue, red, purple, teal } from '@mui/material/colors';
 
+import ClearIcon from '@mui/icons-material/Clear';
+import ListItemIcon from '@mui/material/ListItemIcon';
 import IconButton from '@mui/material/IconButton';
 import SearchIcon from '@mui/icons-material/Search';
 import ListIcon from '@mui/icons-material/List';
@@ -81,6 +85,7 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 export default function PrimarySearchAppBar() {
 
   const [Dados, setDados] = React.useContext(DadosContext);
+  const [searchValue, setSearchValue] = React.useState('')  
   const location = useLocation();
   const theme = useTheme();
   const navegation = useNavigate();
@@ -91,12 +96,13 @@ export default function PrimarySearchAppBar() {
     api.get('/api/wifi').then(response => {
       // console.log('wifiConfig', response.data.wifiConfigs[0]);
       setDados(a => ({ ...a, wifiConfig: response.data.wifiConfigs[0] }));
+      
     }).catch(error => {
       console.error(error);
     })
   }, []);
 
-  // console.log(theme)
+  // console.log(Dados)
 
 
 
@@ -115,7 +121,7 @@ export default function PrimarySearchAppBar() {
   // menu atual
   const renderDrawerMenu = (
     <Box >
-      
+
       <Drawer sx={{}} open={openMenu} onClose={toggleOpenDrawerMenu(false)}>
         <Box sx={{ width: 250, minHeight: '100vh', maxHeight: '100vh' }} role="presentation" onClick={toggleOpenDrawerMenu(false)} onKeyDown={toggleOpenDrawerMenu(false)}>
 
@@ -125,9 +131,9 @@ export default function PrimarySearchAppBar() {
               <ListItem onClick={() => { navegation('/login') }} disablePadding>
                 <ListItemButton>
                   <ListItemIcon>
-                    <LoginIcon 
-                    sx={{ 
-                       color:theme.palette.primary.main
+                    <LoginIcon
+                      sx={{
+                        color: theme.palette.primary.main
                       }} />
                   </ListItemIcon>
                   <ListItemText primary='Login' />
@@ -149,7 +155,7 @@ export default function PrimarySearchAppBar() {
               }} disablePadding>
                 <ListItemButton>
                   <ListItemIcon>
-                    <Logout sx={{ color:theme.palette.primary.main }} />
+                    <Logout sx={{ color: theme.palette.primary.main }} />
                   </ListItemIcon>
                   <ListItemText primary={'Sair'} />
                 </ListItemButton>
@@ -161,7 +167,7 @@ export default function PrimarySearchAppBar() {
               <ListItem onClick={() => { navegation('/') }} disablePadding>
                 <ListItemButton>
                   <ListItemIcon>
-                    <Home sx={{ color:theme.palette.primary.main }} />
+                    <Home sx={{ color: theme.palette.primary.main }} />
                   </ListItemIcon>
                   <ListItemText primary={'Home'} />
                 </ListItemButton>
@@ -173,7 +179,7 @@ export default function PrimarySearchAppBar() {
               <ListItem onClick={() => { navegation('/minha-conta') }} disablePadding>
                 <ListItemButton>
                   <ListItemIcon>
-                    <FolderSpecial sx={{ color:theme.palette.primary.main }} />
+                    <FolderSpecial sx={{ color: theme.palette.primary.main }} />
                   </ListItemIcon>
                   <ListItemText primary={'Minha conta'} />
                 </ListItemButton>
@@ -224,7 +230,7 @@ export default function PrimarySearchAppBar() {
             } disablePadding>
               <ListItemButton>
                 <ListItemIcon>
-                  <Wifi sx={{ color:theme.palette.primary.main }} />
+                  <Wifi sx={{ color: theme.palette.primary.main }} />
                 </ListItemIcon>
                 <ListItemText primary={'Conectar'} />
               </ListItemButton>
@@ -242,7 +248,7 @@ export default function PrimarySearchAppBar() {
                 onClick={() => setDados({ ...Dados, activeTabPerfil: 'dashboard' })}
               >
                 <ListItemIcon>
-                  <Dashboard sx={{ color:theme.palette.primary.main }} />
+                  <Dashboard sx={{ color: theme.palette.primary.main }} />
                 </ListItemIcon>
                 <ListItemText primary="Dashboard" />
               </ListItem>
@@ -258,7 +264,7 @@ export default function PrimarySearchAppBar() {
                 sx={{ display: { md: "none" }, mb: 1, borderRadius: 2 }}
               >
                 <ListItemIcon>
-                  <People sx={{ color:theme.palette.primary.main }} />
+                  <People sx={{ color: theme.palette.primary.main }} />
                 </ListItemIcon>
                 <ListItemText primary="Usuários" />
               </ListItem>
@@ -273,7 +279,7 @@ export default function PrimarySearchAppBar() {
                 onClick={() => setDados({ ...Dados, activeTabPerfil: 'settings' })}
               >
                 <ListItemIcon>
-                  <Settings sx={{ color:theme.palette.primary.main }} />
+                  <Settings sx={{ color: theme.palette.primary.main }} />
                 </ListItemIcon>
                 <ListItemText primary="Meus Dados" />
               </ListItem>
@@ -288,7 +294,7 @@ export default function PrimarySearchAppBar() {
                 onClick={() => setDados({ ...Dados, activeTabPerfil: 'products' })}
               >
                 <ListItemIcon>
-                  <ListIcon sx={{ color:theme.palette.primary.main }} />
+                  <ListIcon sx={{ color: theme.palette.primary.main }} />
                 </ListItemIcon>
                 <ListItemText primary="Produtos" />
               </ListItem>
@@ -321,7 +327,7 @@ export default function PrimarySearchAppBar() {
                 }}
               >
                 <ListItemIcon>
-                  <AddchartIcon sx={{ color:theme.palette.primary.main }} />
+                  <AddchartIcon sx={{ color: theme.palette.primary.main }} />
                 </ListItemIcon>
                 <ListItemText primary="AddProduto" />
               </ListItem>
@@ -336,16 +342,16 @@ export default function PrimarySearchAppBar() {
                 onClick={() => setDados({ ...Dados, activeTabPerfil: 'security' })}
               >
                 <ListItemIcon>
-                  <Security sx={{ color:theme.palette.primary.main }} />
+                  <Security sx={{ color: theme.palette.primary.main }} />
                 </ListItemIcon>
                 <ListItemText primary="Segurança" />
               </ListItem>
             }
 
             <Divider></Divider>
-           
 
-            
+
+
           </List>
 
 
@@ -383,19 +389,43 @@ export default function PrimarySearchAppBar() {
             onClick={() => { navegation('/chat') }}
             edge="start"
           >
-            <ForumIcon  />
+            <ForumIcon />
           </IconButton>
-          <SimpleDialogDemo/>
+          <SimpleDialogDemo />
 
 
           <TrocarTheme />
-          <Search sx={{ borderRadius: 999, display: { xs: 'none', md: 'flex' }, flexGrow: 1, maxWidth: 460, mx: 'auto' }}>
+          <Search  sx={{ borderRadius: 999, display: { xs: 'none', md: 'flex' }, mx: 'auto' }}>
             <SearchIconWrapper>
               <SearchIcon />
             </SearchIconWrapper>
             <StyledInputBase
+              // disabled={load}
+              value={searchValue}
+              onChange={(e) => {
+                e.preventDefault();
+                setSearchValue(e.target.value);
+                setDados(a=>({...a,productsSearch:a.products.filter(i=>i.name.toLowerCase().includes(e.target.value.toLowerCase()))}))
+
+              }}
               placeholder="Search…"
               inputProps={{ 'aria-label': 'search' }}
+              endAdornment={
+                searchValue && (
+                  <InputAdornment position="end">
+                    <IconButton
+                      onClick={() => {
+                        setSearchValue('');
+                        setDados(a=>({...a,productsSearch:a.products}))
+                      }}
+                      edge="end"
+                      size="small"
+                    >
+                      <ClearIcon />
+                    </IconButton>
+                  </InputAdornment>
+                )
+              }
             />
           </Search>
           <Box sx={{ flexGrow: 1 }} />
@@ -403,17 +433,17 @@ export default function PrimarySearchAppBar() {
           {/* tela grande */}
 
           <Box sx={{ flexShrink: 0, display: {}, flexDirection: 'column', alignItems: 'flex-end' }}>
-           
+
             <Typography
               variant={isMobile ? "caption" : "subtitle1"}
               color="text.secondary"
-              sx={{ display: "flex", alignItems: "center", gap: 0.5,color:"#ffffff"}}
+              sx={{ display: "flex", alignItems: "center", gap: 0.5, color: "#ffffff" }}
             >
               <AccessTimeIcon fontSize="small" />
               · 10h até 2h
             </Typography>
           </Box>
-          
+
         </Toolbar>
       </AppBar>
 
