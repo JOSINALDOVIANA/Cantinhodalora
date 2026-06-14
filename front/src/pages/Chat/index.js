@@ -31,7 +31,7 @@ import LockOpenIcon from '@mui/icons-material/LockOpen';
 
 import { DadosContext } from '../../routs';
 import { useNavigate } from 'react-router-dom';
-import { url } from '../../api';
+import { url } from '../../services/api';
 import { io } from 'socket.io-client';
 import { green, red } from '@mui/material/colors';
 import gerarCorAleatoriaRGB from '../../functions/ColorsRandom';

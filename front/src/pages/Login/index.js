@@ -9,7 +9,7 @@ import {
 } from "@mui/material";
 import { DadosContext } from "../../routs.js";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
-import { api } from "../../api/index.js";
+import { api } from "../../services/api/index.js";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 

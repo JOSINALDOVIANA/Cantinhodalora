@@ -63,8 +63,8 @@ import {
 } from '@mui/icons-material';
 import ListIcon from '@mui/icons-material/List';
 import { DadosContext } from '../../routs.js';
-import { api } from '../../api/index.js';
-import ProductCard from '../card/index.js';
+import { api } from '../../services/api/index.js';
+import ProductCard from '../../components/Grid/cards.js';
 
 import AddchartIcon from '@mui/icons-material/Addchart';
 import { useNavigate } from 'react-router-dom';

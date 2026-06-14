@@ -4,16 +4,16 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { useTheme, ThemeProvider, createTheme } from '@mui/material/styles';
 import { IconButton, Typography } from '@mui/material';
 import { Brightness6, Brightness7 } from '@mui/icons-material';
-
-
-import App from './App.js'
-import Load from './components/load';
 import { themeDarck, themeLight } from './functions/theme/theme.js';
-const ProductGrid = React.lazy(() => import('./components/card/grid.js'));
-const Login = React.lazy(() => import('./components/Login/index.js'));
-// const Teste = React.lazy(() => import('./functions/teste/index.js'));
-const MinhaConta = React.lazy(() => import('./components/user/perfil.js'));
-const Chat = React.lazy(() => import('./components/Chat/index.js'));
+
+
+import Load from './pages/load/index.js';
+const Home = React.lazy(()=>import('./pages/Home/index.js'));
+const Login = React.lazy(() => import('./pages/Login/index.js'));
+const Products = React.lazy(() => import('./components/Grid/index.js'));
+const MyAccount = React.lazy(() => import('./pages/Profile/index.js'));
+const Chat = React.lazy(() => import('./pages/Chat/index.js'));
+
 
 
 
@@ -78,10 +78,10 @@ export function Rotas() {
                                 <Routes>
                                     <Route path="/*" element={<Typography>DESCULPE!! este recuso esta indisponivel ou em desenvolvimento</Typography>} />
                                     {/* <Route path="/teste" element={<Teste />} /> */}
-                                    <Route path="/" element={<App />} >
-                                        <Route index element={<ProductGrid />}></Route>
+                                    <Route path="/" element={<Home />} >
+                                        <Route index element={<Products />}></Route>
                                         <Route path="/login" element={<Login />}></Route>
-                                        <Route path="/minha-conta" element={<MinhaConta />}></Route>
+                                        <Route path="/minha-conta" element={<MyAccount />}></Route>
                                         <Route path="/chat" element={<Chat />}></Route>
                                     </Route>
                                     {/* <Route path="/login" element={<Login />} /> */}

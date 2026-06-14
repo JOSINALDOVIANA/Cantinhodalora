@@ -31,8 +31,8 @@ import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import { ArrowBack, Call, Dashboard, DialerSip, FolderSpecial, Home, Logout, People, Security, Settings, Wifi } from '@mui/icons-material';
 
 
-import { DadosContext, TrocarTheme } from '../../routs';
-import { api } from '../../api/index.js';
+import { DadosContext, TrocarTheme } from '../../routs.js';
+import { api } from '../../services/api/index.js';
 import logo from '../../images/logo.png';
 import { QRCodeCanvas } from "qrcode.react";
 
@@ -405,7 +405,7 @@ export default function PrimarySearchAppBar() {
             <Typography
               variant={isMobile ? "caption" : "subtitle1"}
               color="text.secondary"
-              sx={{ display: "flex", alignItems: "center", gap: 0.5 }}
+              sx={{ display: "flex", alignItems: "center", gap: 0.5,color:"#ffffff"}}
             >
               <AccessTimeIcon fontSize="small" />
               · 10h até 2h
