@@ -35,6 +35,7 @@ import { DadosContext, TrocarTheme } from '../../routs.js';
 import { api } from '../../services/api/index.js';
 import logo from '../../images/logo.png';
 import { QRCodeCanvas } from "qrcode.react";
+import SimpleDialogDemo from '../Mapa/index.js';
 
 const Search = styled('div')(({ theme }) => ({
   position: 'relative',
@@ -384,6 +385,7 @@ export default function PrimarySearchAppBar() {
           >
             <ForumIcon  />
           </IconButton>
+          <SimpleDialogDemo/>
 
 
           <TrocarTheme />
