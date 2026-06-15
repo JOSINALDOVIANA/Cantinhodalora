@@ -2,3 +2,5 @@ memory.md
 task.md
 implementation_plan.md
 walkthrough.md
+package-lock.json
+yarn.lock

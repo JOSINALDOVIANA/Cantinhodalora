@@ -35,9 +35,9 @@ import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import { ArrowBack, Call, Dashboard, DialerSip, FolderSpecial, Home, Logout, People, Security, Settings, Wifi } from '@mui/icons-material';
 
 
-import { DadosContext, TrocarTheme } from '../../routs.js';
-import { api } from '../../services/api/index.js';
-import logo from '../../images/logo.png';
+import { DadosContext, TrocarTheme } from '../../Routes/index.jsx';
+import { api } from '../../services/api.jsx';
+import logo from '../../assets/logo.png';
 import { QRCodeCanvas } from "qrcode.react";
 
 
