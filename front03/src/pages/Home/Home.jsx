@@ -21,10 +21,11 @@ const Home = () => {
       minHeight: '100vh',
       minWidth: '100%',
       maxWidth: '100%',
-      // background: `linear-gradient(135deg, ${alpha(theme.palette.primary.dark, 0.25)}, ${theme.palette.background.default} 50%, ${alpha(theme.palette.secondary.dark, 0.25)})`,
+      backgroundColor:theme.palette.mode==='light'?theme.palette.primary.main:theme.palette.background.paper
     }} >
-
+      
       <AppBar />
+      
       <Box sx={{ maxWidth: '100%', minWidth: '100%' }}>
         <Outlet />
       </Box>

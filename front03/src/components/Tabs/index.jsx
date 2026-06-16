@@ -1,6 +1,6 @@
 import React, { useContext, useState } from 'react';
 
-import { Box, Container,Stack } from '@mui/material';
+import { Box, Container,Stack, useTheme } from '@mui/material';
 import SportsBarOutlinedIcon from '@mui/icons-material/SportsBarOutlined';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
@@ -13,6 +13,7 @@ import { purple } from '@mui/material/colors';
 function Categories() {
     const [Dados, setDados] = useContext(DadosContext);
      const [activeCat, setActiveCat] = useState(100);
+     const theme=useTheme();
     return (
     <>
         <Box
@@ -24,8 +25,9 @@ function Categories() {
                 // background: `linear-gradient(135deg, ${alpha(theme.palette.primary.dark, 0.25)}, ${theme.palette.background.default} 50%, ${alpha(theme.palette.secondary.dark, 0.25)})`,
                 backdropFilter: "blur(8px)",
                 borderBottom: 1,
-                borderColor: "divider",
+                borderColor: "#ffffff",
                 mb: 2,
+                backgroundColor:theme.palette.mode==='light'?theme.palette.primary.main:theme.palette.background.paper
             }}
         >
             <Container maxWidth="lg">
@@ -58,7 +60,7 @@ function Categories() {
                     }}
                 >
                     <Tab value={100} label={
-                        <Stack direction="row" spacing={1} sx={{ alignItems: "center" }}>
+                        <Stack direction="row" spacing={1} sx={{ alignItems: "center",color:theme.palette.mode==='light'?theme.palette.background.default:null}}>
                             <SportsBarOutlinedIcon sx={{ color: purple[100] }} />
                             <span>Todos</span>
                         </Stack>
@@ -68,7 +70,7 @@ function Categories() {
                             key={c.id}
                             value={c.id}
                             label={
-                                <Stack direction="row" spacing={1} sx={{ alignItems: "center" }}>
+                                <Stack direction="row" spacing={1} sx={{ alignItems: "center",color:theme.palette.mode==='light'?theme.palette.background.default:null }}>
                                     <SportsBarOutlinedIcon sx={{ color: purple[100] }} />
                                     <span>{c.description}</span>
                                 </Stack>

@@ -68,7 +68,7 @@ import AddchartIcon from '@mui/icons-material/Addchart';
 
 import { DadosContext } from '../../Routes/index.jsx';
 import { api } from '../../services/api.jsx';
-import ProductCard from '../../components/Grid/index.jsx';
+import ProductCard from '../../components/Grid/card.jsx';
 
 import Swal from 'sweetalert2'
 
@@ -284,11 +284,12 @@ export default function AdminPanel() {
 
                     {Dados?.user?.adm ?
                         <ListItem
+                            // sx={{ color: "primary.main" }}
                             button
                             selected={Dados?.activeTabPerfil === 'dashboard'}
                             onClick={() => setDados(a => ({ ...a, activeTabPerfil: 'dashboard' }))}
                         >
-                            <ListItemIcon><Dashboard sx={{ color:theme.palette.primary.main }} /></ListItemIcon>
+                            <ListItemIcon><Dashboard /></ListItemIcon>
                             <ListItemText primary="Dashboard" />
                         </ListItem> : null}
 
@@ -298,7 +299,7 @@ export default function AdminPanel() {
                             selected={Dados?.activeTabPerfil === 'users'}
                             onClick={() => setDados(a => ({ ...a, activeTabPerfil: 'users' }))}
                         >
-                            <ListItemIcon><People sx={{ color:theme.palette.primary.main }} /></ListItemIcon>
+                            <ListItemIcon><People /></ListItemIcon>
                             <ListItemText primary="Usuários" />
                         </ListItem> : null}
 
@@ -307,7 +308,7 @@ export default function AdminPanel() {
                         selected={Dados?.activeTabPerfil === 'settings'}
                         onClick={() => setDados(a => ({ ...a, activeTabPerfil: 'settings' }))}
                     >
-                        <ListItemIcon><Settings sx={{ color:theme.palette.primary.main }} /></ListItemIcon>
+                        <ListItemIcon><Settings /></ListItemIcon>
                         <ListItemText primary="Meus Dados" />
                     </ListItem>
 
@@ -317,7 +318,7 @@ export default function AdminPanel() {
                             selected={Dados?.activeTabPerfil === 'products'}
                             onClick={() => setDados(a => ({ ...a, activeTabPerfil: 'products' }))}
                         >
-                            <ListItemIcon><ListIcon sx={{ color:theme.palette.primary.main }} /></ListItemIcon>
+                            <ListItemIcon><ListIcon /></ListItemIcon>
                             <ListItemText primary="Produtos" />
                         </ListItem> : null}
 
@@ -331,7 +332,7 @@ export default function AdminPanel() {
                             }}
                         >
                             <ListItemIcon>
-                                <AddchartIcon sx={{ color:theme.palette.primary.main }} />
+                                <AddchartIcon />
                             </ListItemIcon>
                             <ListItemText primary="AddProduto" />
                         </ListItem> : null
@@ -342,7 +343,7 @@ export default function AdminPanel() {
                         selected={Dados?.activeTabPerfil === 'security'}
                         onClick={() => setDados(a => ({ ...a, activeTabPerfil: 'security' }))}
                     >
-                        <ListItemIcon><Security sx={{ color:theme.palette.primary.main }} /></ListItemIcon>
+                        <ListItemIcon><Security /></ListItemIcon>
                         <ListItemText primary="Segurança" />
                     </ListItem>
 
@@ -353,7 +354,7 @@ export default function AdminPanel() {
                         onClick={() => setDados(a => ({ ...a, activeTabPerfil: 'WiFiConfigs' }))}
                     >
                         <ListItemIcon>
-                            <Wifi sx={{ color:theme.palette.primary.main }} />
+                            <Wifi />
                         </ListItemIcon>
                         <ListItemText primary="WiFi" />
                     </ListItem>

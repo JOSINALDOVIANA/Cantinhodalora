@@ -85,7 +85,7 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 export default function PrimarySearchAppBar() {
 
   const [Dados, setDados] = React.useContext(DadosContext);
-  const [searchValue, setSearchValue] = React.useState('')  
+  const [searchValue, setSearchValue] = React.useState('')
   const location = useLocation();
   const theme = useTheme();
   const navegation = useNavigate();
@@ -96,7 +96,7 @@ export default function PrimarySearchAppBar() {
     api.get('/api/wifi').then(response => {
       // console.log('wifiConfig', response.data.wifiConfigs[0]);
       setDados(a => ({ ...a, wifiConfig: response.data.wifiConfigs[0] }));
-      
+
     }).catch(error => {
       console.error(error);
     })
@@ -369,111 +369,115 @@ export default function PrimarySearchAppBar() {
   return (
     <>
       <CssBaseline />
-      <AppBar
-        elevation={0}
-        position="fixed">
-        <Toolbar>
+      <React.Suspense fallback={<Box sx={{ height: 100 }}>Carregando...</Box>} >
+        <AppBar
+          sx={{}}
+          elevation={0}
+        // position="fixed"
+        >
+          <Toolbar>
 
-          <IconButton
-            size="large"
-            edge="start"
+            <IconButton
+              size="large"
+              edge="start"
 
-            aria-label="open drawer"
-            sx={{ mr: 2 }}
-            onClick={toggleOpenDrawerMenu(true)}
-          >
-            <ListIcon />
-          </IconButton>
-
-          <IconButton
-            onClick={() => { navegation('/chat') }}
-            edge="start"
-          >
-            <ForumIcon />
-          </IconButton>
-          
-
-
-          <TrocarTheme />
-          <Search  sx={{ borderRadius: 999, display: { xs: 'none', md: 'flex' }, mx: 'auto' }}>
-            <SearchIconWrapper>
-              <SearchIcon />
-            </SearchIconWrapper>
-            <StyledInputBase
-              // disabled={load}
-              value={searchValue}
-              onChange={(e) => {
-                e.preventDefault();
-                setSearchValue(e.target.value);
-                setDados(a=>({...a,productsSearch:a.products.filter(i=>i.name.toLowerCase().includes(e.target.value.toLowerCase()))}))
-
-              }}
-              placeholder="Search…"
-              inputProps={{ 'aria-label': 'search' }}
-              endAdornment={
-                searchValue && (
-                  <InputAdornment position="end">
-                    <IconButton
-                      onClick={() => {
-                        setSearchValue('');
-                        setDados(a=>({...a,productsSearch:a.products}))
-                      }}
-                      edge="end"
-                      size="small"
-                    >
-                      <ClearIcon />
-                    </IconButton>
-                  </InputAdornment>
-                )
-              }
-            />
-          </Search>
-          <Box sx={{ flexGrow: 1 }} />
-
-          {/* tela grande */}
-
-          <Box sx={{ flexShrink: 0, display: {}, flexDirection: 'column', alignItems: 'flex-end' }}>
-
-            <Typography
-              variant={isMobile ? "caption" : "subtitle1"}
-              color="text.secondary"
-              sx={{ display: "flex", alignItems: "center", gap: 0.5, color: "#ffffff" }}
+              aria-label="open drawer"
+              sx={{ mr: 2 }}
+              onClick={toggleOpenDrawerMenu(true)}
             >
-              <AccessTimeIcon fontSize="small" />
-              · 10h até 2h
+              <ListIcon />
+            </IconButton>
+
+            <IconButton
+              onClick={() => { navegation('/chat') }}
+              edge="start"
+            >
+              <ForumIcon />
+            </IconButton>
+
+
+
+            <TrocarTheme />
+            <Search sx={{ borderRadius: 999, display: { xs: 'none', md: 'flex' }, mx: 'auto' }}>
+              <SearchIconWrapper>
+                <SearchIcon />
+              </SearchIconWrapper>
+              <StyledInputBase
+                // disabled={load}
+                value={searchValue}
+                onChange={(e) => {
+                  e.preventDefault();
+                  setSearchValue(e.target.value);
+                  setDados(a => ({ ...a, productsSearch: a.products.filter(i => i.name.toLowerCase().includes(e.target.value.toLowerCase())) }))
+
+                }}
+                placeholder="Search…"
+                inputProps={{ 'aria-label': 'search' }}
+                endAdornment={
+                  searchValue && (
+                    <InputAdornment position="end">
+                      <IconButton
+                        onClick={() => {
+                          setSearchValue('');
+                          setDados(a => ({ ...a, productsSearch: a.products }))
+                        }}
+                        edge="end"
+                        size="small"
+                      >
+                        <ClearIcon />
+                      </IconButton>
+                    </InputAdornment>
+                  )
+                }
+              />
+            </Search>
+            <Box sx={{ flexGrow: 1 }} />
+
+            {/* tela grande */}
+
+            <Box sx={{ flexShrink: 0, display: {}, flexDirection: 'column', alignItems: 'flex-end' }}>
+
+              <Typography
+                variant={isMobile ? "caption" : "subtitle1"}
+                color="text.secondary"
+                sx={{ display: "flex", alignItems: "center", gap: 0.5, color: "inherit" }}
+              >
+                <AccessTimeIcon color='action' fontSize="small" />
+                · 10h até 2h
+              </Typography>
+            </Box>
+
+          </Toolbar>
+        </AppBar>
+
+        {renderDrawerMenu}
+
+        <Dialog open={Dados?.openWifi} onClose={() => setDados({ ...Dados, openWifi: false })}>
+          <Paper sx={{ p: 4, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '100vh' }}>
+            <Typography variant="h4" gutterBottom>
+              Conectar ao Wi-Fi
             </Typography>
-          </Box>
-
-        </Toolbar>
-      </AppBar>
-
-      {renderDrawerMenu}
-
-      <Dialog open={Dados?.openWifi} onClose={() => setDados({ ...Dados, openWifi: false })}>
-        <Paper sx={{ p: 4, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '100vh' }}>
-          <Typography variant="h4" gutterBottom>
-            Conectar ao Wi-Fi
-          </Typography>
-          <Typography variant="body1" gutterBottom>
-            Escaneie o QR Code abaixo para se conectar à rede Wi-Fi do Cantinho da Lora.
-          </Typography>
-          <QRCodeCanvas
-            value={`WIFI:T:${Dados?.wifiConfig?.encryption};S:${Dados?.wifiConfig?.ssid};P:${Dados?.wifiConfig?.password};;`}
-            size={200}
-            bgColor={"#ffffff"}
-            fgColor={"#000000"}
-            level={"H"}
-            includeMargin={true}
-          />
-          <Typography variant="body2" color="textSecondary" sx={{ mt: 2 }}>
-            Rede: {Dados?.wifiConfig?.ssid} <br />
-            Senha: {Dados?.wifiConfig?.password}
-          </Typography>
-          {/* <a href={`intent://WIFI::${Dados?.wifiConfig?.encryption};S:${Dados?.wifiConfig?.ssid};P:${Dados?.wifiConfig?.password};;`}>
+            <Typography variant="body1" gutterBottom>
+              Escaneie o QR Code abaixo para se conectar à rede Wi-Fi do Cantinho da Lora.
+            </Typography>
+            <QRCodeCanvas
+              value={`WIFI:T:${Dados?.wifiConfig?.encryption};S:${Dados?.wifiConfig?.ssid};P:${Dados?.wifiConfig?.password};;`}
+              size={200}
+              bgColor={"#ffffff"}
+              fgColor={"#000000"}
+              level={"H"}
+              includeMargin={true}
+            />
+            <Typography variant="body2" color="textSecondary" sx={{ mt: 2 }}>
+              Rede: {Dados?.wifiConfig?.ssid} <br />
+              Senha: {Dados?.wifiConfig?.password}
+            </Typography>
+            {/* <a href={`intent://WIFI::${Dados?.wifiConfig?.encryption};S:${Dados?.wifiConfig?.ssid};P:${Dados?.wifiConfig?.password};;`}>
             Conectar ao Wi-Fi
           </a> */}
-        </Paper>
-      </Dialog>
+          </Paper>
+        </Dialog>
+      </React.Suspense>
 
 
     </>

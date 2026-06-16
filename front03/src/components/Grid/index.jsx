@@ -1,6 +1,6 @@
 import { DadosContext } from '../../Routes/index.jsx';
 import React, { useState } from 'react';
-import { alpha, Box, Container, CssBaseline, Grid, Stack,Typography, useTheme } from '@mui/material';
+import { alpha, Box, Container, CssBaseline, Grid, Stack, Typography, useTheme } from '@mui/material';
 import { purple } from '@mui/material/colors';
 
 import { api } from '../../services/api.jsx';
@@ -11,7 +11,7 @@ import Categories from '../Tabs/index.jsx'
 
 export default function ProductGrid() {
   const [Dados, setDados] = React.useContext(DadosContext);
-  
+
   const theme = useTheme();
 
 
@@ -32,20 +32,22 @@ export default function ProductGrid() {
   return (
 
     <>
-    <CssBaseline/>   
-    {window.location.pathname!=="/minha-conta"&&<Banner/>}
-    {window.location.pathname!=="/minha-conta"&&<Categories/>}
-      <Grid sx={{ justifyContent: "center", pb: 2 }} container spacing={1} >
-        {Dados?.productsSearch?.map((produto, index) => (
-          <Grid
-            xs={6}
-            md={4}
-            lg={3}
-            key={index}>
-            <ProductCard produto={produto} />
-          </Grid>
-        ))}
-      </Grid>
+      <React.Suspense fallback={<Box sx={{ height: 100 }}>Carregando...</Box>}>
+        <CssBaseline />
+        {window.location.pathname !== "/minha-conta" && <Banner />}
+        {window.location.pathname !== "/minha-conta" && <Categories />}
+        <Grid sx={{ justifyContent: "center", pb: 2, backgroundColor: theme.palette.mode === 'light' ? theme.palette.primary.main : theme.palette.background.paper }} container spacing={1} >
+          {Dados?.productsSearch?.map((produto, index) => (
+            <Grid
+              xs={6}
+              md={4}
+              lg={3}
+              key={index}>
+              <ProductCard produto={produto} />
+            </Grid>
+          ))}
+        </Grid>
+      </React.Suspense>
     </>
   );
 }

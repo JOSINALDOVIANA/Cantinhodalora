@@ -11,26 +11,37 @@ import {
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 
 
-import { DadosContext } from "../../Routes/index.jsx"  
+import { DadosContext } from "../../Routes/index.jsx"
 import { api } from "../../services/api.jsx";
 import Swal from "sweetalert2";
 
 export default function LoginPage() {
   const [Dados, setDados] = React.useContext(DadosContext);
   const navigate = useNavigate();
+
   React.useEffect(() => {
     if (Dados.logado) {
       navigate("/minha-conta");
+      return;
     }
+
+    let isMounted = true;
+
     api.post('/api/users/refresh').then((res) => {
-      // console.log("res", res)
-      setDados(a => ({ ...a, logado: true, user: res.data.user }));
-      navigate("/minha-conta");
+      if (!isMounted) return;
+      const user = res?.data?.user;
+      if (user) {
+        setDados(a => ({ ...a, logado: true, user }));
+        navigate("/minha-conta");
+      }
     }).catch((err) => {
       // console.log("err", err)
-
     });
-  }, [Dados.logado, navigate]);
+
+    return () => {
+      isMounted = false;
+    };
+  }, [Dados.logado, navigate, setDados]);
 
   return (
     <Box
