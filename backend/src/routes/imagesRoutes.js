@@ -1,6 +1,12 @@
 import express from 'express';
 import { uploadSingle } from '../controller/multer/config.js';
-import { deleteImage, selectImages, uploadIMGprod, uploadIMGuser, ImageStatic } from '../controller/imagesController.js';
+import {
+    deleteImage,
+    selectImages,
+    uploadIMGprod,
+    uploadIMGuser,
+    // ImageStatic 
+} from '../controller/imagesController.js';
 import { autenticarJWT } from '../functions/TokenJWT.js';
 
 const router = express.Router();
