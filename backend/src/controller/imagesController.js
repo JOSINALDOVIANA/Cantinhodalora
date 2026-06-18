@@ -6,6 +6,7 @@ import Crypto from 'crypto';
 
 import { fileURLToPath } from 'url';
 import { promisify } from 'util';
+import sharp from 'sharp';
 
 import conexao from '../database/conexao.js';
 
@@ -252,6 +253,7 @@ export const selectImages = async (req, res) => {
             for (const key in images) {
                 images[key].delete = `${process.env.SERVER_URL}api/images?id=${images[key].id}&key=${images[key].key}`
                 images[key].url = `${process.env.SERVER_URL}api/static/images/${images[key].key}`;
+                images[key].urlfull = `${process.env.SERVER_URL}api/images/static/${images[key].key}`;
             }
             return res.json({ status: true, images })
         } catch (error) {
@@ -267,6 +269,7 @@ export const selectImages = async (req, res) => {
             for (const key in images) {
                 images[key].delete = `${process.env.SERVER_URL}api/images?id=${images[key].id}&key=${images[key].key}`
                 images[key].url = `${process.env.SERVER_URL}api/static/images/${images[key].key}`;
+                images[key].urlfull = `${process.env.SERVER_URL}api/images/static/${images[key].key}`;
             }
             return res.json({ status: true, images })
         } catch (error) {
@@ -285,7 +288,9 @@ export const selectImages = async (req, res) => {
             for (const key in images) {
                 images[key].delete = `${process.env.SERVER_URL}api/images?id=${images[key].id}&key=${images[key].key}`
                 images[key].url = `${process.env.SERVER_URL}api/static/images/${images[key].key}`;
+                images[key].urlfull = `${process.env.SERVER_URL}api/images/static/${images[key].key}`;
             }
+            return res.json({ status: true, images })
         } catch (error) {
             console.log(error)
             return res.json({ status: false, mensagem: "error ao consultar por id do produto" })
@@ -298,6 +303,7 @@ export const selectImages = async (req, res) => {
             for (const key in images) {
                 images[key].delete = `${process.env.SERVER_URL}api/images?id=${images[key].id}&key=${images[key].key}`
                 images[key].url = `${process.env.SERVER_URL}api/static/images/${images[key].key}`;
+                images[key].urlfull = `${process.env.SERVER_URL}api/images/static/${images[key].key}`;
             }
             return res.json({ status: true, images })
         } catch (error) {
@@ -315,6 +321,7 @@ export const selectImages = async (req, res) => {
         for (const key in images) {
             images[key].delete = `${process.env.SERVER_URL}api/images?id=${images[key].id}&key=${images[key].key}`
             images[key].url = `${process.env.SERVER_URL}api/static/images/${images[key].key}`;
+            images[key].urlfull = `${process.env.SERVER_URL}api/images/static/${images[key].key}`;
         }
         return res.json({ status: true, images })
     } catch (error) {
@@ -386,7 +393,16 @@ export const uploadIMGprod = async (req, res) => {
 
         });
         res.json({
-            status: true, id, name, size, key, url: `${process.env.SERVER_URL}api/static/images/${key}`, delete: `${process.env.SERVER_URL}api/images?id=${id}&key=${key}`, is_product: true
+            status: true,
+            id,
+            name,
+            size,
+            key,
+            url: `${process.env.SERVER_URL}api/static/images/${key}`,
+            urlfull: `${process.env.SERVER_URL}api/images/static/${key}`,
+            delete: `${process.env.SERVER_URL}api/images?id=${id}&key=${key}`,
+            is_product: true,
+
         });
     } catch (error) {
         console.error(error)
@@ -396,6 +412,23 @@ export const uploadIMGprod = async (req, res) => {
     }
 
 };
+
+export const ImageStatic = async (req, res) => {
+    const { filename } = req.params;
+    const filePath = path.resolve(__dirname, '..', '..', 'tmp', 'uploads', filename);
+
+    try {
+        // exemplo: redimensionar para 300x300 e otimizar
+        const image = await sharp(filePath)
+            .resize(300, 300)        // redimensiona
+            .webp({ quality: 80 })   // converte para WebP com compressão
+            .toBuffer();
+        res.set('Cache-Control', 'public, max-age=2592000, immutable');
+        res.type('image/webp').send(image);
+    } catch (err) {
+        res.status(404).send('Imagem não encontrada ou erro no processamento');
+    }
+}
 
 // export const deleteIMGprod = async (req,res)=>{
 //         const {id,key}=req.query

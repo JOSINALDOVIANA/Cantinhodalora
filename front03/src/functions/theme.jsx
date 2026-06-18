@@ -69,7 +69,9 @@ export const themeLight = {
 export const themeDarck = {
   palette: {
     primary: {
-      main: '#6d064e'
+      main: '#c48212ff',
+      dark: '#583e05ff',
+      light: '#ddc687ff'
     },
     secondary: {
       main: '#612be9'

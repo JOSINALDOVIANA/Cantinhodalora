@@ -16,7 +16,7 @@ import chatRoutes from './src/routes/chatRoutes.js';
 
 
 
-import {options, swaggerOptions} from './src/functions/swaggerOptions.js';
+import { options, swaggerOptions } from './src/functions/swaggerOptions.js';
 import swaggerJSDoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
 
@@ -33,11 +33,11 @@ const __dirname = path.dirname(__filename);
 
 
 const api = express();
-api.set('trust proxy', 1); 
+api.set('trust proxy', 1);
 const server = http.createServer(api); // 🔑 servidor HTTP
 
 // Configuração do Socket.IO
-const io = new Server(server, Iocors );
+const io = new Server(server, Iocors);
 
 // Middleware para parsing JSON e URL-encoded
 api.use(bodyParser.json({ limit: '50mb' }));
@@ -45,7 +45,7 @@ api.use(bodyParser.urlencoded({ extended: true, limit: '50mb', parameterLimit: 1
 
 //Configuração cors para o express
 api.use(cors({
-    origin: ['http://localhost:3000','http://localhost:5173', 'https://www.cantinhodalora.info', 'https://cantinhodalora.info'],
+    origin: ['http://localhost:3000', 'http://localhost:5173', 'https://www.cantinhodalora.info', 'https://cantinhodalora.info'],
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
@@ -111,6 +111,6 @@ io.on('connection', (socket) => {
 
 // iniciando o serv
 const port = process.env.PORT || 3001;
-server.listen(port, '0.0.0.0', () => { 
+server.listen(port, '0.0.0.0', () => {
     console.log(`Servidor rodando na porta ${port}`);
 });
