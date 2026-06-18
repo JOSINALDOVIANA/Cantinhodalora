@@ -414,7 +414,7 @@ export const uploadIMGprod = async (req, res) => {
 };
 
 export const ImageStatic = async (req, res) => {
-    const { filename } = req.params;
+    const filename = decodeURIComponent(req.params.filename);
     const filePath = path.resolve(__dirname, '..', '..', 'tmp', 'uploads', filename);
 
     try {
@@ -429,6 +429,7 @@ export const ImageStatic = async (req, res) => {
         res.status(404).send('Imagem não encontrada ou erro no processamento');
     }
 }
+
 
 
 
