@@ -6,7 +6,7 @@ import Crypto from 'crypto';
 
 import { fileURLToPath } from 'url';
 import { promisify } from 'util';
-// import sharp from 'sharp';
+import sharp from 'sharp';
 
 import conexao from '../database/conexao.js';
 
@@ -413,22 +413,22 @@ export const uploadIMGprod = async (req, res) => {
 
 };
 
-// export const ImageStatic = async (req, res) => {
-//     const { filename } = req.params;
-//     const filePath = path.resolve(__dirname, '..', '..', 'tmp', 'uploads', filename);
+export const ImageStatic = async (req, res) => {
+    const { filename } = req.params;
+    const filePath = path.resolve(__dirname, '..', '..', 'tmp', 'uploads', filename);
 
-//     try {
-//         // exemplo: redimensionar para 300x300 e otimizar
-//         const image = await sharp(filePath)
-//             .resize(300, 300)        // redimensiona
-//             .webp({ quality: 80 })   // converte para WebP com compressão
-//             .toBuffer();
-//         res.set('Cache-Control', 'public, max-age=2592000, immutable');
-//         res.type('image/webp').send(image);
-//     } catch (err) {
-//         res.status(404).send('Imagem não encontrada ou erro no processamento');
-//     }
-// }
+    try {
+        // exemplo: redimensionar para 300x300 e otimizar
+        const image = await sharp(filePath)
+            .resize(300, 300)        // redimensiona
+            .webp({ quality: 80 })   // converte para WebP com compressão
+            .toBuffer();
+        res.set('Cache-Control', 'public, max-age=2592000, immutable');
+        res.type('image/webp').send(image);
+    } catch (err) {
+        res.status(404).send('Imagem não encontrada ou erro no processamento');
+    }
+}
 
 
 
