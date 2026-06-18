@@ -9,7 +9,7 @@ const router = express.Router();
 router.get('/getAllImages', selectImages);
 
 // GET /api/images/static/:filename
-router.get('/static/:filename', ImageStatic);
+// router.get('/static/:filename', ImageStatic);
 
 // POST /api/images/uploadUser
 router.post('/uploadUser', autenticarJWT, uploadSingle, uploadIMGuser);
