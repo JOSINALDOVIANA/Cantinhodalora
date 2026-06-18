@@ -6,7 +6,7 @@ import Crypto from 'crypto';
 
 import { fileURLToPath } from 'url';
 import { promisify } from 'util';
-import sharp from 'sharp';
+// import sharp from 'sharp';
 
 import conexao from '../database/conexao.js';
 
