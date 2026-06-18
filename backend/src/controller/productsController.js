@@ -137,7 +137,7 @@ export const getAllProducts = async (req, res) => {
       for (let key in produto.images) {
         produto.images[key].delete = `${process.env.SERVER_URL}api/images?id=${produto.images[key].id}&key=${produto.images[key].key}`
         produto.images[key].url = `${process.env.SERVER_URL}api/static/images/${produto.images[key].key}`;
-        produto.images[key].urlFull = `${process.env.SERVER_URL}api/images/static${produto.images[key].key}`;
+        produto.images[key].urlFull = `${process.env.SERVER_URL}api/images/static/${produto.images[key].key}`;
       }
       produto.url = produto.images.find(img => img.id === produto.image_id)?.url || null;
       produto.urlFull = produto.images.find(img => img.id === produto.image_id)?.urlFull || null;
@@ -156,7 +156,7 @@ export const getAllProducts = async (req, res) => {
         produtos[key].categories = await db('product_categories').where({ product_id: produtos[key].id }).join('categories', 'product_categories.category_id', 'categories.id').select('categories.*');
         produtos[key].images[imgKey].delete = `${process.env.SERVER_URL}api/images?id=${produtos[key].images[imgKey].id}&key=${produtos[key].images[imgKey].key}`;
         produtos[key].images[imgKey].url = `${process.env.SERVER_URL}api/static/images/${produtos[key].images[imgKey].key}`;
-        produtos[key].images[imgKey].urlFull = `${process.env.SERVER_URL}api/images/static${produtos[key].images[imgKey].key}`;
+        produtos[key].images[imgKey].urlFull = `${process.env.SERVER_URL}api/images/static/${produtos[key].images[imgKey].key}`;
       }
       produtos[key].url = produtos[key].images.find(img => img.id === produtos[key].image_id)?.url || null;
       produtos[key].urlFull = produtos[key].images.find(img => img.id === produtos[key].image_id)?.urlFull || null;
