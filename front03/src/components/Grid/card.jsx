@@ -38,7 +38,7 @@ export default function ProductCard({ produto, ...props }) {
           <CardMedia
             component="img"
             alt={produto?.name}
-            image={produto?.url}
+            image={produto?.urlFull}
             sx={{
 
               objectFit: "cover",
