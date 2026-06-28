@@ -1,33 +1,26 @@
-import { DadosContext } from '../../Routes/index.jsx';
-import React, { useState } from 'react';
-import { alpha, Box, Container, CssBaseline, Grid, Stack, Typography, useTheme } from '@mui/material';
-import { purple } from '@mui/material/colors';
+import { DadosContext } from '../../services/Contexts/DadosContext.jsx';
+import React, { useEffect } from 'react';
+import { Box, CssBaseline, Grid, useTheme } from '@mui/material';
 
-import { api } from '../../services/api.jsx';
+
+
 import ProductCard from './card.jsx';
 import Banner from '../Banner/index.jsx'
 import Categories from '../Tabs/index.jsx'
-
+import { useLoadProducts } from '../../services/UseQuery/ProductsQuery.jsx';
 
 export default function ProductGrid() {
-  const [Dados, setDados] = React.useContext(DadosContext);
+  const { Dados, setDados } = React.useContext(DadosContext);
+  const { products, loadingProducts } = useLoadProducts();
+  useEffect(() => {
+    setDados(prev => ({ ...prev, productsSearch: products }));
+  }, [products]);
 
   const theme = useTheme();
 
 
 
-  React.useEffect(() => {
-    api.get('/api/products').then(response => {
-      // console.log('response.data.produtos', response);
-      setDados(a => ({ ...a, productsSearch: response.data.produtos, products: response.data.produtos }))
-    });
-    api.get('/api/categories').then(response => {
-      // console.log('response.data.categories', response);
-      setDados(a => ({ ...a, categories: response.data.categories }))
-    });
-  }, []);
 
-  // console.log(window.location.pathname)
 
   return (
 
@@ -37,7 +30,8 @@ export default function ProductGrid() {
         {window.location.pathname !== "/minha-conta" && <Banner />}
         {window.location.pathname !== "/minha-conta" && <Categories />}
         <Grid sx={{ justifyContent: "center", pb: 2, backgroundColor: theme.palette.mode === 'light' ? theme.palette.primary.main : theme.palette.background.paper }} container spacing={1} >
-          {Dados?.productsSearch?.map((produto, index) => (
+          {loadingProducts && <Box sx={{ height: 100 }}>Carregando...</Box>}
+          {!loadingProducts && Dados?.productsSearch?.map((produto, index) => (
             <Grid
               xs={6}
               md={4}

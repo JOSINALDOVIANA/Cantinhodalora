@@ -42,13 +42,13 @@ export default function ProductCard({ produto, ...props }) {
             sx={{
 
               objectFit: "cover",
-              maxWidth: '90%',
+              maxWidth: '100%',
               minHeight: 150,
               maxHeight: 150,
-              borderRadius: "0px 50px 0px 50px",
+              // borderRadius: "0px 50px 0px 50px",
               // padding: 1,
-              margin: 1,
-              border: `2px solid ${theme.palette.primary.main}`,
+              // margin: 1,
+              // border: `2px solid ${theme.palette.primary.main}`,
 
               // WebkitMaskImage: `linear-gradient(to top, transparent 0.1%, ${theme.palette.mode === "dark" ? "#000" : "#fff"
               // } 10%)`

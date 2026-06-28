@@ -1,45 +1,28 @@
 import * as React from 'react';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
-import { useTheme, ThemeProvider, createTheme } from '@mui/material/styles';
-import { IconButton, Typography } from '@mui/material';
-import { Brightness6, Brightness7 } from '@mui/icons-material';
+import { ThemeProvider, createTheme } from '@mui/material/styles';
+import { Typography } from '@mui/material';
+
 import { themeDarck, themeLight } from './../functions/theme.jsx';
 
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
+
+
+import { DadosProvider } from '../services/providers/DadosProvider.jsx';
 import Load from './../pages/Load/index.jsx';
-const Home = React.lazy(()=>import('./../pages/Home/Home.jsx'));
+import { ColorModeContext } from '../services/Contexts/ColorContext.jsx';
+
+const Home = React.lazy(() => import('./../pages/Home/Home.jsx'));
 const Login = React.lazy(() => import('./../pages/Login/index.jsx'));
 const Products = React.lazy(() => import('./../components/Grid/index.jsx'));
 const MyAccount = React.lazy(() => import('./../pages/Profile/index.jsx'));
 const Chat = React.lazy(() => import('./../pages/Chat/index.jsx'));
 
-
-
-
-
-
-
-export const ColorModeContext = React.createContext({ toggleColorMode: () => { } });
-export let SearchContex = React.createContext(null);
-export let DadosContext = React.createContext(null);
-
-export function TrocarTheme(props) {
-    const theme = useTheme();
-    const colorMode = React.useContext(ColorModeContext);
-    return (
-
-
-        <IconButton {...props} onClick={colorMode.toggleColorMode}>
-            {theme.palette.mode === 'dark' ? <Brightness6 /> : <Brightness7 />}
-        </IconButton>
-
-    );
-}
-
 export default function Rotas() {
-    const [search, setSearch] = React.useState("")
-    const [Dados, setDados] = React.useState({ logado: false, activeTabPerfil: "", user: {} });
+    const queryClient = new QueryClient();
+
     const [mode, setMode] = React.useState(() => {
         // return 'dark'
         if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
@@ -60,21 +43,18 @@ export default function Rotas() {
     const theme = React.useMemo(
         () =>
             createTheme(
-                mode==='dark'?themeDarck:themeLight
+                mode === 'dark' ? themeDarck : themeLight
             ),
         [mode],
     );
 
     return (
-        <DadosContext.Provider value={[Dados, setDados]}>
-            <SearchContex.Provider value={[search, setSearch]}>
+        <QueryClientProvider client={queryClient}>
+            <DadosProvider>
                 <ColorModeContext.Provider value={colorMode}>
-                    {/* <LocalizationProvider dateAdapter={AdapterDayjs}> */}
                     <ThemeProvider theme={theme}>
                         <React.Suspense fallback={<Load />}>
-
                             <BrowserRouter >
-
                                 <Routes>
                                     <Route path="/*" element={<Typography>DESCULPE!! este recuso esta indisponivel ou em desenvolvimento</Typography>} />
                                     {/* <Route path="/teste" element={<Teste />} /> */}
@@ -106,14 +86,12 @@ export default function Rotas() {
                                         </Route> */}
 
                                 </Routes>
-
                             </BrowserRouter>
                         </React.Suspense>
                     </ThemeProvider>
-                    {/* </LocalizationProvider> */}
-
                 </ColorModeContext.Provider>
-            </SearchContex.Provider>
-        </DadosContext.Provider>
+            </DadosProvider>
+        </QueryClientProvider>
+
     );
 }

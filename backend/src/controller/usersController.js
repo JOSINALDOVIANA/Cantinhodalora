@@ -1,6 +1,7 @@
 import { gerarTokens } from '../functions/TokenJWT.js';
 import conexao from '../database/conexao.js';
 import jwt from 'jsonwebtoken';
+import { gerarHash, verificarSenha } from '../functions/argon2.js';
 
 /**
  * @openapi
@@ -272,15 +273,16 @@ export const getUserById = async (req, res) => {
  */
 export const createUser = async (req, res) => {
   let { name, email, password, image_id, adm = false, images = [], others_info = {} } = req.body;
+  let { hash } = await gerarHash(password);
   try {
-    const [id] = await conexao('users').insert({ name, email, password, image_id, adm, others_info }).returning('id');
+    const [id] = await conexao('users').insert({ name, email, password: hash, image_id, adm, others_info }).returning('id');
     if (!!images && images.length > 0) {
       let imagesInsert = images.map((image) => {
         return { user_id: id, image_id: image.id }
       });
       await conexao('user_images').insert(imagesInsert);
     }
-    return res.json({ id, name, email, password, image_id, adm, images });
+    return res.json({ id, name, email, password: hash, image_id, adm, images });
   } catch (error) {
 
     return res.status(500).json({ error: error.message });
@@ -447,48 +449,53 @@ export const deleteUser = async (req, res) => {
  *         description: Erro interno no servidor
  */
 export const userLogin = async (req, res) => {
-  const { email, password } = req.body;
-  // console.log('email', req.body)
+  let { email, password } = req.body;
+
+
+
   try {
-    let user = await conexao('users').where({ email, password }).first();
-    if (!user) {
-      return res.status(401).json({ error: 'Credenciais inválidas' });
-    }
-    if (!!user) {
-      user.images = await conexao('user_images').where({ user_id: user.id }).join('images', 'user_images.image_id', 'images.id').select('images.*');
-      if (user.images.length > 0) {
-        for (const key in user.images) {
-          user.images[key].delete = `${process.env.SERVER_URL}api/images?id=${user.images[key].id}&key=${user.images[key].key}`
-          user.images[key].url = `${process.env.SERVER_URL}api/static/images/${user.images[key].key}`;
-          if (user.images[key].id == user.image_id) {
-            user.url = user.images[key].url;
+    if (!!email) {
+      let user = await conexao('users').where({ email }).first();
+
+      if (!!user && (await verificarSenha(password, user.password)).status) {
+        user.images = await conexao('user_images').where({ user_id: user.id }).join('images', 'user_images.image_id', 'images.id').select('images.*');
+        if (user.images.length > 0) {
+          for (const key in user.images) {
+            user.images[key].delete = `${process.env.SERVER_URL}api/images?id=${user.images[key].id}&key=${user.images[key].key}`
+            user.images[key].url = `${process.env.SERVER_URL}api/static/images/${user.images[key].key}`;
+            if (user.images[key].id == user.image_id) {
+              user.url = user.images[key].url;
+            }
           }
         }
+
+        // Gera os tokens e configura os cookies para qualquer login bem-sucedido, com ou sem imagens
+        const { accessToken, refreshToken } = gerarTokens({ id: user.id, name: user.name, email: user.email, password: user.password });
+
+        // Cookies HTTPOnly
+        res.cookie("accessToken", accessToken, {
+          httpOnly: true,   // impede acesso via document.cookie
+          secure: true,     // só envia em conexões HTTPS
+          sameSite: "strict",
+          maxAge: 15 * 60 * 1000,
+        });
+
+        res.cookie("refreshToken", refreshToken, {
+          httpOnly: true,
+          secure: true,
+          sameSite: "strict",
+          maxAge: 7 * 24 * 60 * 60 * 1000,
+        });
+        return res.json({ status: true, message: 'Login realizado com sucesso', user });
       }
-
-      // Gera os tokens e configura os cookies para qualquer login bem-sucedido, com ou sem imagens
-      const { accessToken, refreshToken } = gerarTokens({ id: user.id, name: user.name, email: user.email, password: user.password });
-
-      // Cookies HTTPOnly
-      res.cookie("accessToken", accessToken, {
-        httpOnly: false,
-        secure: false,
-        sameSite: "lax",
-        maxAge: 15 * 60 * 1000,
-      });
-
-      res.cookie("refreshToken", refreshToken, {
-        httpOnly: false,
-        secure: false,
-        sameSite: "lax",
-        maxAge: 7 * 24 * 60 * 60 * 1000,
-      });
+      return res.status(401).json({ status: false, message: 'Credenciais inválidas(email ou senha)' });
     }
+    return res.status(401).json({ status: false, message: 'Credenciais inválidas(email)' });
 
-    return res.json(user);
+
   } catch (error) {
-    throw new Error('Erro ao realizar login: ' + error.message);
-    return res.status(500).json({ error: error.message });
+    // throw new Error('Erro ao realizar login: ' + error.message);
+    return res.status(500).json({ status: false, message: 'Erro ao realizar login DB', error: error.message });
   }
 };
 
@@ -521,24 +528,26 @@ export const userLogin = async (req, res) => {
  *         description: Refresh token inválido ou expirado
  */
 export const userRefresh = async (req, res) => {
+  // console.log('cookie')
   const { refreshToken } = req.cookies;
+  // console.log("refreshToken", refreshToken);
 
   if (!refreshToken) return res.status(401).send("Refresh token ausente");
 
   jwt.verify(refreshToken, process.env.REFRESH_SECRET, async (err, user) => {
-    if (err) return res.status(403).send("Refresh token inválido");
+    if (err) return res.status(403).json({ status: false, message: 'Refresh token inválido', error: err.message });
     const { accessToken } = gerarTokens({ id: user.id, name: user.name, email: user.email, password: user.password });
     res.cookie("accessToken", accessToken, {
-      httpOnly: false,
-      secure: false,
-      sameSite: "lax",
+      httpOnly: true,   // impede acesso via document.cookie
+      secure: true,     // só envia em conexões HTTPS
+      sameSite: "strict", // evita envio em requisições cross-site
+
       maxAge: 15 * 60 * 1000,
     });
 
     // console.log("user", user);
-    let userSerializer = await conexao('users').where({ id: user.id, email: user.email }).first();
+    let userSerializer = await conexao('users').where({ id: user.id, email: user.email, password: user.password }).first();
     if (!!userSerializer) {
-      delete userSerializer.password;
       userSerializer.images = await conexao('user_images').where({ user_id: user.id }).join('images', 'user_images.image_id', 'images.id').select('images.*');
       if (userSerializer.images.length > 0) {
         for (const key in userSerializer.images) {
@@ -552,7 +561,7 @@ export const userRefresh = async (req, res) => {
     }
 
 
-    res.json({ message: "Token renovado", user: userSerializer });
+    return res.json({ status: true, message: "Token renovado", user: userSerializer });
   });
 
 }

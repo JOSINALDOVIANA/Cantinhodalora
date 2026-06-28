@@ -60,11 +60,7 @@ api.use(cookieParser());
 const specs = swaggerJSDoc(options);
 api.use('/api/api-docs', swaggerUi.serve, swaggerUi.setup(specs, swaggerOptions));
 
-//static images
-// api.use('/api/static/images', {
-//     maxAge: 2592000000,
-//     immutable: true,
-// }, express.static(path.resolve(__dirname, 'tmp', 'uploads')))
+
 
 api.use(
     '/api/static/images',

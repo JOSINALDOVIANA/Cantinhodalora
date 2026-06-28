@@ -5,13 +5,18 @@ import SportsBarOutlinedIcon from '@mui/icons-material/SportsBarOutlined';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 
-import { DadosContext } from '../../Routes/index.jsx';
+import { DadosContext } from '../../services/Contexts/DadosContext.jsx';
 import { purple } from '@mui/material/colors';
+import { useLoadCategories } from '../../services/UseQuery/CategoriesQuery.jsx';
+import { useLoadProducts } from '../../services/UseQuery/ProductsQuery.jsx';
 
 // import { Container } from './styles';
 
 function Categories() {
-    const [Dados, setDados] = useContext(DadosContext);
+    const { setDados, Dados, } = React.useContext(DadosContext);
+    const { products } = useLoadProducts();
+    const { loadingCategories, categories } = useLoadCategories();
+
     const [activeCat, setActiveCat] = useState(100);
     const theme = useTheme();
     return (
@@ -30,16 +35,16 @@ function Categories() {
                     backgroundColor: theme.palette.mode === 'light' ? theme.palette.primary.main : theme.palette.background.paper
                 }}
             >
-                <Container maxWidth="lg">
+                <Container maxWidth='xl'>
                     <Tabs
                         value={activeCat}
                         onChange={(_, v) => {
                             // console.log('cat', v);
                             setActiveCat(v);
                             if (v === 100) {
-                                setDados(a => ({ ...a, productsSearch: a.products }))
+                                setDados(a => ({ ...a, productsSearch: products }))
                             } else {
-                                let prod = Dados?.products?.filter(p => p.categories?.find(c => c.id === v));
+                                let prod = products?.filter(p => p.categories?.find(c => c.id === v));
                                 setDados(a => ({ ...a, productsSearch: [...prod] }))
                             }
                         }}
@@ -65,7 +70,8 @@ function Categories() {
                                 <span>Todos</span>
                             </Stack>
                         } />
-                        {Dados?.categories?.map((c) => (
+                        {/* {loadingCategories && <Box sx={{ height: 100 }}>Carregando...</Box>} */}
+                        {!loadingCategories && categories?.map((c) => (
                             <Tab
                                 key={c.id}
                                 value={c.id}

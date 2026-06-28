@@ -16,9 +16,9 @@ import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
 import useMediaQuery from "@mui/material/useMediaQuery";
-import { Avatar, CssBaseline, Dialog, InputAdornment, Paper } from '@mui/material';
+import { CssBaseline, Dialog, InputAdornment, Paper } from '@mui/material';
 
-import { deepOrange, green, blue, red, purple, teal } from '@mui/material/colors';
+import { deepOrange, green, blue, red, purple } from '@mui/material/colors';
 
 import ClearIcon from '@mui/icons-material/Clear';
 import ListItemIcon from '@mui/material/ListItemIcon';
@@ -30,15 +30,14 @@ import InstagramIcon from '@mui/icons-material/Instagram';
 import FacebookIcon from '@mui/icons-material/Facebook';
 import LoginIcon from '@mui/icons-material/Login';
 import ForumIcon from '@mui/icons-material/Forum';
-import SportsBarOutlinedIcon from '@mui/icons-material/SportsBarOutlined';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
-import { ArrowBack, Call, Dashboard, DialerSip, FolderSpecial, Home, Logout, People, Security, Settings, Wifi } from '@mui/icons-material';
+import { Call, Dashboard, FolderSpecial, Home, Logout, People, Security, Settings, Wifi } from '@mui/icons-material';
 
 
-import { DadosContext, TrocarTheme } from '../../Routes/index.jsx';
+import { DadosContext } from '../../services/Contexts/DadosContext.jsx';
 import { api } from '../../services/api.jsx';
-import logo from '../../assets/logo.png';
 import { QRCodeCanvas } from "qrcode.react";
+import { TrocarTheme } from "./../Theme/index.jsx";
 
 
 const Search = styled('div')(({ theme }) => ({
@@ -84,7 +83,7 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 
 export default function PrimarySearchAppBar() {
 
-  const [Dados, setDados] = React.useContext(DadosContext);
+  const { Dados, setDados } = React.useContext(DadosContext);
   const [searchValue, setSearchValue] = React.useState('')
   const location = useLocation();
   const theme = useTheme();
@@ -110,8 +109,17 @@ export default function PrimarySearchAppBar() {
 
 
   const [openMenu, setOpenMenu] = React.useState(false);
+  const menuButtonRef = React.useRef(null);
 
-  const toggleOpenDrawerMenu = (newOpen) => () => {
+  const toggleOpenDrawerMenu = (newOpen) => (event) => {
+    if (newOpen && event && event.currentTarget) {
+      event.currentTarget.blur();
+    }
+    if (!newOpen) {
+      setTimeout(() => {
+        menuButtonRef.current?.focus();
+      }, 0);
+    }
     setOpenMenu(newOpen);
   };
   const toggleCloseDrawerMenu = (newOpen) => () => {
@@ -289,7 +297,6 @@ export default function PrimarySearchAppBar() {
             {Dados?.logado && Dados?.user?.adm &&
               <ListItem
                 sx={{ display: { md: "none" }, mb: 1, borderRadius: 2 }}
-                button
                 selected={Dados?.activeTabPerfil === 'products'}
                 onClick={() => setDados({ ...Dados, activeTabPerfil: 'products' })}
               >
@@ -378,6 +385,7 @@ export default function PrimarySearchAppBar() {
           <Toolbar>
 
             <IconButton
+              ref={menuButtonRef}
               size="large"
               edge="start"
 

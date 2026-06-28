@@ -66,20 +66,22 @@ import {
 import ListIcon from '@mui/icons-material/List';
 import AddchartIcon from '@mui/icons-material/Addchart';
 
-import { DadosContext } from '../../Routes/index.jsx';
+import { DadosContext } from '../../services/Contexts/DadosContext.jsx';
 import { api } from '../../services/api.jsx';
 import ProductCard from '../../components/Grid/card.jsx';
 
 import Swal from 'sweetalert2'
+import { useQueryClient } from '@tanstack/react-query';
+import { useRefreshUser } from '../../services/UseQuery/UsersQuery.jsx';
 
 
 
 export default function AdminPanel() {
-
-
+    const queryClient = useQueryClient();
+    const { user, loadingUser, error } = useRefreshUser();
     const theme = useTheme();
 
-    const [Dados, setDados] = React.useContext(DadosContext);
+    const { Dados, setDados, updateWifiConfig, updateUser } = React.useContext(DadosContext);
 
     const navigate = useNavigate();
     const isSmallScreen = useMediaQuery(theme.breakpoints.down("md"));
@@ -197,7 +199,7 @@ export default function AdminPanel() {
                             </Typography>
                         </Box>
                     </Box>
-                    <Typography variant="body2" color="textSecondary" textAlign="center">
+                    <Typography variant="body2" color="textSecondary" sx={{ textAlign: "center" }}>
                         {subtitle}
                     </Typography>
                 </CardContent>
@@ -232,7 +234,7 @@ export default function AdminPanel() {
 
 
     React.useEffect(() => {
-        if (!Dados?.logado) {
+        if (user === null) {
             Swal.fire({
                 title: "Erro",
                 text: "Você não tem permissão para acessar esta página!",
@@ -284,8 +286,7 @@ export default function AdminPanel() {
 
                     {Dados?.user?.adm ?
                         <ListItem
-                            // sx={{ color: "primary.main" }}
-                            button
+
                             selected={Dados?.activeTabPerfil === 'dashboard'}
                             onClick={() => setDados(a => ({ ...a, activeTabPerfil: 'dashboard' }))}
                         >
@@ -295,7 +296,7 @@ export default function AdminPanel() {
 
                     {Dados?.user?.adm ?
                         <ListItem
-                            button
+
                             selected={Dados?.activeTabPerfil === 'users'}
                             onClick={() => setDados(a => ({ ...a, activeTabPerfil: 'users' }))}
                         >
@@ -304,7 +305,7 @@ export default function AdminPanel() {
                         </ListItem> : null}
 
                     <ListItem
-                        button
+
                         selected={Dados?.activeTabPerfil === 'settings'}
                         onClick={() => setDados(a => ({ ...a, activeTabPerfil: 'settings' }))}
                     >
@@ -314,7 +315,7 @@ export default function AdminPanel() {
 
                     {Dados?.user?.adm ?
                         <ListItem
-                            button
+
                             selected={Dados?.activeTabPerfil === 'products'}
                             onClick={() => setDados(a => ({ ...a, activeTabPerfil: 'products' }))}
                         >
@@ -324,7 +325,7 @@ export default function AdminPanel() {
 
                     {Dados?.user?.adm ?
                         <ListItem
-                            button
+
                             selected={Dados?.activeTabPerfil === 'addProduct'}
                             onClick={() => {
                                 setDados({ ...Dados, activeTabPerfil: 'addProduct', upProduct: true, ProductDataEdit: { name: '', description: '', size: '', price: '', url: '', images: [], image_id: '', categories: [] } });
@@ -339,7 +340,7 @@ export default function AdminPanel() {
                     }
 
                     <ListItem
-                        button
+
                         selected={Dados?.activeTabPerfil === 'security'}
                         onClick={() => setDados(a => ({ ...a, activeTabPerfil: 'security' }))}
                     >
@@ -349,7 +350,7 @@ export default function AdminPanel() {
 
                     {/* wificonfigs */}
                     <ListItem
-                        button
+
                         selected={Dados?.activeTabPerfil === 'security'}
                         onClick={() => setDados(a => ({ ...a, activeTabPerfil: 'WiFiConfigs' }))}
                     >
@@ -748,55 +749,35 @@ export default function AdminPanel() {
 
                 {Dados?.activeTabPerfil === 'WiFiConfigs' && (
                     <Paper sx={{ p: 3 }}>
-                        <TextField label="SSID" fullWidth margin="normal" value={Dados?.wifiConfig?.ssid || ''} onChange={(e) => setDados(a => ({ ...a, wifiConfig: { ...a.wifiConfig, ssid: e.target.value } }))} />
-                        <TextField label="Senha" fullWidth margin="normal" type="text" value={Dados?.wifiConfig?.password || ''} onChange={(e) => setDados(a => ({ ...a, wifiConfig: { ...a.wifiConfig, password: e.target.value } }))} />
-                        <TextField label="Tipo de Criptografia" fullWidth margin="normal" value={Dados?.wifiConfig?.encryption || 'WPA'} onChange={(e) => setDados(a => ({ ...a, wifiConfig: { ...a.wifiConfig, encryption: e.target.value } }))} />
-                        <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 2 }}>
-                            <Button variant="outlined" color="error" startIcon={<Cancel />} onClick={() => setDados(a => ({ ...a, wifiConfig: null }))}>Cancelar</Button>
-                            <Button variant="contained" color="success" startIcon={<Save />} onClick={() => {
-                                if (Dados?.wifiConfig?.id) {
-                                    api.put(`/api/wifi/${Dados.wifiConfig.id}`, Dados.wifiConfig).then(r => {
-                                        Swal.fire({
-                                            icon: 'success',
-                                            title: 'Configuração de WiFi atualizada com sucesso!',
-                                            showConfirmButton: false,
-                                            timer: 1500
-                                        });
+                        <FormControl onSubmit={(e) => {
+                            e.preventDefault();
+                            updateWifiConfig(Dados.wifiConfig);
 
-                                    }).catch((error) => {
-                                        console.error('Erro ao atualizar configuração de WiFi:', error);
-                                        Swal.fire({
-                                            icon: 'error',
-                                            title: 'Erro ao atualizar configuração de WiFi!',
-                                            showConfirmButton: false,
-                                            timer: 1500
-                                        });
+                        }}>
+                            {/* <TextField label="SSID" fullWidth margin="normal" value={Dados?.wifiConfig?.ssid || ''} onChange={(e) => setDados(a => ({ ...a, wifiConfig: { ...a.wifiConfig, ssid: e.target.value } }))} />
+                            <TextField label="Senha" fullWidth margin="normal" type="text" value={Dados?.wifiConfig?.password || ''} onChange={(e) => setDados(a => ({ ...a, wifiConfig: { ...a.wifiConfig, password: e.target.value } }))} />
+                            <TextField label="Tipo de Criptografia" fullWidth margin="normal" value={Dados?.wifiConfig?.encryption || 'WPA'} onChange={(e) => setDados(a => ({ ...a, wifiConfig: { ...a.wifiConfig, encryption: e.target.value } }))} /> */}
+                            <InputLabel id="demo-simple-select-label">Encryption Type</InputLabel>
+                            <Select
+                                labelId="demo-simple-select-label"
+                                id="demo-simple-select"
+                                value={Dados?.wifiConfig?.encryption || 'WPA'}
+                                label="Encryption Type"
+                                onChange={(e) => setDados(a => ({ ...a, wifiConfig: { ...a.wifiConfig, encryption: e.target.value } }))}
+                            >
+                                <MenuItem value="WPA">WPA</MenuItem>
+                                <MenuItem value="WPA2">WPA2</MenuItem>
+                                <MenuItem value="WPA3">WPA3</MenuItem>
+                            </Select>
+                            <TextField margin="normal" fullWidth label="SSID" value={Dados?.wifiConfig?.ssid || ''} onChange={(e) => setDados(a => ({ ...a, wifiConfig: { ...a.wifiConfig, ssid: e.target.value } }))} />
+                            <TextField margin="normal" fullWidth label="Senha" value={Dados?.wifiConfig?.password || ''} onChange={(e) => setDados(a => ({ ...a, wifiConfig: { ...a.wifiConfig, password: e.target.value } }))} />
 
-                                    });
-                                } else {
-                                    api.post('/api/wifi', Dados.wifiConfig).then(r => {
-                                        Swal.fire({
-                                            icon: 'success',
-                                            title: 'Configuração de WiFi criada com sucesso!',
-                                            showConfirmButton: false,
-                                            timer: 1500
-                                        });
-
-                                    }).catch((error) => {
-                                        console.error('Erro ao criar configuração de WiFi:', error);
-                                        Swal.fire({
-                                            icon: 'error',
-                                            title: 'Erro ao criar configuração de WiFi!',
-                                            showConfirmButton: false,
-                                            timer: 1500
-                                        });
-
-                                    });
-                                }
-                            }
-                            }
-                            >Salvar</Button>
-                        </Box>
+                            <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 2 }}>
+                                <Button variant="outlined" color="error" startIcon={<Cancel />} onClick={() => setDados(a => ({ ...a, wifiConfig: null }))}>Cancelar</Button>
+                                <Button variant="contained" type='submit' color="success" startIcon={<Save />}
+                                >Salvar</Button>
+                            </Box>
+                        </FormControl>
                     </Paper>
                 )}
 
@@ -952,19 +933,7 @@ export default function AdminPanel() {
                         handleCloseDialog()
                     }}>Cancelar</Button>
                     <Button variant="contained" startIcon={<Save />} color='success' onClick={() => {
-                        if (Dados?.upUser) {
-                            api.put(`api/users/${Dados?.newUser?.id}`, { ...Dados?.newUser }).then(r => {
-                                api.get('/api/users').then(r => {
-                                    setDados(a => ({ ...a, upUser: false, user: { ...a.user, usersSystem: [...r.data] } }))
-                                })
-                            })
-                        } else {
-                            api.post(`api/users`, { ...Dados?.newUser }).then(r => {
-                                api.get('/api/users').then(r => {
-                                    setDados(a => ({ ...a, user: { ...a.user, usersSystem: [...r.data] } }))
-                                })
-                            })
-                        }
+
                         handleCloseDialog()
 
                     }} >{Dados?.upUser ? "Editar" : "Adicionar"}</Button>

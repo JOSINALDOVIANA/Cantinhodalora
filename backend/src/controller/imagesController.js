@@ -413,22 +413,71 @@ export const uploadIMGprod = async (req, res) => {
 
 };
 
+// export const ImageStatic = async (req, res) => {
+//     const filename = decodeURIComponent(req.params.filename);
+//     const filePath = path.resolve(__dirname, '..', '..', 'tmp', 'uploads', filename);
+
+//     try {
+//         // exemplo: redimensionar para 300x300 e otimizar
+//         const image = await sharp(filePath)
+//             .resize(150, 150)        // redimensiona
+//             .webp({ quality: 80, lossless: false })   // converte para WebP com compressão
+
+//         res.set('Cache-Control', 'public, max-age=2592000, immutable');
+//         res.type('image/webp').send(image);
+//     } catch (err) {
+//         res.status(404).send('Imagem não encontrada ou erro no processamento');
+//     }
+// }
+
+
+
 export const ImageStatic = async (req, res) => {
     const filename = decodeURIComponent(req.params.filename);
+    const width = parseInt(req.query.w) || 150;   // largura via query string (default 150)
+    const height = parseInt(req.query.h) || 150;  // altura via query string (default 150)
+
     const filePath = path.resolve(__dirname, '..', '..', 'tmp', 'uploads', filename);
 
+    // nome do cache inclui dimensões
+    const cachedPath = path.resolve(
+        __dirname,
+        '..',
+        '..',
+        'tmp',
+        'cache',
+        `${filename}-${width}x${height}.webp`
+    );
+
     try {
-        // exemplo: redimensionar para 300x300 e otimizar
-        const image = await sharp(filePath)
-            .resize(300, 300)        // redimensiona
-            .webp({ quality: 80 })   // converte para WebP com compressão
-            .toBuffer();
+        // se já existe no cache, serve direto
+        if (fs.existsSync(cachedPath)) {
+            res.set('Cache-Control', 'public, max-age=2592000, immutable');
+            res.type('image/webp');
+            return fs.createReadStream(cachedPath).pipe(res);
+        }
+
+        // caso contrário, processa e salva no cache
+        const transform = sharp(filePath)
+            .resize(width, height)
+            .webp({ quality: 80, lossless: false });
+
+        fs.mkdirSync(path.dirname(cachedPath), { recursive: true });
+
+        const writeStream = fs.createWriteStream(cachedPath);
         res.set('Cache-Control', 'public, max-age=2592000, immutable');
-        res.type('image/webp').send(image);
+        res.type('image/webp');
+
+        // envia ao cliente e salva no cache ao mesmo tempo
+        transform.pipe(writeStream);
+        transform.pipe(res);
+
     } catch (err) {
         res.status(404).send('Imagem não encontrada ou erro no processamento');
     }
-}
+};
+
+
 
 
 
