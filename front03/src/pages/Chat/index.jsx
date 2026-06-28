@@ -32,7 +32,7 @@ import LockOpenIcon from '@mui/icons-material/LockOpen';
 
 
 
-import { DadosContext } from '../../Routes/index.jsx';
+import { DadosContext } from '../../services/Contexts/DadosContext.jsx'
 import { url } from '../../services/api.jsx';
 import gerarCorAleatoriaRGB from '../../functions/RandomColors.jsx';
 
@@ -40,7 +40,7 @@ import gerarCorAleatoriaRGB from '../../functions/RandomColors.jsx';
 
 export default function Chat() {
   const [newMensagem, setNewMensagem] = useState({ from: 'public', destino: 'all', origem: {} });
-  const [Dados, setDados] = React.useContext(DadosContext);
+  const { Dados, setDados } = React.useContext(DadosContext);
   const [input, setInput] = useState('');
   const [socketIo, setSocketIo] = useState(null);
   const listRef = useRef(null);
@@ -73,13 +73,13 @@ export default function Chat() {
 
   useEffect(() => {
     // vps
-    const socket = window.location.origin.includes('localhost')?io(url):io("wss://cantinhodalora.info", {
+    const socket = window.location.origin.includes('localhost') ? io(url) : io("wss://cantinhodalora.info", {
       transports: ["websocket"],   // força uso de WebSocket
       secure: true,                // garante SSL/TLS
       reconnection: true,          // tenta reconectar se cair
       reconnectionAttempts: 5,     // número de tentativas
       reconnectionDelay: 2000      // intervalo entre tentativas
-    });    
+    });
 
     setSocketIo(socket);
 
@@ -229,10 +229,10 @@ export default function Chat() {
 
                 {/* se não sou o emissor e é privado =>recebidas*/}
 
-                {m?.from==='private'&&m?.destino?.id===Dados?.chat?.user?.id &&
-                 <Paper
+                {m?.from === 'private' && m?.destino?.id === Dados?.chat?.user?.id &&
+                  <Paper
                     onClick={() => {
-                      
+
                       setNewMensagem(a => ({ ...a, destino: m.origem }));
                     }}
                     elevation={1}
@@ -295,10 +295,10 @@ export default function Chat() {
         open={openDialog}
         onClose={(event, reason) => {
           // Impede fechar ao clicar fora ou apertar ESC
-    if (reason === "backdropClick" || reason === "escapeKeyDown") {
-      return;
-    }
-    setOpenDialog(false);
+          if (reason === "backdropClick" || reason === "escapeKeyDown") {
+            return;
+          }
+          setOpenDialog(false);
         }}
 
         PaperProps={{
