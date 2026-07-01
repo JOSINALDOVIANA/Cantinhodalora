@@ -127,11 +127,12 @@ export const getCategoryById = async (req, res) => {
  */
 export const createCategory = async (req, res) => {
   const { description } = req.body;
+  // console.log("description", description);
   try {
     const [id] = await db('categories').insert({ description }).returning('id');
-    return res.json({ category: { id, description } })
+    return res.json({ status: true, category: { id, description } })
   } catch (error) {
-    return res.json({ category: {} })
+    return res.json({ status: false, error: error.message, category: {} })
   }
 };
 
@@ -210,11 +211,11 @@ export const updateCategory = async (req, res) => {
  *         description: Erro ao deletar categoria
  */
 export const deleteCategory = async (req, res) => {
-  const { id } = req.body;
+  const { id } = req.params;
   try {
     await db('categories').where({ id }).del();
-    return res.json({ message: 'Categoria deletada com sucesso' })
+    return res.json({ status: true, message: 'Categoria deletada com sucesso' })
   } catch (error) {
-    return res.json({ message: 'Erro ao deletar categoria' })
+    return res.json({ status: false, message: 'Erro ao deletar categoria' })
   }
 };

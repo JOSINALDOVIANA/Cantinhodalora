@@ -61,6 +61,7 @@ import {
     VisibilityOff,
     Visibility,
     Wifi,
+    Category,
 
 } from '@mui/icons-material';
 import ListIcon from '@mui/icons-material/List';
@@ -68,144 +69,34 @@ import AddchartIcon from '@mui/icons-material/Addchart';
 
 import { DadosContext } from '../../services/Contexts/DadosContext.jsx';
 import { api } from '../../services/api.jsx';
-import ProductCard from '../../components/Grid/card.jsx';
+import DashboardPage from './Dashboard.jsx';
 
 import Swal from 'sweetalert2'
-import { useQueryClient } from '@tanstack/react-query';
+
 import { useRefreshUser } from '../../services/UseQuery/UsersQuery.jsx';
+import Users from './users.jsx';
+import { useLoadProducts } from '../../services/UseQuery/ProductsQuery.jsx';
+
+import CategoriesManager from '../../components/Grud/grudCategories.jsx';
+import ProductsManager from '../../components/Grud/grudProducts.jsx';
 
 
 
 export default function AdminPanel() {
-    const queryClient = useQueryClient();
-    const { user, loadingUser, error } = useRefreshUser();
+    const { products } = useLoadProducts();
+
+    const { user } = useRefreshUser();
     const theme = useTheme();
 
-    const { Dados, setDados, updateWifiConfig, updateUser } = React.useContext(DadosContext);
+    const { Dados, setDados } = React.useContext(DadosContext);
 
     const navigate = useNavigate();
     const isSmallScreen = useMediaQuery(theme.breakpoints.down("md"));
-    const [showPassword, setShowPassword] = React.useState(false);
-    const outlinedPasswordId = React.useId();
 
-    const handleClickShowPassword = () => setShowPassword((show) => !show);
 
-    const handleMouseDownPassword = (event) => {
-        event.preventDefault();
-    };
 
-    const handleMouseUpPassword = (event) => {
-        event.preventDefault();
-    };
 
-    const totalUsers = Dados?.user?.usersSystem?.length || 0;
-    const activeUsers = Dados?.user?.usersSystem?.filter(u => u.status == true).length || 0;
-    const adminUsers = Dados?.user?.usersSystem?.filter(u => u.adm == true).length || 0;
-    const totalProducts = Dados?.products?.length || 0;
 
-    const getPercent = (value, total) => total > 0 ? Math.round((value / total) * 100) : 0;
-
-    const dashboardCards = [
-        {
-            title: 'Usuários',
-            value: totalUsers,
-            subtitle: 'Total de usuários cadastrados',
-            percent: getPercent(totalUsers, totalUsers), // Sempre 100% para o total
-            color: green[500],
-        },
-        {
-            title: 'Ativos',
-            value: activeUsers,
-            subtitle: 'Usuários com status ativo',
-            percent: getPercent(activeUsers, totalUsers),
-            color: blue[500],
-        },
-        {
-            title: 'Administradores',
-            value: adminUsers,
-            subtitle: 'Contagem de administradores',
-            percent: getPercent(adminUsers, totalUsers),
-            color: purple[500],
-        },
-        {
-            title: 'Produtos',
-            value: totalProducts,
-            subtitle: 'Produtos cadastrados no catálogo',
-            percent: totalProducts > 0 ? 100 : 0,
-            color: deepOrange[500],
-        },
-    ];
-
-    const renderDashboardCard = ({ title, value, subtitle, percent, color }) => (
-        <Grid xs={12} sm={6} md={4} key={title}>
-            <Card sx={{
-                minHeight: 220,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                // backgroundColor: theme.palette.mode === 'dark' ? theme.palette.primary.dark : theme.palette.grey[50],
-                border: `1px solid ${theme.palette.primary.main}`,
-                boxShadow: theme.shadows[1],
-            }}>
-                <CardContent sx={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: 2,
-                    height: '100%',
-                    width: '100%',
-                }}>
-                    <Typography color="textSecondary" gutterBottom sx={{ letterSpacing: 0.5 }}>
-                        {title}
-                    </Typography>
-                    <Box sx={{ position: 'relative', display: 'inline-flex' }}>
-                        <CircularProgress
-                            variant="determinate"
-                            value={percent}
-                            size={120}
-                            thickness={5}
-                            sx={{ color, opacity: 0.2 }}
-                        />
-                        <CircularProgress
-                            variant="determinate"
-                            value={percent}
-                            size={120}
-                            thickness={5}
-                            sx={{
-                                color,
-                                position: 'absolute',
-                                left: 0,
-                                top: 0,
-                                transform: 'rotate(-90deg)',
-                            }}
-                        />
-                        <Box sx={{
-                            top: 0,
-                            left: 0,
-                            bottom: 0,
-                            right: 0,
-                            position: 'absolute',
-                            display: 'flex',
-                            flexDirection: 'column',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                        }}>
-                            <Typography variant="h4" sx={{ fontWeight: 700 }}>
-                                {value}
-                            </Typography>
-                            <Typography variant="caption" color="textSecondary">
-                                {percent}%
-                            </Typography>
-                        </Box>
-                    </Box>
-                    <Typography variant="body2" color="textSecondary" sx={{ textAlign: "center" }}>
-                        {subtitle}
-                    </Typography>
-                </CardContent>
-            </Card>
-        </Grid>
-    );
 
     const [openDialog, setOpenDialog] = useState(false);// para adicionar usuário
     const handleOpenDialog = () => setOpenDialog(true);
@@ -278,13 +169,13 @@ export default function AdminPanel() {
 
             <Box sx={{ display: { xs: 'none', md: 'flex' }, flexDirection: 'column', gap: 2, minWidth: '200px' }}>
                 <Box sx={{ mb: 0 }}>
-                    <Avatar src={Dados?.user?.url} sx={{ width: 80, height: 80, mx: 'auto', mb: 2 }} />
-                    <Typography align="center">{Dados?.user?.name}</Typography>
+                    <Avatar src={user?.url} sx={{ width: 80, height: 80, mx: 'auto', mb: 2 }} />
+                    <Typography align="center">{user?.name}</Typography>
                 </Box>
 
                 <List>
 
-                    {Dados?.user?.adm ?
+                    {user?.adm ?
                         <ListItem
 
                             selected={Dados?.activeTabPerfil === 'dashboard'}
@@ -294,7 +185,7 @@ export default function AdminPanel() {
                             <ListItemText primary="Dashboard" />
                         </ListItem> : null}
 
-                    {Dados?.user?.adm ?
+                    {user?.adm ?
                         <ListItem
 
                             selected={Dados?.activeTabPerfil === 'users'}
@@ -304,16 +195,8 @@ export default function AdminPanel() {
                             <ListItemText primary="Usuários" />
                         </ListItem> : null}
 
-                    <ListItem
 
-                        selected={Dados?.activeTabPerfil === 'settings'}
-                        onClick={() => setDados(a => ({ ...a, activeTabPerfil: 'settings' }))}
-                    >
-                        <ListItemIcon><Settings /></ListItemIcon>
-                        <ListItemText primary="Meus Dados" />
-                    </ListItem>
-
-                    {Dados?.user?.adm ?
+                    {user?.adm ?
                         <ListItem
 
                             selected={Dados?.activeTabPerfil === 'products'}
@@ -323,7 +206,18 @@ export default function AdminPanel() {
                             <ListItemText primary="Produtos" />
                         </ListItem> : null}
 
-                    {Dados?.user?.adm ?
+
+                    {user?.adm ?
+                        <ListItem
+
+                            selected={Dados?.activeTabPerfil === 'Categories'}
+                            onClick={() => setDados(a => ({ ...a, activeTabPerfil: 'Categories' }))}
+                        >
+                            <ListItemIcon><Category /></ListItemIcon>
+                            <ListItemText primary="Categorias" />
+                        </ListItem> : null}
+
+                    {user?.adm ?
                         <ListItem
 
                             selected={Dados?.activeTabPerfil === 'addProduct'}
@@ -365,387 +259,50 @@ export default function AdminPanel() {
             <Box sx={{ flexGrow: 1 }}>
 
                 {Dados?.activeTabPerfil === 'dashboard' && (
-                    <Grid container spacing={2} sx={{ alignItems: 'stretch', justifyContent: 'center' }}>
-                        {dashboardCards.map((card) => renderDashboardCard(card))}
-                    </Grid>
+                    <Box
+                        sx={{
+                            display: 'flex',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            flexFlow: 1,
+                            flex: 1
+                        }}
+                    >
+                        <DashboardPage />
+                    </Box>
+                    // <CategoriesManager />
+                )}
+                {Dados?.activeTabPerfil === 'Categories' && (
+                    // <Box
+                    //     sx={{
+                    //         display: 'flex',
+                    //         justifyContent: 'center',
+                    //         alignItems: 'center',
+                    //         flexFlow: 1,
+                    //         flex: 1
+                    //     }}
+                    // >
+                    //     <DashboardPage />
+                    // </Box>
+                    <CategoriesManager />
                 )}
 
                 {Dados?.activeTabPerfil === 'users' && (
-                    <Paper sx={{ display: 'flex', flexDirection: 'column', flexFlow: 1, flex: 1 }} >
-                        <Box sx={{ p: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                            <Typography variant="h6">Gerenciar Usuários</Typography>
-                            <Button
-                                variant="contained"
-                                startIcon={<Add />}
-                                onClick={() => {
-                                    setDados({ ...Dados, upUser: false, newUser: { name: '', email: '', password: '', images: [], adm: false, others_info: {} } })
-                                    handleOpenDialog()
-                                }}>
-                                Novo Usuário
-                            </Button>
-                        </Box>
-                        <TableContainer>
-                            <Table>
-                                <TableHead>
-                                    <TableRow sx={{}}>
-                                        <TableCell>Imagem</TableCell>
-                                        <TableCell>Nome</TableCell>
-                                        <TableCell>Email</TableCell>
-                                        <TableCell>Senha</TableCell>
-                                        <TableCell align="center">Ações</TableCell>
-                                    </TableRow>
-                                </TableHead>
-                                <TableBody>
-                                    {Dados?.user?.usersSystem?.map((user) => (
-                                        <TableRow key={user.id}>
-                                            <TableCell >{<Avatar src={user.url || user?.iamges?.[0]?.url} sx={{ width: 80, height: 80 }} />}</TableCell>
-                                            <TableCell >{user.name}</TableCell>
-                                            <TableCell>{user.email}</TableCell>
-                                            <TableCell>
-                                                <FormControl sx={{ m: 1, width: '25ch' }} variant="outlined">
-                                                    <InputLabel htmlFor={`${outlinedPasswordId}-input`} />
-                                                    <OutlinedInput
-                                                        value={user?.password}
-                                                        id={`${outlinedPasswordId}-input`}
-                                                        type={showPassword ? 'text' : 'password'}
-                                                        endAdornment={
-                                                            <InputAdornment position="end">
-                                                                <IconButton
-                                                                    aria-label={
-                                                                        showPassword ? 'hide the password' : 'display the password'
-                                                                    }
-                                                                    onClick={handleClickShowPassword}
-                                                                    onMouseDown={handleMouseDownPassword}
-                                                                    onMouseUp={handleMouseUpPassword}
-                                                                    edge="end"
-                                                                >
-                                                                    {showPassword ? <VisibilityOff /> : <Visibility />}
-                                                                </IconButton>
-                                                            </InputAdornment>
-                                                        }
-                                                        label="Password"
-                                                    />
-                                                </FormControl>
-                                            </TableCell>
-                                            <TableCell align="center">
-                                                <Button onClick={() => {
-                                                    setDados(a => ({ ...a, upUser: true, newUser: { ...user } }))
-                                                    handleOpenDialog()
-                                                }} size="small" startIcon={<Edit />} sx={{ mr: 1 }}>
-                                                    Editar
-                                                </Button>
-                                                <Button
-                                                    size="small"
-                                                    color="error"
-                                                    startIcon={<Delete />}
-                                                    onClick={() => {
-                                                        api.delete(`api/users/${user.id}`).then(r => {
-                                                            api.get('/api/users').then(r => {
-                                                                setDados(a => ({ ...a, user: { ...a.user, usersSystem: [...r.data] } }))
-                                                            })
-                                                        })
-                                                    }}
-                                                >
-                                                    Deletar
-                                                </Button>
-                                            </TableCell>
-                                        </TableRow>
-                                    ))}
-                                </TableBody>
-                            </Table>
-                        </TableContainer>
-                    </Paper>
+                    <Users />
                 )}
 
-                {Dados?.activeTabPerfil === 'settings' && (
-                    <Paper sx={{ p: 3 }}>
-                        <Typography variant="h6" gutterBottom>Configurações do Sistema</Typography>
-                        <Box sx={{ mt: 2, display: 'flex', flexDirection: 'column', gap: 2 }}>
-                            <TextField label="Nome da Aplicação" fullWidth defaultValue="Naldo" />
-                            <TextField label="Email de Contato" fullWidth defaultValue="contato@naldo.com" />
-                            <TextField label="Telefone" fullWidth defaultValue="+55 (11) 98765-4321" />
-                            <Button variant="contained">Salvar Configurações</Button>
-                        </Box>
-                    </Paper>
-                )}
 
                 {Dados?.activeTabPerfil === 'products' && (
-
-                    <Grid sx={{ justifyContent: 'center' }} container spacing={1}>
-                        {
-                            Dados?.productsSearch?.map((produto, index) => (
-                                <Grid
-                                    xs={6}
-                                    md={4}
-                                    lg={3}
-                                    key={index}>
-                                    <ProductCard onClick={() => { setDados(a => ({ ...a, ProductDataEdit: produto })); handleOpenDialog2(); }} produto={produto} />
-                                </Grid>
-                            ))
-                        }
-                    </Grid>
+                    // <Products />
+                    <ProductsManager />
                 )}
 
-                {Dados?.activeTabPerfil === 'addProduct' && (
+                {/* {Dados?.activeTabPerfil === 'addProduct' && (
 
-                    <Paper elevation={5} sx={{ p: 3, minWidth: '50%', minHeight: '100vh' }}>
-
-                        <Box
-                            sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', alignContent: 'center', gap: 2, mb: 2 }}
-                        >
-                            <Avatar src={Dados?.ProductDataEdit?.url} sx={{ width: 100, height: 100, mb: 2 }} />
-                            <TextField
-                                autoFocus
-                                margin="dense"
-                                label="Nome"
-                                fullWidth
-                                variant="outlined"
-                                value={Dados?.ProductDataEdit?.name}
-                                onChange={(e) => setDados(a => ({ ...a, ProductDataEdit: { ...a.ProductDataEdit, name: e.target.value } }))}
-                            />
-                            <TextField
-                                margin="dense"
-                                label="Descrição"
-                                fullWidth
-                                variant="outlined"
-                                multiline
-                                maxRows={4}
-                                value={Dados?.ProductDataEdit?.description}
-                                onChange={(e) => setDados(a => ({ ...a, ProductDataEdit: { ...a.ProductDataEdit, description: e.target.value } }))}
-                            />
-                            <TextField
-                                margin="dense"
-                                label="Tamanho/ml"
-                                fullWidth
-                                // select
-                                variant="outlined"
-                                value={Dados?.ProductDataEdit?.size}
-                                onChange={(e) => setDados(a => ({ ...a, ProductDataEdit: { ...a.ProductDataEdit, size: e.target.value } }))}
-                            />
+                    <AddProduct />
 
 
-                            <TextField
-                                margin="dense"
-                                label="estoque"
-                                fullWidth
-                                variant="outlined"
-                                // multiline
-                                // maxRows={4}
-                                value={Dados?.ProductDataEdit?.unit}
-                                onChange={(e) => setDados(a => ({ ...a, ProductDataEdit: { ...a.ProductDataEdit, unit: e.target.value } }))}
-                            />
-                            <TextField
-                                margin="dense"
-                                label="Preço/UNIDADE"
-                                fullWidth
-                                variant="outlined"
-                                // multiline
-                                // maxRows={4}
-                                value={Dados?.ProductDataEdit?.price}
-                                onChange={(e) => setDados(a => ({ ...a, ProductDataEdit: { ...a.ProductDataEdit, price: e.target.value } }))}
-                            />
-
-                            <Paper sx={{ mt: 2, p: 2, width: '100%' }}>
-                                <Typography variant="subtitle1" gutterBottom>
-                                    Imagens
-                                </Typography>
-                                <CssBaseline />
-                                <AvatarGroup>
-                                    {Dados?.ProductDataEdit?.images?.map((img, index) => (
-                                        <Avatar
-                                            color={img.id === Dados?.ProductDataEdit?.image_id ? "red" : ""}
-                                            onClick={() => {
-
-                                                setDados(a => ({ ...a, ProductDataEdit: { ...a.ProductDataEdit, images: a.ProductDataEdit?.images.filter(i => i.id !== img.id) } }))
-
-                                            }}
-                                            key={index}
-                                            src={img?.url}
-                                            sx={{ width: 50, height: 50, border: img.id === Dados?.ProductDataEdit?.image_id ? "2px solid red !important" : undefined }} />
-                                    ))}
-                                </AvatarGroup>
-                                <Divider flexItem variant="middle" sx={{ mt: 2 }} />
-                                <Box sx={{ gap: 2, display: 'flex', flexDirection: isSmallScreen ? 'column' : 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-                                    <Button variant='contained' onClick={handleOpenDialog3}
-
-                                        sx={{ mt: 2 }}
-                                    >
-                                        Selecionar
-                                    </Button>
-
-
-                                    <IconButton
-                                        sx={{
-
-                                            mr: 2
-                                        }}
-                                        color="success"
-                                        component="label">
-                                        <input id='img' hidden accept="image/*" type="file"
-                                            onChange={async (ee) => {
-
-                                                const files = ee.target.files;
-                                                let uploadedFiles = []
-
-
-                                                for (let iterator of files) {
-
-                                                    uploadedFiles.push(
-                                                        {
-                                                            "file": iterator,
-                                                            "id": uniqueId(),//definindo um id unico 
-                                                            "name": iterator.name,
-                                                            "prod": false,
-                                                            "readableSize": iterator.size,
-                                                            preview: URL.createObjectURL(iterator), // criando um link para preview da foto carregada
-                                                            url: URL.createObjectURL(iterator),// sera usado para setar a variavel img no proprietario/index.js
-                                                        }
-                                                    )
-                                                }
-
-
-
-                                                // CRIANDO UM DATAFORM
-                                                const data = new FormData();
-                                                data.append('file', uploadedFiles[0].file, uploadedFiles[0].name);
-
-                                                // SALVANDO NOVA IMAGEM
-                                                // console.log(data)
-
-                                                try {
-                                                    await api.post(`/api/images/uploadProduct`, data, {
-                                                        onUploadProgress: e => {
-                                                            let progr = parseInt(Math.round((e.loaded * 100) / e.total));
-                                                            // setProgress(a => a + progr)
-                                                        }
-                                                    }).then(r => {
-
-                                                        Swal.mixin({
-                                                            toast: true,
-                                                            position: "top-end",
-                                                            showConfirmButton: false,
-                                                            timer: 3000,
-                                                            timerProgressBar: true,
-                                                            didOpen: (toast) => {
-                                                                toast.onmouseenter = Swal.stopTimer;
-                                                                toast.onmouseleave = Swal.resumeTimer;
-                                                            }
-                                                        }).fire({
-                                                            icon: "success",
-                                                            title: "Signed in successfully"
-                                                        });
-
-
-
-                                                    })
-                                                    await api.get(`/api/images/getAllImages?is_product=true`).then(r => {
-                                                        setDados(a => ({ ...a, imagesProducts: r.data.images }))
-                                                    })
-
-                                                } catch (error) {
-
-                                                    alert("formato nao aceito");
-
-                                                    Swal.mixin({
-                                                        toast: true,
-                                                        position: "top-end",
-                                                        showConfirmButton: false,
-                                                        timer: 3000,
-                                                        timerProgressBar: true,
-                                                        didOpen: (toast) => {
-                                                            toast.onmouseenter = Swal.stopTimer;
-                                                            toast.onmouseleave = Swal.resumeTimer;
-                                                        }
-                                                    }).fire({
-                                                        icon: "error",
-                                                        title: "Formato de arquivo não aceito"
-                                                    })
-
-                                                }
-                                            }}
-                                        />
-
-                                        <PhotoCamera />
-                                    </IconButton>
-
-                                </Box>
-
-                            </Paper>
-                            <Paper sx={{ mt: 2, p: 2, width: '100%' }}>
-                                <Typography variant="subtitle1" gutterBottom>
-                                    Categorias
-                                </Typography>
-                                <Grid container spacing={2}>
-                                    {Dados?.ProductDataEdit?.categories?.map((category, index) => (
-                                        <Button
-                                            onClick={() => { setDados(a => ({ ...a, ProductDataEdit: { ...a.ProductDataEdit, categories: a.ProductDataEdit?.categories.filter(c => c.id !== category.id) } })) }}
-                                        >
-
-
-                                            {category.description}
-
-                                        </Button>
-                                    ))}
-
-                                </Grid>
-                                <Divider flexItem variant="middle" sx={{ mt: 2, mb: 2 }} />
-                                <Box sx={{ display: 'flex', flexDirection: isSmallScreen ? 'column' : 'row', justifyContent: 'space-between', alignItems: 'center', gap: 2 }}>
-
-                                    <Button variant='contained' onClick={handleOpenDialog4}
-                                    >
-                                        Selecionar
-                                    </Button>
-                                    <Button onClick={() => { handleOpenDialog6() }} color='warning' variant='contained'>Adicionar</Button>
-                                </Box>
-                            </Paper>
-                        </Box>
-                        <Box sx={{ display: 'flex', flexDirection: isSmallScreen ? 'column' : 'row', justifyContent: "space-between", mt: 2, gap: 2 }}>
-                            <Button color='error' startIcon={<Cancel />} variant="outlined" onClick={() => {
-                                setDados(a => ({ ...a, ProductDataEdit: null, activeTabPerfil: 'products' }))
-
-
-                            }}>Cancelar</Button>
-                            <Button color='success' startIcon={<Save />} variant="contained" onClick={async () => {
-                                await api.post('/api/products', Dados?.ProductDataEdit).then((response) => {
-                                    // atualizar a lista de produtos no frontend
-                                    Swal.fire({
-                                        icon: 'success',
-                                        title: 'Produto atualizado com sucesso!',
-                                        showConfirmButton: false,
-                                        timer: 1500
-                                    })
-
-                                }).catch((error) => {
-                                    console.error('Erro ao editar produto:', error);
-                                    Swal.fire({
-                                        icon: 'error',
-                                        title: 'Erro ao editar produto!',
-                                        showConfirmButton: false,
-                                        timer: 1500
-                                    })
-                                    handleCloseDialog2();
-                                });
-
-                                await api.get('/api/products').then((response) => {
-                                    setDados(a => ({ ...a, products: response.data.produtos, ProductDataEdit: null, activeTabPerfil: 'products', productsSearch: response.data.produtos }));
-
-
-                                }).catch((error) => {
-                                    Swal.fire({
-                                        icon: 'error',
-                                        title: 'Erro ao buscar produtos!',
-                                        showConfirmButton: false,
-                                        timer: 1500
-                                    })
-
-                                });
-
-                            }} >Salvar</Button>
-                        </Box>
-                    </Paper>
-
-
-                )}
+                )} */}
 
                 {Dados?.activeTabPerfil === 'WiFiConfigs' && (
                     <Paper sx={{ p: 3 }}>

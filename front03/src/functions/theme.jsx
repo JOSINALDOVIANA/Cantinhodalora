@@ -14,10 +14,10 @@ export const themeLight = {
       // default: '#fcfbfe',
       // paper: 'rgb(252, 252, 254)'
     },
-    text: {
-      primary: '#f5e0e0ff',   // cor padrão dos textos
-      secondary: '#555555'  // cor secundária
-    },
+    // text: {
+    //   primary: '#f5e0e0ff',   // cor padrão dos textos
+    //   secondary: '#555555'  // cor secundária
+    // },
     mode: 'light'
   },
   typography: {

@@ -9,8 +9,10 @@ const fetchProducts = async () => {
 
 // Função para atualizar produto
 const updateProduct = async (payload) => {
+    // console.log(payload)
     const { data } = await api.put(`/api/products/${payload?.id}`, { ...payload });
     return data;
+    // return {}
 };
 // Função para add produto
 const addProduct = async (payload) => {
@@ -25,6 +27,7 @@ const delProduct = async (payload) => {
 
 // Hook para carregar produtos (load)
 export function useLoadProducts() {
+    const refreshProducts = useRefreshProducts();
     const {
         data: products,
         isLoading: loadingProducts,
@@ -34,13 +37,15 @@ export function useLoadProducts() {
         queryFn: fetchProducts,
         staleTime: 60000,  // cache válido por 1 min
         gcTime: 300000,    // garbage collector em 5 min
+        enabled: true // não vai buscar direto, só quando for chamado
     });
 
-    return { products, loadingProducts, error };
+    return { products, loadingProducts, error, refreshProducts };
 }
 
 // Hook para refresh (basicamente revalida a query)
 export function useRefreshProducts() {
+    // console.log('refreshProducts')
     const queryClient = useQueryClient();
     return () => {
         queryClient.invalidateQueries({ queryKey: ["products"] });
@@ -58,6 +63,7 @@ export function useUpdateProduct() {
         },
     });
 }
+
 // Hook para deletar produto
 export function useDeleteProduct() {
     const queryClient = useQueryClient();

@@ -587,7 +587,8 @@ export const userRefresh = async (req, res) => {
  *                   example: Logout realizado
  */
 export const userLogout = async (req, res) => {
+  // console.log('logout')
   res.clearCookie("accessToken");
   res.clearCookie("refreshToken");
-  res.json({ message: "Logout realizado" });
+  res.json({ status: true, message: "Logout realizado" });
 }

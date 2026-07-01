@@ -38,6 +38,7 @@ import { DadosContext } from '../../services/Contexts/DadosContext.jsx';
 import { api } from '../../services/api.jsx';
 import { QRCodeCanvas } from "qrcode.react";
 import { TrocarTheme } from "./../Theme/index.jsx";
+import { useLogout, useRefreshUser } from '../../services/UseQuery/UsersQuery.jsx';
 
 
 const Search = styled('div')(({ theme }) => ({
@@ -82,7 +83,8 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 }));
 
 export default function PrimarySearchAppBar() {
-
+  const { user } = useRefreshUser();
+  const logout = useLogout();
   const { Dados, setDados } = React.useContext(DadosContext);
   const [searchValue, setSearchValue] = React.useState('')
   const location = useLocation();
@@ -101,7 +103,7 @@ export default function PrimarySearchAppBar() {
     })
   }, []);
 
-  // console.log(Dados)
+  // console.log(user)
 
 
 
@@ -135,7 +137,7 @@ export default function PrimarySearchAppBar() {
 
           <List>
             {/* Login */}
-            {!Dados?.logado && location.pathname !== '/login' &&
+            {!user && location.pathname !== '/login' &&
               <ListItem onClick={() => { navegation('/login') }} disablePadding>
                 <ListItemButton>
                   <ListItemIcon>
@@ -150,7 +152,7 @@ export default function PrimarySearchAppBar() {
             }
 
             {/* sair/logout */}
-            {Dados?.logado &&
+            {user &&
               <ListItem onClick={() => {
                 api.post('/api/users/logout').then(response => {
                   if (response.status === 200) {
@@ -183,7 +185,7 @@ export default function PrimarySearchAppBar() {
             }
 
             {/* Minha conta */}
-            {Dados?.logado &&
+            {user &&
               <ListItem onClick={() => { navegation('/minha-conta') }} disablePadding>
                 <ListItemButton>
                   <ListItemIcon>
@@ -244,11 +246,11 @@ export default function PrimarySearchAppBar() {
               </ListItemButton>
             </ListItem>
 
-            {Dados?.logado && isMobile && <Divider />}
+            {user && isMobile && <Divider />}
 
 
             {/* Dashboard */}
-            {Dados?.logado && Dados?.user?.adm &&
+            {user && user.adm &&
               <ListItem
                 sx={{ display: { md: "none" }, mb: 1, borderRadius: 2 }}
 
@@ -264,7 +266,7 @@ export default function PrimarySearchAppBar() {
             }
 
             {/* User */}
-            {Dados?.logado && Dados?.user?.adm &&
+            {user && user.adm &&
               <ListItem
 
                 selected={Dados?.activeTabPerfil === 'users'}
@@ -279,7 +281,7 @@ export default function PrimarySearchAppBar() {
             }
 
             {/* Configurações */}
-            {Dados?.logado &&
+            {user &&
               <ListItem
                 sx={{ display: { md: "none" }, mb: 1, borderRadius: 2 }}
 
@@ -294,7 +296,7 @@ export default function PrimarySearchAppBar() {
             }
 
             {/* Produtos */}
-            {Dados?.logado && Dados?.user?.adm &&
+            {user && user.adm &&
               <ListItem
                 sx={{ display: { md: "none" }, mb: 1, borderRadius: 2 }}
                 selected={Dados?.activeTabPerfil === 'products'}
@@ -308,7 +310,7 @@ export default function PrimarySearchAppBar() {
             }
 
             {/* addProduto */}
-            {Dados?.logado && Dados?.user?.adm &&
+            {user && user.adm &&
               <ListItem
                 sx={{ display: { md: "none" }, mb: 1, borderRadius: 2 }}
 
@@ -341,7 +343,7 @@ export default function PrimarySearchAppBar() {
             }
 
             {/* segurança */}
-            {Dados?.logado &&
+            {user &&
               <ListItem
                 sx={{ display: { md: "none" }, mb: 1, borderRadius: 2 }}
 

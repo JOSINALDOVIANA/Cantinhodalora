@@ -1,15 +1,23 @@
 import React from 'react';
 import { useRefreshUser } from '../../services/UseQuery/UsersQuery';
 import { DadosContext } from '../../services/Contexts/DadosContext';
+import { blue, deepOrange, green, purple } from '@mui/material/colors';
+import { Box, Card, CardContent, CircularProgress, Grid, Typography, useTheme } from '@mui/material';
+import { useLoadProducts } from '../../services/UseQuery/ProductsQuery';
+import { useFetchUsersSystem } from '../../services/UseQuery/UsersQuery';
 // import { Container } from './styles';
 
 export default function Dashboard() {
     const { user, loadingUser, error } = useRefreshUser();
+    const { usersSystem, loadingUsersSystem, errorUsersSystem } = useFetchUsersSystem();
+    const { products } = useLoadProducts();
     const { Dados, setDados } = React.useContext(DadosContext);
-    const totalUsers = Dados?.user?.usersSystem?.length || 0;
-    const activeUsers = Dados?.user?.usersSystem?.filter(u => u.status == true).length || 0;
-    const adminUsers = Dados?.user?.usersSystem?.filter(u => u.adm == true).length || 0;
-    const totalProducts = Dados?.products?.length || 0;
+
+    const theme = useTheme();
+    const totalUsers = usersSystem?.length || 0;
+    const activeUsers = usersSystem?.filter((u) => u?.status == true).length || 0;
+    const adminUsers = usersSystem?.filter((u) => u?.adm == true).length || 0;
+    const totalProducts = products?.length || 0;
     const getPercent = (value, total) => total > 0 ? Math.round((value / total) * 100) : 0;
 
     const dashboardCards = [
@@ -37,7 +45,7 @@ export default function Dashboard() {
         {
             title: 'Produtos',
             value: totalProducts,
-            subtitle: 'Produtos cadastrados no catálogo',
+            subtitle: 'Produtos cadastrados',
             percent: totalProducts > 0 ? 100 : 0,
             color: deepOrange[500],
         },
@@ -47,6 +55,9 @@ export default function Dashboard() {
         <Grid xs={12} sm={6} md={4} key={title}>
             <Card sx={{
                 minHeight: 220,
+                minWidth: 220,
+                maxWidth: 220,
+                maxHeight: 220,
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -117,7 +128,9 @@ export default function Dashboard() {
 
     return (
         <>
-
+            <Grid sx={{ justifyContent: 'center', alignItems: 'center', padding: 2 }} container spacing={3}>
+                {dashboardCards.map(renderDashboardCard)}
+            </Grid>
 
         </>
     );

@@ -23,6 +23,6 @@ router.delete('/:id', autenticarJWT, deleteUser);
 router.post("/refresh", userRefresh);
 
 // POST /api/users/logout
-router.post("/logout", userLogout);
+router.post("/logout", autenticarJWT, userLogout);
 
 export default router;

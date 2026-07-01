@@ -14,12 +14,13 @@ const updateCategory = async (payload) => {
 };
 // Função para add   categoria
 const addCategory = async (payload) => {
-    const { data } = await api.post(`/api/categories/`, { ...payload });
+    // console.log("payload", payload);
+    const { data } = await api.post(`/api/categories`, payload);
     return data;
 };
 // Função para delete   categoria
 const deleteCategory = async (payload) => {
-    const { data } = await api.delete(`/api/categories/${payload?.id}`, { ...payload });
+    const { data } = await api.delete(`/api/categories/${payload?.id}`);
     return data;
 };
 

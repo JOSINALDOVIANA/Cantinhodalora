@@ -120,53 +120,136 @@ import db from '../database/conexao.js';
  *       500:
  *         description: Erro interno no servidor
  */
+// export const getAllProducts = async (req, res) => {
+//   const { product_id } = req.query;
+//   // console.log('product_id:', product_id);
+
+//   if (!!product_id) {
+//     try {
+//       let produto = await db('products').where({ id: product_id }).first();
+//       if (!produto) {
+//         throw new Error('Produto não encontrado');
+//         return res.status(404).json({ error: 'Produto não encontrado' });
+//       }
+//       produto.images = await db('product_images').where({ product_id }).join('images', 'product_images.image_id', 'images.id').select('images.*');
+//       produto.categories = await db('product_categories').where({ product_id }).join('categories', 'product_categories.category_id', 'categories.id').select('categories.*');
+
+//       for (let key in produto.images) {
+//         produto.images[key].delete = `${process.env.SERVER_URL}api/images?id=${produto.images[key].id}&key=${produto.images[key].key}`
+//         produto.images[key].url = `${process.env.SERVER_URL}api/static/images/${produto.images[key].key}`;
+//         produto.images[key].urlFull = `${process.env.SERVER_URL}api/images/static/${produto.images[key].key}`;
+//       }
+//       produto.url = produto.images.find(img => img.id === produto.image_id)?.url || null;
+//       produto.urlFull = produto.images.find(img => img.id === produto.image_id)?.urlFull || null;
+//       return res.json({ status: true, produto });
+//     } catch (error) {
+//       console.log(error);
+//       return res.status(500).json({ error: 'Erro ao buscar produto: ' + error.message });
+//     }
+//   };
+
+//   try {
+//     let produtos = await db('products').select('*');
+//     for (let key in produtos) {
+//       produtos[key].images = await db('product_images').where({ product_id: produtos[key].id }).join('images', 'product_images.image_id', 'images.id').select('images.*');
+//       for (let imgKey in produtos[key].images) {
+//         produtos[key].categories = await db('product_categories').where({ product_id: produtos[key].id }).join('categories', 'product_categories.category_id', 'categories.id').select('categories.*');
+//         produtos[key].images[imgKey].delete = `${process.env.SERVER_URL}api/images?id=${produtos[key].images[imgKey].id}&key=${produtos[key].images[imgKey].key}`;
+//         produtos[key].images[imgKey].url = `${process.env.SERVER_URL}api/static/images/${produtos[key].images[imgKey].key}`;
+//         produtos[key].images[imgKey].urlFull = `${process.env.SERVER_URL}api/images/static/${produtos[key].images[imgKey].key}`;
+//       }
+//       produtos[key].url = produtos[key].images.find(img => img.id === produtos[key].image_id)?.url || null;
+//       produtos[key].urlFull = produtos[key].images.find(img => img.id === produtos[key].image_id)?.urlFull || null;
+//     }
+
+
+//     return res.json({ status: true, produtos });
+//   } catch (error) {
+//     console.log(error);
+//     return res.status(500).json({ error: 'Erro ao buscar products: ' + error.message });
+//   }
+// };
+
 export const getAllProducts = async (req, res) => {
   const { product_id } = req.query;
-  // console.log('product_id:', product_id);
 
-  if (!!product_id) {
-    try {
-      let produto = await db('products').where({ id: product_id }).first();
-      if (!produto) {
-        throw new Error('Produto não encontrado');
-        return res.status(404).json({ error: 'Produto não encontrado' });
-      }
-      produto.images = await db('product_images').where({ product_id }).join('images', 'product_images.image_id', 'images.id').select('images.*');
-      produto.categories = await db('product_categories').where({ product_id }).join('categories', 'product_categories.category_id', 'categories.id').select('categories.*');
-
-      for (let key in produto.images) {
-        produto.images[key].delete = `${process.env.SERVER_URL}api/images?id=${produto.images[key].id}&key=${produto.images[key].key}`
-        produto.images[key].url = `${process.env.SERVER_URL}api/static/images/${produto.images[key].key}`;
-        produto.images[key].urlFull = `${process.env.SERVER_URL}api/images/static/${produto.images[key].key}`;
-      }
-      produto.url = produto.images.find(img => img.id === produto.image_id)?.url || null;
-      produto.urlFull = produto.images.find(img => img.id === produto.image_id)?.urlFull || null;
-      return res.json({ status: true, produto });
-    } catch (error) {
-      console.log(error);
-      return res.status(500).json({ error: 'Erro ao buscar produto: ' + error.message });
-    }
-  };
+  const formatImage = (img) => ({
+    ...img,
+    delete: `${process.env.SERVER_URL}api/images?id=${img.id}&key=${img.key}`,
+    url: `${process.env.SERVER_URL}api/static/images/${img.key}`,
+    urlFull: `${process.env.SERVER_URL}api/images/static/${img.key}`
+  });
 
   try {
-    let produtos = await db('products').select('*');
-    for (let key in produtos) {
-      produtos[key].images = await db('product_images').where({ product_id: produtos[key].id }).join('images', 'product_images.image_id', 'images.id').select('images.*');
-      for (let imgKey in produtos[key].images) {
-        produtos[key].categories = await db('product_categories').where({ product_id: produtos[key].id }).join('categories', 'product_categories.category_id', 'categories.id').select('categories.*');
-        produtos[key].images[imgKey].delete = `${process.env.SERVER_URL}api/images?id=${produtos[key].images[imgKey].id}&key=${produtos[key].images[imgKey].key}`;
-        produtos[key].images[imgKey].url = `${process.env.SERVER_URL}api/static/images/${produtos[key].images[imgKey].key}`;
-        produtos[key].images[imgKey].urlFull = `${process.env.SERVER_URL}api/images/static/${produtos[key].images[imgKey].key}`;
+    if (product_id) {
+      // Busca produto único
+      const produto = await db('products').where({ id: product_id }).first();
+      if (!produto) {
+        return res.status(404).json({ error: 'Produto não encontrado' });
       }
-      produtos[key].url = produtos[key].images.find(img => img.id === produtos[key].image_id)?.url || null;
-      produtos[key].urlFull = produtos[key].images.find(img => img.id === produtos[key].image_id)?.urlFull || null;
+
+      const [images, categories] = await Promise.all([
+        db('product_images')
+          .where({ product_id })
+          .join('images', 'product_images.image_id', 'images.id')
+          .select('images.*'),
+        db('product_categories')
+          .where({ product_id })
+          .join('categories', 'product_categories.category_id', 'categories.id')
+          .select('categories.*')
+      ]);
+
+      produto.images = images.map(formatImage);
+      produto.categories = categories;
+      produto.url = produto.images.find(img => img.id === produto.image_id)?.url || null;
+      produto.urlFull = produto.images.find(img => img.id === produto.image_id)?.urlFull || null;
+
+      return res.json({ status: true, produto });
     }
 
+    // Busca todos os produtos
+    const produtos = await db('products').select('*');
+    const productIds = produtos.map(p => p.id);
 
-    return res.json({ status: true, produtos });
+    const [images, categories] = await Promise.all([
+      db('product_images')
+        .whereIn('product_id', productIds)
+        .join('images', 'product_images.image_id', 'images.id')
+        .select('images.*', 'product_images.product_id'),
+      db('product_categories')
+        .whereIn('product_id', productIds)
+        .join('categories', 'product_categories.category_id', 'categories.id')
+        .select('categories.*', 'product_categories.product_id')
+    ]);
+
+    // Agrupar imagens e categorias por produto
+    const imagesByProduct = images.reduce((acc, img) => {
+      acc[img.product_id] = acc[img.product_id] || [];
+      acc[img.product_id].push(formatImage(img));
+      return acc;
+    }, {});
+
+    const categoriesByProduct = categories.reduce((acc, cat) => {
+      acc[cat.product_id] = acc[cat.product_id] || [];
+      acc[cat.product_id].push(cat);
+      return acc;
+    }, {});
+
+    const produtosFormatados = produtos.map(p => {
+      const imgs = imagesByProduct[p.id] || [];
+      return {
+        ...p,
+        images: imgs,
+        categories: categoriesByProduct[p.id] || [],
+        url: imgs.find(img => img.id === p.image_id)?.url || null,
+        urlFull: imgs.find(img => img.id === p.image_id)?.urlFull || null
+      };
+    });
+
+    return res.json({ status: true, produtos: produtosFormatados });
   } catch (error) {
-    console.log(error);
-    return res.status(500).json({ error: 'Erro ao buscar products: ' + error.message });
+    console.error(error);
+    return res.status(500).json({ error: 'Erro ao buscar produtos: ' + error.message });
   }
 };
 
@@ -242,7 +325,7 @@ export const createProduct = async (req, res) => {
     }
 
     if (categories && categories.length > 0) {
-      let catInsert = categories.map(cat => ({ product_id: id, category_id: cat.id }));
+      let catInsert = categories.map(cat => ({ product_id: id, category_id: cat }));
       await db('product_categories').insert(catInsert);
     }
 
@@ -332,14 +415,16 @@ export const updateProduct = async (req, res) => {
 
     }
     if (!!categories) {
+      // console.log(categories)
       await db('product_categories').where({ product_id: id }).del();
-      let catup = categories.map(cat => ({ product_id: id, category_id: cat.id }));
+      let catup = categories.map(cat => ({ product_id: id, category_id: cat }));
+      console.log(catup)
       await db('product_categories').insert(catup);
 
     }
     return res.json({ id, description, price, unit, size, url: images.find(img => img.id === image_id)?.url || null, images, image_id, name, categories });
   } catch (error) {
-    throw new Error('Erro ao atualizar produto: ' + error.message);
+    // throw new Error('Erro ao atualizar produto: ' + error.message);
     return res.status(500).json({ error: 'Erro ao atualizar produto: ' + error.message });
   }
 };

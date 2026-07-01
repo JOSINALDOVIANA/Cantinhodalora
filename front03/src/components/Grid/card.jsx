@@ -5,6 +5,7 @@ import {
   CardContent,
   Typography,
   Box,
+  Chip,
 
 } from '@mui/material';
 
@@ -26,11 +27,12 @@ export default function ProductCard({ produto, ...props }) {
             width: "100%",
             maxWidth: 170, // limite opcional
             minWidth: 170,
-            maxHeight: 250,
-            minHeight: 250,
+            maxHeight: 340,
+            minHeight: 340,
             boxShadow: 3,
             borderRadius: 2,
             justifyContent: 'space-between',
+            gap: 1,
             // background: `linear-gradient(135deg, ${alpha(theme.palette.primary.dark, 0.25)}, ${theme.palette.background.default} 50%, ${alpha(theme.palette.secondary.dark, 0.25)})`,
 
           }}
@@ -56,28 +58,71 @@ export default function ProductCard({ produto, ...props }) {
           />
           <CardContent
             sx={{
-              minHeight: 70,
-              maxHeight: 70,
+              minHeight: 200,
+              maxHeight: 200,
               display: "flex",
               flexDirection: "column",
               justifyContent: "space-between",
               // alignContent: "space-between",
               // alignItems: "flex-end",
-              justifyItems: "flex-end",
+              // justifyItems: "flex-end",
               padding: 1,
+              gap: 1,
             }}
           >
-            <Typography sx={{ fontSize: { xs: "0.6rem", sm: "0.7rem", md: "0.8rem" } }} component="p" >
-              {produto.name + ' ' + produto.size}
-            </Typography>
-
-
-            <Typography component='p' sx={{
-              fontSize: { xs: "0.7rem", sm: "0.8rem", md: "0.9rem" }, color: theme.palette.primary.main,
-              fontWeight: 'bold'
-            }}>
-              R$ {produto?.price.toFixed(2)}
-            </Typography>
+            <Box sx={{ mb: 0 }}>
+              <Typography variant="subtitle1" sx={{ fontWeight: 700, color: "text.primary" }}>
+                {produto.name}
+              </Typography>
+              <Chip
+                label={produto.size}
+                size="small"
+                variant="outlined"
+                sx={{ fontWeight: 500, marginRight: 1 }}
+              />
+              <Chip
+                label={`Estoque: ${produto.unit || 0}`}
+                size="small"
+                variant="outlined"
+                color={produto.unit > 0 ? "success" : "error"}
+                sx={{ fontWeight: 500, height: 20 }}
+              />
+            </Box>
+            <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap", alignItems: "center" }}>
+              <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 500 }}>
+                Categorias:
+              </Typography>
+              <Box>
+                {produto.categories.map((c) => (
+                  <Chip
+                    key={c.id || c.description}
+                    label={c.description}
+                    size="small"
+                    sx={{
+                      height: 18,
+                      fontSize: "0.75rem",
+                      backgroundColor: "action.selected",
+                      "&:not(:last-child)": {
+                        marginRight: 1, // adiciona espaço apenas se não for o último
+                      },
+                    }}
+                  />
+                ))}
+              </Box>
+            </Box>
+            <Chip
+              label={`R$ ${parseFloat(produto.price || 0).toFixed(2)}`}
+              size="small"
+              color="primary"
+              variant="soft"
+              sx={{
+                fontWeight: 600,
+                height: 20,
+                backgroundColor: (theme) =>
+                  theme.palette.mode === "dark" ? "rgba(25,118,210,0.2)" : "rgba(25,118,210,0.1)",
+                color: "primary.main",
+              }}
+            />
           </CardContent>
           {/* <CardActions>
         <Button size="small" variant="contained" color="primary">

@@ -7,6 +7,11 @@ const fetchUser = async () => {
     const { data } = await api.post("/api/users/refresh");
     return data.user;
 };
+// Função para buscar todos os usuarios do sistema
+const fetchUsersSystem = async () => {
+    const { data } = await api.get("/api/users");
+    return data;
+};
 // função para add usuario
 const addUser = async (dados) => {
     const { data } = await api.post("/api/users", { ...dados });
@@ -39,8 +44,8 @@ export function useRefreshUser() {
         gcTime: 1000 * 60 * 10, // não deixa a aplicação usar o cache por mais de 10 minutos
         refetchOnWindowFocus: false, // não busca no windows focus
         refetchOnReconnect: false, // não busca no reconnect
-        refetchOnMount: false, // não busca no mount
-        retry: false, // não tenta novamente em caso de erro
+        // refetchOnMount: false, // não busca no mount
+        // retry: false, // não tenta novamente em caso de erro
     });
     return { user: data, error, loadingUser: isLoading };
 }
@@ -91,4 +96,34 @@ export function useAddUser() {
             queryClient.invalidateQueries({ queryKey: ["refreshUser"] });
         },
     });
-}   
+}
+// hook para buscar todos os usuarios do sistema
+export function useFetchUsersSystem() {
+    const { data, error, isLoading } = useQuery({
+        queryKey: ["usersSystem"],
+        queryFn: fetchUsersSystem,
+        staleTime: 1000 * 60 * 5, // cache por 5 minutos
+        gcTime: 1000 * 60 * 10, // não deixa a aplicação usar o cache por mais de 10 minutos
+        refetchOnWindowFocus: false, // não busca no windows focus
+        refetchOnReconnect: false, // não busca no reconnect
+        // refetchOnMount: false, // não busca no mount
+        // retry: false, // não tenta novamente em caso de erro
+    });
+    return { usersSystem: data, error, loadingUsersSystem: isLoading };
+}
+
+// Hook para refresh usersSystem  (basicamente revalida a query)
+export function useRefreshUsersSystem() {
+    const queryClient = useQueryClient();
+    return () => {
+        queryClient.invalidateQueries({ queryKey: ["usersSystem"] });
+    };
+}
+// hook para fazer logout
+export function useLogout() {
+    const queryClient = useQueryClient();
+    return () => {
+        queryClient.invalidateQueries({ queryKey: ["refreshUser"] });
+    };
+}
+
