@@ -17,7 +17,6 @@ import { ColorModeContext } from '../services/Contexts/ColorContext.jsx';
 const Home = React.lazy(() => import('./../pages/Home/Home.jsx'));
 const Login = React.lazy(() => import('./../pages/Login/index.jsx'));
 const Products = React.lazy(() => import('./../components/Grid/index.jsx'));
-// const Products2 = React.lazy(() => import('./../components/Grid/car2.jsx'));
 const MyAccount = React.lazy(() => import('./../pages/Profile/index.jsx'));
 const Chat = React.lazy(() => import('./../pages/Chat/index.jsx'));
 

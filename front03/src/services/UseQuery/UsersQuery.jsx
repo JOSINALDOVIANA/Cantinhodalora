@@ -1,17 +1,12 @@
+import React from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { api } from "../api";
+import { DadosContext } from "../Contexts/DadosContext";
 
-// Função para buscar dados do usuário
-const fetchUser = async () => {
-    const { data } = await api.post("/api/users/refresh");
-    return data.user;
-};
+
 // Função para buscar todos os usuarios do sistema
-const fetchUsersSystem = async () => {
-    const { data } = await api.get("/api/users");
-    return data;
-};
+
 // função para add usuario
 const addUser = async (dados) => {
     const { data } = await api.post("/api/users", { ...dados });
@@ -26,7 +21,8 @@ const deleteUser = async (data) => {
 const loginUser = async (credentials) => {
     // console.log("credentials", credentials)
     const { data } = await api.post("/api/users/login", credentials);
-    return data;
+    // console.log("data", data)
+    return data.user;
 };
 
 // Função para atualizar usuário
@@ -37,19 +33,51 @@ const updateUser = async (d) => {
 
 // hook para pegar dados do usuario logado
 export function useRefreshUser() {
-    const { data, error, isLoading } = useQuery({
+    const { setDados } = React.useContext(DadosContext);
+
+    const { data, error, isLoading, refetch } = useQuery({
         queryKey: ["refreshUser"],
-        queryFn: async () => await fetchUser(),
+        queryFn: async () => {
+            // console.log("fetchUser");
+            const { data } = await api.post("/api/users/refresh");
+            if (!!data?.user){
+            setDados(a => ({ ...a, logado: true, }));
+            };
+            return data.user;
+
+        },
         staleTime: 1000 * 60 * 5, // cache por 5 minutos
         gcTime: 1000 * 60 * 10, // não deixa a aplicação usar o cache por mais de 10 minutos
-        refetchOnWindowFocus: false, // não busca no windows focus
-        refetchOnReconnect: false, // não busca no reconnect
-        // refetchOnMount: false, // não busca no mount
-        // retry: false, // não tenta novamente em caso de erro
+        refetchOnWindowFocus: true, // não busca no windows focus
+        refetchOnReconnect: true, // não busca no reconnect
+        refetchOnMount: true, // não busca no mount
+        retry: false, // não tenta novamente em caso de erro
+        enabled: true, // habilita a query
     });
-    return { user: data, error, loadingUser: isLoading };
+    return { user: data, error, loadingUser: isLoading, refetchUser: refetch };
 }
-// hook para login
+// hook para logout
+export function useLogout() {
+  const { setDados } = React.useContext(DadosContext);
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async () => {
+      const { data } = await api.post("/api/users/logout");
+      return data;
+    },
+    onSuccess: () => {
+      // Zera os dados da query
+      queryClient.setQueryData(["refreshUser"], null);
+
+      // ou, se quiser remover completamente:
+      // queryClient.removeQueries({ queryKey: ["refreshUser"] });
+
+      // Atualiza o contexto
+      setDados(a => ({ ...a, logado: false }));
+    },
+  });
+}
 export function useLogin() {
     const queryClient = useQueryClient();
 
@@ -99,31 +127,22 @@ export function useAddUser() {
 }
 // hook para buscar todos os usuarios do sistema
 export function useFetchUsersSystem() {
-    const { data, error, isLoading } = useQuery({
+    const { data, error, isLoading,refetch } = useQuery({
         queryKey: ["usersSystem"],
-        queryFn: fetchUsersSystem,
+        queryFn: async () => {
+            const { data } = await api.get("/api/users");
+            return data;
+        },
         staleTime: 1000 * 60 * 5, // cache por 5 minutos
         gcTime: 1000 * 60 * 10, // não deixa a aplicação usar o cache por mais de 10 minutos
-        refetchOnWindowFocus: false, // não busca no windows focus
-        refetchOnReconnect: false, // não busca no reconnect
-        // refetchOnMount: false, // não busca no mount
-        // retry: false, // não tenta novamente em caso de erro
+        refetchOnWindowFocus: true, // não busca no windows focus
+        refetchOnReconnect: true, // não busca no reconnect
+        refetchOnMount: true, // não busca no mount
+        retry: true, // não tenta novamente em caso de erro
     });
-    return { usersSystem: data, error, loadingUsersSystem: isLoading };
+    return { usersSystem: data, error, loadingUsersSystem: isLoading,refetchUsersSystem: refetch };
 }
 
-// Hook para refresh usersSystem  (basicamente revalida a query)
-export function useRefreshUsersSystem() {
-    const queryClient = useQueryClient();
-    return () => {
-        queryClient.invalidateQueries({ queryKey: ["usersSystem"] });
-    };
-}
-// hook para fazer logout
-export function useLogout() {
-    const queryClient = useQueryClient();
-    return () => {
-        queryClient.invalidateQueries({ queryKey: ["refreshUser"] });
-    };
-}
+
+
 

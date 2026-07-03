@@ -29,7 +29,7 @@ export default function ProductGrid() {
         <CssBaseline />
         {window.location.pathname !== "/minha-conta" && <Banner />}
         {window.location.pathname !== "/minha-conta" && <Categories />}
-        <Grid sx={{ justifyContent: "center", pb: 2, backgroundColor: theme.palette.mode === 'light' ? theme.palette.primary.main : theme.palette.background.paper }} container spacing={1} >
+        <Grid  sx={{ justifyContent: "center", pb: 2, backgroundColor: theme.palette.mode === 'light' ? theme.palette.primary.main : theme.palette.background.paper }} container spacing={2} >
           {loadingProducts && <Box sx={{ height: 100 }}>Carregando...</Box>}
           {!loadingProducts && Dados?.productsSearch?.map((produto, index) => (
             <Grid

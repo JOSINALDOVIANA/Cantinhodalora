@@ -67,10 +67,10 @@ export const getAllWifiConfigs = async (req, res) => {
   // console.log('getAllWifiConfigs called');
   try {
     const wifiConfigs = await db('wifi_configs').select('*');
-    return res.json({ wifiConfigs });
+    return res.json({status:true, wifiConfigs });
   } catch (error) {
     console.error('Erro getAllWifiConfigs:', error);
-    return res.status(500).json({ wifiConfigs: [] });
+    return res.status(500).json({status:false, wifiConfigs: [] });
   }
 };
 
@@ -105,9 +105,9 @@ export const getWifiConfigById = async (req, res) => {
   try {
     const wifiConfig = await db('wifi_configs').where({ id }).first();
     if (!wifiConfig) {
-      return res.status(404).json({ wifiConfig: {} });
+      return res.status(404).json({ status:false,wifiConfig: {} });
     }
-    return res.json({ wifiConfig });
+    return res.json({status:true, wifiConfig });
   } catch (error) {
     console.error('Erro getWifiConfigById:', error);
     return res.status(500).json({ wifiConfig: {} });
@@ -152,10 +152,10 @@ export const createWifiConfig = async (req, res) => {
     const [id] = await db('wifi_configs')
       .insert({ ssid, password, encryption })
       .returning('id');
-    return res.status(201).json({ wifiConfig: { id, ssid, password, encryption } });
+    return res.status(201).json({status:true, wifiConfig: { id, ssid, password, encryption } });
   } catch (error) {
     console.error('Erro createWifiConfig:', error);
-    return res.status(500).json({ wifiConfig: {} });
+    return res.status(500).json({status:false, wifiConfig: {} });
   }
 };
 
@@ -203,12 +203,12 @@ export const updateWifiConfig = async (req, res) => {
   try {
     const updated = await db('wifi_configs').where({ id }).update({ ssid, password, encryption });
     if (!updated) {
-      return res.status(404).json({ wifiConfig: {} });
+      return res.status(404).json({status:false, wifiConfig: {} });
     }
     return getWifiConfigById(req, res);
   } catch (error) {
     console.error('Erro updateWifiConfig:', error);
-    return res.status(500).json({ wifiConfig: {} });
+    return res.status(500).json({ status:false, wifiConfig: {} });
   }
 };
 
@@ -248,9 +248,9 @@ export const deleteWifiConfig = async (req, res) => {
     if (!deleted) {
       return res.status(404).json({ message: 'Configura��o n�o encontrada' });
     }
-    return res.json({ message: 'Configura��o exclu�da com sucesso' });
+    return res.json({status:true, message: 'Configuração excluída com sucesso' });
   } catch (error) {
     console.error('Erro deleteWifiConfig:', error);
-    return res.status(500).json({ message: 'Erro ao excluir configura��o' });
+    return res.status(500).json({status:false, message: 'Erro ao excluir configuração' });
   }
 };

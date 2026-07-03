@@ -204,7 +204,7 @@ export const getAllProducts = async (req, res) => {
       produto.url = produto.images.find(img => img.id === produto.image_id)?.url || null;
       produto.urlFull = produto.images.find(img => img.id === produto.image_id)?.urlFull || null;
 
-      return res.json({ status: true, produto });
+      return res.json({ status: true, dados:produto });
     }
 
     // Busca todos os produtos
@@ -246,7 +246,7 @@ export const getAllProducts = async (req, res) => {
       };
     });
 
-    return res.json({ status: true, produtos: produtosFormatados });
+    return res.json({ status: true, dados: produtosFormatados });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ error: 'Erro ao buscar produtos: ' + error.message });

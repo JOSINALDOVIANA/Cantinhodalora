@@ -449,55 +449,85 @@ export const deleteUser = async (req, res) => {
  *         description: Erro interno no servidor
  */
 export const userLogin = async (req, res) => {
-  let { email, password } = req.body;
-
-
+  const { email, password } = req.body;
 
   try {
-    if (!!email) {
-      let user = await conexao('users').where({ email }).first();
-
-      if (!!user && (await verificarSenha(password, user.password)).status) {
-        user.images = await conexao('user_images').where({ user_id: user.id }).join('images', 'user_images.image_id', 'images.id').select('images.*');
-        if (user.images.length > 0) {
-          for (const key in user.images) {
-            user.images[key].delete = `${process.env.SERVER_URL}api/images?id=${user.images[key].id}&key=${user.images[key].key}`
-            user.images[key].url = `${process.env.SERVER_URL}api/static/images/${user.images[key].key}`;
-            if (user.images[key].id == user.image_id) {
-              user.url = user.images[key].url;
-            }
-          }
-        }
-
-        // Gera os tokens e configura os cookies para qualquer login bem-sucedido, com ou sem imagens
-        const { accessToken, refreshToken } = gerarTokens({ id: user.id, name: user.name, email: user.email, password: user.password });
-
-        // Cookies HTTPOnly
-        res.cookie("accessToken", accessToken, {
-          httpOnly: true,   // impede acesso via document.cookie
-          secure: true,     // só envia em conexões HTTPS
-          sameSite: "strict",
-          maxAge: 15 * 60 * 1000,
-        });
-
-        res.cookie("refreshToken", refreshToken, {
-          httpOnly: true,
-          secure: true,
-          sameSite: "strict",
-          maxAge: 7 * 24 * 60 * 60 * 1000,
-        });
-        return res.json({ status: true, message: 'Login realizado com sucesso', user });
-      }
-      return res.status(401).json({ status: false, message: 'Credenciais inválidas(email ou senha)' });
+    if (!email) {
+      return res.status(401).json({ status: false, message: 'Credenciais inválidas (email)' });
     }
-    return res.status(401).json({ status: false, message: 'Credenciais inválidas(email)' });
 
+    const user = await conexao('users').where({ email }).first();
+    const senhaValida = user && (await verificarSenha(password, user.password)).status;
+
+    if (!senhaValida) {
+      return res.status(401).json({ status: false, message: 'Credenciais inválidas (email ou senha)' });
+    }
+
+    // Carrega imagens do usuário
+    user.images = await conexao('user_images')
+      .where({ user_id: user.id })
+      .join('images', 'user_images.image_id', 'images.id')
+      .select('images.*');
+
+    if (user.images.length > 0) {
+      user.images = user.images.map(img => {
+        const url = `${process.env.SERVER_URL}api/static/images/${img.key}`;
+        return {
+          ...img,
+          delete: `${process.env.SERVER_URL}api/images?id=${img.id}&key=${img.key}`,
+          url,
+        };
+      });
+
+      const imagemPrincipal = user.images.find(img => img.id === user.image_id);
+      if (imagemPrincipal) {
+        user.url = imagemPrincipal.url;
+      }
+    }
+
+    // Gera tokens
+    const { accessToken, refreshToken } = gerarTokens({
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      password: user.password,
+    });
+
+    // Salva refreshToken no banco
+    await conexao('refresh_tokens').insert({
+      user_id: user.id,
+      token: refreshToken,
+      expires_at: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000), // 1 dia
+    });
+
+    // Configura cookies
+    const cookieOptions = {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'strict',
+    };
+
+    res.cookie('accessToken', accessToken, {
+      ...cookieOptions,
+      maxAge: 15 * 60 * 1000, // 15 minutos
+    });
+
+    res.cookie('refreshToken', refreshToken, {
+      ...cookieOptions,
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 dias
+    });
+
+    return res.json({ status: true, message: 'Login realizado com sucesso', user });
 
   } catch (error) {
-    // throw new Error('Erro ao realizar login: ' + error.message);
-    return res.status(500).json({ status: false, message: 'Erro ao realizar login DB', error: error.message });
+    return res.status(500).json({
+      status: false,
+      message: 'Erro ao realizar login DB',
+      error: error.message,
+    });
   }
 };
+
 
 //refresh token
 /**
@@ -528,43 +558,86 @@ export const userLogin = async (req, res) => {
  *         description: Refresh token inválido ou expirado
  */
 export const userRefresh = async (req, res) => {
-  // console.log('cookie')
   const { refreshToken } = req.cookies;
-  // console.log("refreshToken", refreshToken);
 
-  if (!refreshToken) return res.status(401).send("Refresh token ausente");
+  if (!refreshToken) {
+    return res.status(401).json({ status: false, message: "Refresh token ausente" });
+  }
 
-  jwt.verify(refreshToken, process.env.REFRESH_SECRET, async (err, user) => {
-    if (err) return res.status(403).json({ status: false, message: 'Refresh token inválido', error: err.message });
-    const { accessToken } = gerarTokens({ id: user.id, name: user.name, email: user.email, password: user.password });
-    res.cookie("accessToken", accessToken, {
-      httpOnly: true,   // impede acesso via document.cookie
-      secure: true,     // só envia em conexões HTTPS
-      sameSite: "strict", // evita envio em requisições cross-site
+  try {
+    // Verifica se o token está no banco e ainda válido
+    const tokenRow = await conexao('refresh_tokens')
+      .where({ token: refreshToken, is_valid: true })
+      .andWhere('expires_at', '>', new Date())
+      .first();
 
-      maxAge: 15 * 60 * 1000,
-    });
-
-    // console.log("user", user);
-    let userSerializer = await conexao('users').where({ id: user.id, email: user.email, password: user.password }).first();
-    if (!!userSerializer) {
-      userSerializer.images = await conexao('user_images').where({ user_id: user.id }).join('images', 'user_images.image_id', 'images.id').select('images.*');
-      if (userSerializer.images.length > 0) {
-        for (const key in userSerializer.images) {
-          userSerializer.images[key].delete = `${process.env.SERVER_URL}api/images?id=${userSerializer.images[key].id}&key=${userSerializer.images[key].key}`
-          userSerializer.images[key].url = `${process.env.SERVER_URL}api/static/images/${userSerializer.images[key].key}`;
-          if (userSerializer.images[key].id == userSerializer.image_id) {
-            userSerializer.url = userSerializer.images[key].url;
-          }
-        }
-      }
+    if (!tokenRow) {
+      return res.status(403).json({ status: false, message: 'Refresh token inválido ou expirado' });
     }
 
+    jwt.verify(refreshToken, process.env.REFRESH_SECRET, async (err, user) => {
+      if (err) {
+        return res.status(403).json({
+          status: false,
+          message: 'Refresh token inválido',
+          error: err.message,
+        });
+      }
 
-    return res.json({ status: true, message: "Token renovado", user: userSerializer });
-  });
+      // Gera novo accessToken
+      const { accessToken } = gerarTokens({
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        password: user.password,
+      });
 
-}
+      // Atualiza cookie
+      res.cookie("accessToken", accessToken, {
+        httpOnly: true,
+        secure: true,
+        sameSite: "strict",
+        maxAge: 15 * 60 * 1000, // 15 minutos
+      });
+
+      // Serializa usuário
+      let userSerializer = await conexao('users')
+        .where({ id: user.id, email: user.email, password: user.password })
+        .first();
+
+      if (userSerializer) {
+        const images = await conexao('user_images')
+          .where({ user_id: user.id })
+          .join('images', 'user_images.image_id', 'images.id')
+          .select('images.*');
+
+        userSerializer.images = images.map(img => {
+          const url = `${process.env.SERVER_URL}api/static/images/${img.key}`;
+          return {
+            ...img,
+            delete: `${process.env.SERVER_URL}api/images?id=${img.id}&key=${img.key}`,
+            url,
+          };
+        });
+
+        const imagemPrincipal = userSerializer.images.find(img => img.id === userSerializer.image_id);
+        if (imagemPrincipal) {
+          userSerializer.url = imagemPrincipal.url;
+        }
+      }
+
+      return res.json({ status: true, message: "Token renovado", user: userSerializer });
+    });
+
+  } catch (error) {
+    return res.status(500).json({
+      status: false,
+      message: "Erro ao renovar token",
+      error: error.message,
+    });
+  }
+};
+
 
 //logout
 /**
@@ -587,7 +660,12 @@ export const userRefresh = async (req, res) => {
  *                   example: Logout realizado
  */
 export const userLogout = async (req, res) => {
-  // console.log('logout')
+  const { refreshToken } = req.cookies;
+  if (refreshToken) {
+    await conexao('refresh_tokens')
+      .where({ token: refreshToken })
+      .update({ is_valid: false });
+  }
   res.clearCookie("accessToken");
   res.clearCookie("refreshToken");
   res.json({ status: true, message: "Logout realizado" });

@@ -39,6 +39,7 @@ import { api } from '../../services/api.jsx';
 import { QRCodeCanvas } from "qrcode.react";
 import { TrocarTheme } from "./../Theme/index.jsx";
 import { useLogout, useRefreshUser } from '../../services/UseQuery/UsersQuery.jsx';
+import { useWifiConfig } from '../../services/UseQuery/WifiQuery.jsx';
 
 
 const Search = styled('div')(({ theme }) => ({
@@ -83,7 +84,8 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 }));
 
 export default function PrimarySearchAppBar() {
-  const { user } = useRefreshUser();
+  // const { user,error,loadingUser,refetchUser } = useRefreshUser();
+  const { WifiConfig, loadingWifiConfig, erroWifi, refetchWifiConfig } = useWifiConfig();  
   const logout = useLogout();
   const { Dados, setDados } = React.useContext(DadosContext);
   const [searchValue, setSearchValue] = React.useState('')
@@ -91,19 +93,6 @@ export default function PrimarySearchAppBar() {
   const theme = useTheme();
   const navegation = useNavigate();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-
-
-  React.useEffect(() => {
-    api.get('/api/wifi').then(response => {
-      // console.log('wifiConfig', response.data.wifiConfigs[0]);
-      setDados(a => ({ ...a, wifiConfig: response.data.wifiConfigs[0] }));
-
-    }).catch(error => {
-      console.error(error);
-    })
-  }, []);
-
-  // console.log(user)
 
 
 
@@ -137,7 +126,7 @@ export default function PrimarySearchAppBar() {
 
           <List>
             {/* Login */}
-            {!user && location.pathname !== '/login' &&
+            {!Dados?.logado && location.pathname !== '/login' &&
               <ListItem onClick={() => { navegation('/login') }} disablePadding>
                 <ListItemButton>
                   <ListItemIcon>
@@ -152,7 +141,7 @@ export default function PrimarySearchAppBar() {
             }
 
             {/* sair/logout */}
-            {user &&
+            {Dados?.logado &&
               <ListItem onClick={() => {
                 api.post('/api/users/logout').then(response => {
                   if (response.status === 200) {
@@ -185,7 +174,7 @@ export default function PrimarySearchAppBar() {
             }
 
             {/* Minha conta */}
-            {user &&
+            {Dados?.logado &&
               <ListItem onClick={() => { navegation('/minha-conta') }} disablePadding>
                 <ListItemButton>
                   <ListItemIcon>
@@ -246,11 +235,11 @@ export default function PrimarySearchAppBar() {
               </ListItemButton>
             </ListItem>
 
-            {user && isMobile && <Divider />}
+            {Dados?.logado && isMobile && <Divider />}
 
 
             {/* Dashboard */}
-            {user && user.adm &&
+            {Dados?.logado &&
               <ListItem
                 sx={{ display: { md: "none" }, mb: 1, borderRadius: 2 }}
 
@@ -266,7 +255,7 @@ export default function PrimarySearchAppBar() {
             }
 
             {/* User */}
-            {user && user.adm &&
+            {Dados?.logado &&
               <ListItem
 
                 selected={Dados?.activeTabPerfil === 'users'}
@@ -281,7 +270,7 @@ export default function PrimarySearchAppBar() {
             }
 
             {/* Configurações */}
-            {user &&
+            {Dados?.logado &&
               <ListItem
                 sx={{ display: { md: "none" }, mb: 1, borderRadius: 2 }}
 
@@ -296,7 +285,7 @@ export default function PrimarySearchAppBar() {
             }
 
             {/* Produtos */}
-            {user && user.adm &&
+            {Dados?.logado &&
               <ListItem
                 sx={{ display: { md: "none" }, mb: 1, borderRadius: 2 }}
                 selected={Dados?.activeTabPerfil === 'products'}
@@ -310,7 +299,7 @@ export default function PrimarySearchAppBar() {
             }
 
             {/* addProduto */}
-            {user && user.adm &&
+            {Dados?.logado &&
               <ListItem
                 sx={{ display: { md: "none" }, mb: 1, borderRadius: 2 }}
 
@@ -343,7 +332,7 @@ export default function PrimarySearchAppBar() {
             }
 
             {/* segurança */}
-            {user &&
+            {Dados?.logado &&
               <ListItem
                 sx={{ display: { md: "none" }, mb: 1, borderRadius: 2 }}
 
@@ -357,7 +346,7 @@ export default function PrimarySearchAppBar() {
               </ListItem>
             }
 
-            <Divider></Divider>
+
 
 
 
@@ -470,18 +459,38 @@ export default function PrimarySearchAppBar() {
             <Typography variant="body1" gutterBottom>
               Escaneie o QR Code abaixo para se conectar à rede Wi-Fi do Cantinho da Lora.
             </Typography>
-            <QRCodeCanvas
-              value={`WIFI:T:${Dados?.wifiConfig?.encryption};S:${Dados?.wifiConfig?.ssid};P:${Dados?.wifiConfig?.password};;`}
-              size={200}
-              bgColor={"#ffffff"}
-              fgColor={"#000000"}
-              level={"H"}
-              includeMargin={true}
-            />
-            <Typography variant="body2" color="textSecondary" sx={{ mt: 2 }}>
-              Rede: {Dados?.wifiConfig?.ssid} <br />
-              Senha: {Dados?.wifiConfig?.password}
+            {loadingWifiConfig ? (
+              <Typography variant="body1" gutterBottom>
+                Carregando configuração do Wi-Fi...
+              </Typography>
+            ) : erroWifi ? (
+              <Typography variant="body1" color="error" gutterBottom>
+                Erro ao carregar configuração do Wi-Fi. Por favor, tente novamente.
+              </Typography>
+            ) : (
+              <QRCodeCanvas
+                value={`WIFI:T:${WifiConfig[0]?.encryption};S:${WifiConfig[0]?.ssid};P:${WifiConfig[0]?.password};;`}
+                size={200}
+                bgColor={"#ffffff"}
+                fgColor={"#000000"}
+                level={"H"}
+                includeMargin={true}
+              />
+            )
+            }
+           {loadingWifiConfig ? <Typography variant="body1" gutterBottom>
+                Carregando configuração do Wi-Fi...
+              </Typography>
+            :erroWifi ? <Typography variant="body1" color="error" gutterBottom>  
+              Erro ao carregar configuração do Wi-Fi. Por favor, tente novamente.
             </Typography>
+            :  <Typography variant="body2" color="textSecondary" sx={{ mt: 2 }}>
+              Rede: {WifiConfig[0]?.ssid} <br />
+              Senha: {WifiConfig[0]?.password}
+            </Typography>}
+
+
+
             {/* <a href={`intent://WIFI::${Dados?.wifiConfig?.encryption};S:${Dados?.wifiConfig?.ssid};P:${Dados?.wifiConfig?.password};;`}>
             Conectar ao Wi-Fi
           </a> */}

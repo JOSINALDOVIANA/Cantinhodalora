@@ -14,11 +14,13 @@ export default function LoginPage() {
   const navigate = useNavigate();
 
 
+//  console.log("user", user)
   React.useEffect(() => {
-    if (!loadingUser && user) {
+
+    if (Dados?.logado) {
       navigate("/minha-conta");
     }
-  }, [loadingUser, user]);
+  }, [Dados?.logado, navigate]);
 
 
   return (

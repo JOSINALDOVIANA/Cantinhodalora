@@ -4,7 +4,7 @@ import { api } from "../api.jsx";
 // Função para buscar produtos
 const fetchProducts = async () => {
     const { data } = await api.get("/api/products");
-    return data.produtos;
+    return data.dados;
 };
 
 // Função para atualizar produto

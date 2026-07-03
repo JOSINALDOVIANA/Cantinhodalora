@@ -79,6 +79,7 @@ import { useLoadProducts } from '../../services/UseQuery/ProductsQuery.jsx';
 
 import CategoriesManager from '../../components/Grud/grudCategories.jsx';
 import ProductsManager from '../../components/Grud/grudProducts.jsx';
+import WifiManager from '../../components/Grud/grudWifi.jsx';
 
 
 
@@ -217,7 +218,7 @@ export default function AdminPanel() {
                             <ListItemText primary="Categorias" />
                         </ListItem> : null}
 
-                    {user?.adm ?
+                    {/* {user?.adm ?
                         <ListItem
 
                             selected={Dados?.activeTabPerfil === 'addProduct'}
@@ -231,22 +232,22 @@ export default function AdminPanel() {
                             </ListItemIcon>
                             <ListItemText primary="AddProduto" />
                         </ListItem> : null
-                    }
+                    } */}
 
-                    <ListItem
+                    {/* <ListItem
 
                         selected={Dados?.activeTabPerfil === 'security'}
                         onClick={() => setDados(a => ({ ...a, activeTabPerfil: 'security' }))}
                     >
                         <ListItemIcon><Security /></ListItemIcon>
                         <ListItemText primary="Segurança" />
-                    </ListItem>
+                    </ListItem> */}
 
                     {/* wificonfigs */}
                     <ListItem
 
                         selected={Dados?.activeTabPerfil === 'security'}
-                        onClick={() => setDados(a => ({ ...a, activeTabPerfil: 'WiFiConfigs' }))}
+                        onClick={() => setDados(a => ({ ...a, activeTabPerfil: 'WifiConfigs' }))}
                     >
                         <ListItemIcon>
                             <Wifi />
@@ -304,38 +305,8 @@ export default function AdminPanel() {
 
                 )} */}
 
-                {Dados?.activeTabPerfil === 'WiFiConfigs' && (
-                    <Paper sx={{ p: 3 }}>
-                        <FormControl onSubmit={(e) => {
-                            e.preventDefault();
-                            updateWifiConfig(Dados.wifiConfig);
-
-                        }}>
-                            {/* <TextField label="SSID" fullWidth margin="normal" value={Dados?.wifiConfig?.ssid || ''} onChange={(e) => setDados(a => ({ ...a, wifiConfig: { ...a.wifiConfig, ssid: e.target.value } }))} />
-                            <TextField label="Senha" fullWidth margin="normal" type="text" value={Dados?.wifiConfig?.password || ''} onChange={(e) => setDados(a => ({ ...a, wifiConfig: { ...a.wifiConfig, password: e.target.value } }))} />
-                            <TextField label="Tipo de Criptografia" fullWidth margin="normal" value={Dados?.wifiConfig?.encryption || 'WPA'} onChange={(e) => setDados(a => ({ ...a, wifiConfig: { ...a.wifiConfig, encryption: e.target.value } }))} /> */}
-                            <InputLabel id="demo-simple-select-label">Encryption Type</InputLabel>
-                            <Select
-                                labelId="demo-simple-select-label"
-                                id="demo-simple-select"
-                                value={Dados?.wifiConfig?.encryption || 'WPA'}
-                                label="Encryption Type"
-                                onChange={(e) => setDados(a => ({ ...a, wifiConfig: { ...a.wifiConfig, encryption: e.target.value } }))}
-                            >
-                                <MenuItem value="WPA">WPA</MenuItem>
-                                <MenuItem value="WPA2">WPA2</MenuItem>
-                                <MenuItem value="WPA3">WPA3</MenuItem>
-                            </Select>
-                            <TextField margin="normal" fullWidth label="SSID" value={Dados?.wifiConfig?.ssid || ''} onChange={(e) => setDados(a => ({ ...a, wifiConfig: { ...a.wifiConfig, ssid: e.target.value } }))} />
-                            <TextField margin="normal" fullWidth label="Senha" value={Dados?.wifiConfig?.password || ''} onChange={(e) => setDados(a => ({ ...a, wifiConfig: { ...a.wifiConfig, password: e.target.value } }))} />
-
-                            <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 2 }}>
-                                <Button variant="outlined" color="error" startIcon={<Cancel />} onClick={() => setDados(a => ({ ...a, wifiConfig: null }))}>Cancelar</Button>
-                                <Button variant="contained" type='submit' color="success" startIcon={<Save />}
-                                >Salvar</Button>
-                            </Box>
-                        </FormControl>
-                    </Paper>
+                {Dados?.activeTabPerfil === 'WifiConfigs' && (
+                    <WifiManager />
                 )}
 
 

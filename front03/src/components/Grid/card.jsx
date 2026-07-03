@@ -20,7 +20,7 @@ export default function ProductCard({ produto, ...props }) {
   return (
     <>
       <React.Suspense fallback={<Box sx={{ height: 100 }}>Carregando...</Box>}>
-        <Card  {...props} elevation={3}
+        <Card  {...props} elevation={8}
           sx={{
             display: "flex",
             flexDirection: "column",
