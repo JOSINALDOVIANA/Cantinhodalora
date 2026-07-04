@@ -10,12 +10,13 @@ const fetchImagesProducts = async () => {
 
 // Hook para carregar imagens de produtos (load)
 export function useLoadImagesProducts() {
-    const refreshImages = useRefreshImages();
+    
 
     const {
         data: imagesProducts,
         isLoading: loadingImagesProducts,
         error,
+        refetch
     } = useQuery({
         queryKey: ["images"],
         queryFn: fetchImagesProducts,
@@ -25,7 +26,7 @@ export function useLoadImagesProducts() {
     });
 
 
-    return { imagesProducts, loadingImagesProducts, error, refreshImages };
+    return { imagesProducts, loadingImagesProducts, error, refreshImages: refetch };
 }
 // Hook para refresh    
 export function useRefreshImages() {
@@ -33,4 +34,18 @@ export function useRefreshImages() {
     return () => {
         queryClient.invalidateQueries({ queryKey: ["images"] });
     };
+}
+
+export function useDeleteImage() {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationfn: async (image) => {
+            await api.delete(`/api/images?id=${image.id}&key=${image.Key}`);
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["images"] });
+        }
+    }
+        
+    );
 }

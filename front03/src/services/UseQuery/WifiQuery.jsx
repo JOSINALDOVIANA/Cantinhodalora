@@ -55,10 +55,11 @@ export function useDeleteWifi() {
     return useMutation({
         mutationFn: async (wifiConfig) => {
             const { data } = await api.delete(`/api/wifi/${wifiConfig.id}`);
-            return data.status;
+            return data;
         },
         onSuccess: () => {
             queryClient.invalidateQueries(['wifiConfig']);
+            return true;
         },
     });
         

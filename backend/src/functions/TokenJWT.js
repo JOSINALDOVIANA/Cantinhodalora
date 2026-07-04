@@ -1,7 +1,7 @@
 import jwt from "jsonwebtoken";
 // Função para gerar tokens
 export function gerarTokens(user) {
-    const accessToken = jwt.sign(user, process.env.ACCESS_SECRET, { expiresIn: "15m" });
+    const accessToken = jwt.sign(user, process.env.ACCESS_SECRET, { expiresIn: "60m" });
     const refreshToken = jwt.sign(user, process.env.REFRESH_SECRET, { expiresIn: "1d" });
     return { accessToken, refreshToken };
 }

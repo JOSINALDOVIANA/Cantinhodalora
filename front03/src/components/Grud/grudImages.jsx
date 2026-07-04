@@ -13,6 +13,8 @@ import {
     Alert,
     Tooltip,
     Zoom,
+    ListItemAvatar,
+    Avatar,
 } from "@mui/material";
 import {
     Add as AddIcon,
@@ -21,38 +23,29 @@ import {
     Save as SaveIcon,
     Cancel as CancelIcon,
     Refresh as RefreshIcon,
+    Upload,
 } from "@mui/icons-material";
 import Swal from "sweetalert2";
-import { useAddWifi, useDeleteWifi, useUpdateWifiConfig, useWifiConfig } from "../../services/UseQuery/WifiQuery";
+import { useDeleteImage, useLoadImagesProducts } from "../../services/UseQuery/ImagesQuery";
+import UploadImageProd from "../../functions/UploadImageProd";
+
+export default function ImagesManager() {
+    const { imagesProducts, loadingImagesProducts, refreshImages, error } = useLoadImagesProducts();
+    const deleteMutation = useDeleteImage();
 
 
-export default function WifiManager() {
-    const { WifiConfig, loadingWifiConfig, erroWifi, refetchWifiConfig } = useWifiConfig();
-    const addMutation = useAddWifi();
-    const updateMutation = useUpdateWifiConfig();
-    const deleteMutation = useDeleteWifi();
 
 
-    const [newWifi, setNewWifi] = useState(null);
-    const [editWifi, setEditWifi] = useState(null);
 
-    const handleAdd = (e) => {
-        e.preventDefault();
-        if (!newWifi?.ssid.trim()) return;
-        addMutation.mutate({ ...newWifi });
-        setNewWifi(null);
-    };
 
-    const handleSaveEdit = () => {
-        if (!editWifi?.ssid.trim()) return;
-        updateMutation.mutate(editWifi);
-        setEditWifi(null);
-    };
 
-    const handleDelete = (wifi) => {
+
+
+
+    const handleDelete = (img) => {
         Swal.fire({
             title: "Tem certeza?",
-            text: `Você deseja excluir a a rede "${WifiConfig?.ssid}"?`,
+            text: `Você deseja excluir a categoria "${cat.description}"?`,
             icon: "warning",
             showCancelButton: true,
             confirmButtonColor: "#d33",
@@ -61,15 +54,14 @@ export default function WifiManager() {
             cancelButtonText: "Cancelar",
         }).then((result) => {
             if (result.isConfirmed) {
-                 deleteMutation.mutate({ ...wifi }, {
-                    onSuccess: () => {
-                        Swal.fire("Deletado!", "A rede foi deletada.", "success");
-                    },
-                    onError: () => {
-                        Swal.fire("Erro!", "Ocorreu um erro ao deletar a rede.", "error");
-                    },
+                deleteMutation.mutate(img);
+                Swal.fire({
+                    title: "Excluída!",
+                    text: "A categoria foi removida com sucesso.",
+                    icon: "success",
+                    timer: 1500,
+                    showConfirmButton: false,
                 });
-                
             }
         });
     };
@@ -78,9 +70,9 @@ export default function WifiManager() {
         <Paper
             elevation={2}
             sx={{
-                p: 2,
+                p: 4,
                 borderRadius: 4,
-                maxWidth: 700,
+                maxWidth: 600,
                 mx: "auto",
                 mt: 2,
                 boxShadow: "0px 10px 30px rgba(0, 0, 0, 0.05)",
@@ -106,11 +98,11 @@ export default function WifiManager() {
                         letterSpacing: "-0.5px",
                     }}
                 >
-                    Gerenciar Redes Wi-Fi
+                    Gerenciar Images/Produtos
                 </Typography>
                 <Tooltip title="Atualizar Lista" arrow TransitionComponent={Zoom}>
                     <IconButton
-                        onClick={refetchWifiConfig}
+                        onClick={refreshImages}
                         color="primary"
                         sx={{
                             border: "1px solid",
@@ -128,47 +120,21 @@ export default function WifiManager() {
                 </Tooltip>
             </Box>
 
-            {/* Adicionar wifi form */}
+            {/* Adicionar Image */}
             <Box
                 component="form"
-                onSubmit={handleAdd}
+                onSubmit={e => {
+                    e.preventDefault();
+                    refreshImages();
+                }}
                 sx={{
                     display: "flex",
                     gap: 2,
                     mb: 4,
                 }}
             >
-                <TextField
-                    fullWidth
-                    size="small"
-                    label="Novo Wi-Fi"
-                    variant="outlined"
-                    value={newWifi?.ssid||''}
-                    onChange={(e) => setNewWifi(a => ({ ...a, ssid: e.target.value }))}
-                    placeholder="Ex: CantinhodaLora..."
-                    sx={{
-                        width: 'auto',
-                        "& .MuiOutlinedInput-root": {
-                            borderRadius: 2,
-                        },
-                    }}
-                />
-                <TextField
-                    fullWidth
-                    size="small"
-                    label="Senha"
-                    variant="outlined"
-                    value={newWifi?.password}
-                    onChange={(e) => setNewWifi(a => ({ ...a, password: e.target.value }))}
-                    placeholder=""
-                    sx={{
-                        width: 'auto',
-                        "& .MuiOutlinedInput-root": {
-                            borderRadius: 2,
-                        },
-                    }}
-                />
-                <Button
+                <UploadImageProd />
+                {/* <Button
                     type="submit"
                     variant="contained"
                     color="primary"
@@ -176,7 +142,6 @@ export default function WifiManager() {
                     sx={{
                         borderRadius: 2,
                         px: 3.5,
-                        overflow: "hidden",
                         textTransform: "none",
                         fontWeight: 600,
                         boxShadow: "none",
@@ -186,11 +151,11 @@ export default function WifiManager() {
                     }}
                 >
                     Adicionar
-                </Button>
+                </Button> */}
             </Box>
 
             {/* Conteúdo principal / Lista */}
-            {loadingWifiConfig ? (
+            {loadingImagesProducts ? (
                 <Box
                     sx={{
                         display: "flex",
@@ -203,12 +168,12 @@ export default function WifiManager() {
                 >
                     <CircularProgress size={40} thickness={4} />
                     <Typography variant="body2" color="text.secondary">
-                        Carregando categorias...
+                        Carregando Images...
                     </Typography>
                 </Box>
-            ) : erroWifi ? (
+            ) : error ? (
                 <Alert severity="error" sx={{ borderRadius: 2 }}>
-                    Erro ao carregar as redes. Por favor, tente novamente mais tarde.
+                    Erro ao carregar Images. Por favor, tente novamente mais tarde.
                 </Alert>
             ) : (
                 <List
@@ -219,22 +184,23 @@ export default function WifiManager() {
                         p: 0,
                     }}
                 >
-                    {WifiConfig?.length === 0 ? (
+                    {imagesProducts?.length === 0 ? (
                         <Typography
                             variant="body1"
                             color="text.secondary"
                             align="center"
                             sx={{ py: 6, fontStyle: "italic" }}
                         >
-                            Nenhuma rede encontrada. Crie uma acima!
+                            Nenhuma Image encontrada. Crie uma acima!
                         </Typography>
                     ) : (
-                        WifiConfig?.map((w) => (
+                        imagesProducts?.map((img) => (
                             <ListItem
-                                key={w.id}
+                                key={img?.id}
                                 sx={{
                                     border: "1px solid",
                                     borderColor: "divider",
+                                    justifyContent: "space-between",
                                     borderRadius: 3,
                                     bgcolor: "background.paper",
                                     transition: "all 0.25s ease-in-out",
@@ -246,7 +212,7 @@ export default function WifiManager() {
                                     p: 2,
                                 }}
                             >
-                                {editWifi?.id === w.id ? (
+                                {false ? (
                                     <Box
                                         sx={{
                                             display: "flex",
@@ -258,33 +224,15 @@ export default function WifiManager() {
                                         <TextField
                                             fullWidth
                                             size="small"
-                                            value={editWifi?.ssid}
+                                            value={editCategory.description}
                                             onChange={(e) =>
-                                                setEditWifi({
-                                                    ...editWifi,
-                                                    ssid: e.target.value,
+                                                setEditCategory({
+                                                    ...editCategory,
+                                                    description: e.target.value,
                                                 })
                                             }
                                             autoFocus
-                                            placeholder="Nome da Rede Wi-Fi"
-                                            sx={{
-                                                "& .MuiOutlinedInput-root": {
-                                                    borderRadius: 2,
-                                                },
-                                            }}
-                                        />
-                                        <TextField
-                                            fullWidth
-                                            size="small"
-                                            value={editWifi?.password}
-                                            onChange={(e) =>
-                                                setEditWifi({
-                                                    ...editWifi,
-                                                    password: e.target.value,
-                                                })
-                                            }
-                                            autoFocus
-                                            placeholder="Nome da Rede Wi-Fi"
+                                            placeholder="Nome da categoria"
                                             sx={{
                                                 "& .MuiOutlinedInput-root": {
                                                     borderRadius: 2,
@@ -312,7 +260,7 @@ export default function WifiManager() {
                                             </Tooltip>
                                             <Tooltip title="Cancelar" arrow>
                                                 <IconButton
-                                                    onClick={() => setEditWifi(null)}
+                                                    onClick={() => setEditCategory(null)}
                                                     color="error"
                                                     size="small"
                                                     sx={{
@@ -332,18 +280,13 @@ export default function WifiManager() {
                                     </Box>
                                 ) : (
                                     <>
-                                        <ListItemText
-                                            primary={w.ssid}
-                                            primaryTypographyProps={{
-                                                fontWeight: 600,
-                                                color: "text.primary",
-                                                fontSize: "1rem",
-                                            }}
-                                        />
+                                        <ListItemAvatar>
+                                            <Avatar alt={img?.name} src={img?.urlfull||img?.url} />
+                                        </ListItemAvatar>
                                         <Box sx={{ display: "flex", gap: 1 }}>
-                                            <Tooltip title="Editar" arrow>
+                                            {/* <Tooltip title="Editar" arrow>
                                                 <IconButton
-                                                    onClick={() => setEditWifi(w)}
+                                                    onClick={() => setEditCategory(cat)}
                                                     color="primary"
                                                     size="small"
                                                     sx={{
@@ -358,10 +301,10 @@ export default function WifiManager() {
                                                 >
                                                     <EditIcon fontSize="small" />
                                                 </IconButton>
-                                            </Tooltip>
+                                            </Tooltip> */}
                                             <Tooltip title="Excluir" arrow>
                                                 <IconButton
-                                                    onClick={() => handleDelete(w)}
+                                                    onClick={() => handleDelete(img)}
                                                     color="error"
                                                     size="small"
                                                     sx={{

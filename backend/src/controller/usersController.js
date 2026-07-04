@@ -504,7 +504,7 @@ export const userLogin = async (req, res) => {
     const cookieOptions = {
       httpOnly: true,
       secure: true,
-      sameSite: 'strict',
+      sameSite: 'lax',
     };
 
     res.cookie('accessToken', accessToken, {

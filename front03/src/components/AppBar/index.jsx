@@ -31,7 +31,7 @@ import FacebookIcon from '@mui/icons-material/Facebook';
 import LoginIcon from '@mui/icons-material/Login';
 import ForumIcon from '@mui/icons-material/Forum';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
-import { Call, Dashboard, FolderSpecial, Home, Logout, People, Security, Settings, Wifi } from '@mui/icons-material';
+import { Call, Category, Dashboard, FolderSpecial, Home, ImageAspectRatio, Logout, People, Security, Settings, Wifi, Wifi2Bar } from '@mui/icons-material';
 
 
 import { DadosContext } from '../../services/Contexts/DadosContext.jsx';
@@ -235,11 +235,11 @@ export default function PrimarySearchAppBar() {
               </ListItemButton>
             </ListItem>
 
-            {Dados?.logado && isMobile && <Divider />}
+            {Dados?.logado && window.location.pathname === '/minha-conta' && isMobile && <Divider />}
 
 
             {/* Dashboard */}
-            {Dados?.logado &&
+            {Dados?.logado && window.location.pathname === '/minha-conta' &&
               <ListItem
                 sx={{ display: { md: "none" }, mb: 1, borderRadius: 2 }}
 
@@ -255,7 +255,7 @@ export default function PrimarySearchAppBar() {
             }
 
             {/* User */}
-            {Dados?.logado &&
+            {Dados?.logado && window.location.pathname === '/minha-conta' &&
               <ListItem
 
                 selected={Dados?.activeTabPerfil === 'users'}
@@ -269,23 +269,35 @@ export default function PrimarySearchAppBar() {
               </ListItem>
             }
 
-            {/* Configurações */}
-            {Dados?.logado &&
+            {/* Categorias */}
+            {Dados?.logado &&  window.location.pathname === '/minha-conta' &&
               <ListItem
+                selected={Dados?.activeTabPerfil === 'Categories'}
+                onClick={() => setDados({ ...Dados, activeTabPerfil: 'Categories' })}
                 sx={{ display: { md: "none" }, mb: 1, borderRadius: 2 }}
-
-                selected={Dados?.activeTabPerfil === 'settings'}
-                onClick={() => setDados({ ...Dados, activeTabPerfil: 'settings' })}
               >
                 <ListItemIcon>
-                  <Settings sx={{ color: theme.palette.primary.main }} />
+                  <Category sx={{ color: theme.palette.primary.main }} />
                 </ListItemIcon>
-                <ListItemText primary="Meus Dados" />
+                <ListItemText primary="Categorias" />
+              </ListItem>
+            }
+            {/* wifi */}
+            {Dados?.logado && window.location.pathname === '/minha-conta' &&
+              <ListItem
+                selected={Dados?.activeTabPerfil === 'WifiConfigs'}
+                onClick={() => setDados({ ...Dados, activeTabPerfil: 'WifiConfigs' })}
+                sx={{ display: { md: "none" }, mb: 1, borderRadius: 2 }}
+              >
+                <ListItemIcon>
+                  <Wifi2Bar sx={{ color: theme.palette.primary.main }} />
+                </ListItemIcon>
+                <ListItemText primary="Wi-Fi" />
               </ListItem>
             }
 
             {/* Produtos */}
-            {Dados?.logado &&
+            {Dados?.logado &&window.location.pathname === '/minha-conta' &&
               <ListItem
                 sx={{ display: { md: "none" }, mb: 1, borderRadius: 2 }}
                 selected={Dados?.activeTabPerfil === 'products'}
@@ -298,51 +310,20 @@ export default function PrimarySearchAppBar() {
               </ListItem>
             }
 
-            {/* addProduto */}
-            {Dados?.logado &&
-              <ListItem
-                sx={{ display: { md: "none" }, mb: 1, borderRadius: 2 }}
+          
 
-                selected={Dados?.activeTabPerfil === 'addProduct'}
-                onClick={() => {
-                  setDados({
-                    ...Dados,
-                    activeTabPerfil: 'addProduct',
-                    editProduct: {
-                      id: null,
-                      description: "",
-                      size: 0,
-                      price: 0,
-                      url: "",
-                      images: [],
-                      image_id: "",
-                      name: "",
-                      categorias: []
-                    },
-                    upProduct: true,
-                  });
-
-                }}
-              >
-                <ListItemIcon>
-                  <AddchartIcon sx={{ color: theme.palette.primary.main }} />
-                </ListItemIcon>
-                <ListItemText primary="AddProduto" />
-              </ListItem>
-            }
-
-            {/* segurança */}
-            {Dados?.logado &&
+            {/* Images */}
+            {Dados?.logado && window.location.pathname === '/minha-conta' &&
               <ListItem
                 sx={{ display: { md: "none" }, mb: 1, borderRadius: 2 }}
 
                 selected={Dados?.activeTabPerfil === 'security'}
-                onClick={() => setDados({ ...Dados, activeTabPerfil: 'security' })}
+                onClick={() => setDados({ ...Dados, activeTabPerfil: 'images' })}
               >
                 <ListItemIcon>
-                  <Security sx={{ color: theme.palette.primary.main }} />
+                  <ImageAspectRatio sx={{ color: theme.palette.primary.main }} />
                 </ListItemIcon>
-                <ListItemText primary="Segurança" />
+                <ListItemText primary="Imagens" />
               </ListItem>
             }
 
