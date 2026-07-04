@@ -73,7 +73,30 @@ export default function ProductsManager() {
     const handleAdd = (e) => {
         e.preventDefault();
         if (!newProduct.name.trim()) return;
-        addMutation.mutate(newProduct);
+        addMutation.mutate(newProduct,{
+            onSuccess: () => {
+                Swal.fire({
+                    title: "Sucesso!",
+                    text: "Produto adicionado com sucesso.",
+                    icon: "success",
+                    timer: 1500,
+                    showConfirmButton: true,
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        refreshProducts();
+                    }
+                });
+            },
+            onError: () => {
+                Swal.fire({
+                    title: "Erro!",
+                    text: "Ocorreu um erro ao adicionar o produto.",
+                    icon: "error",
+                    timer: 1500,
+                    showConfirmButton: false,
+                });
+            }
+        });
         setNewProduct({
             name: "",
             description: "",
@@ -90,7 +113,31 @@ export default function ProductsManager() {
     const handleSaveEdit = () => {
         // console.log(editProduct);
         if (!editProduct?.name?.trim()) return;
-        updateMutation.mutate(editProduct);
+        updateMutation.mutate(editProduct,{
+            onSuccess: () => {
+                Swal.fire({
+                    title: "Sucesso!",
+                    text: "Produto atualizado com sucesso.",
+                    icon: "success",
+                    timer: 1500,
+                    showConfirmButton: true,
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        refreshProducts();
+                    }
+                }
+                );
+            },
+            onError: () => {
+                Swal.fire({
+                    title: "Erro!",
+                    text: "Ocorreu um erro ao atualizar o produto.",
+                    icon: "error",
+                    timer: 1500,
+                    showConfirmButton: false,
+                });
+            }
+        });
         setEditProduct(null);
     };
 
@@ -848,18 +895,18 @@ export default function ProductsManager() {
                                                             key={index}
                                                             control={
                                                                 <Checkbox
-                                                                    checked={editProduct?.categories?.includes(cat.id)}
+                                                                    checked={editProduct?.categories.map(e=>e.id)?.includes(cat.id)}
                                                                     onChange={(e) => {
                                                                         if (e.target.checked) {
                                                                             setEditProduct({
                                                                                 ...editProduct,
-                                                                                categories: [...editProduct.categories, cat.id],
+                                                                                categories: [...editProduct.categories, cat],
                                                                             });
                                                                         } else {
                                                                             setEditProduct({
                                                                                 ...editProduct,
                                                                                 categories: editProduct.categories.filter(
-                                                                                    (id) => id !== cat.id
+                                                                                    (c) => c.id !== cat.id
                                                                                 ),
                                                                             });
                                                                         }

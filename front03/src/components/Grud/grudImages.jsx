@@ -32,16 +32,6 @@ import UploadImageProd from "../../functions/UploadImageProd";
 export default function ImagesManager() {
     const { imagesProducts, loadingImagesProducts, refreshImages, error } = useLoadImagesProducts();
     const deleteMutation = useDeleteImage();
-
-
-
-
-
-
-
-
-
-
     const handleDelete = (img) => {
         Swal.fire({
             title: "Tem certeza?",

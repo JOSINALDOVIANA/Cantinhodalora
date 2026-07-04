@@ -16,7 +16,7 @@ import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
 import useMediaQuery from "@mui/material/useMediaQuery";
-import { CssBaseline, Dialog, InputAdornment, Paper } from '@mui/material';
+import { CssBaseline, Dialog, InputAdornment, Paper, Tooltip, Zoom } from '@mui/material';
 
 import { deepOrange, green, blue, red, purple } from '@mui/material/colors';
 
@@ -31,7 +31,7 @@ import FacebookIcon from '@mui/icons-material/Facebook';
 import LoginIcon from '@mui/icons-material/Login';
 import ForumIcon from '@mui/icons-material/Forum';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
-import { Call, Category, Dashboard, FolderSpecial, Home, ImageAspectRatio, Logout, People, Security, Settings, Wifi, Wifi2Bar } from '@mui/icons-material';
+import { Call, Category, Dashboard, FolderSpecial, Home, ImageAspectRatio, Logout, People, Refresh, Security, Settings, Wifi, Wifi2Bar } from '@mui/icons-material';
 
 
 import { DadosContext } from '../../services/Contexts/DadosContext.jsx';
@@ -40,6 +40,7 @@ import { QRCodeCanvas } from "qrcode.react";
 import { TrocarTheme } from "./../Theme/index.jsx";
 import { useLogout, useRefreshUser } from '../../services/UseQuery/UsersQuery.jsx';
 import { useWifiConfig } from '../../services/UseQuery/WifiQuery.jsx';
+import { useRefreshProducts } from '../../services/UseQuery/ProductsQuery.jsx';
 
 
 const Search = styled('div')(({ theme }) => ({
@@ -84,8 +85,8 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 }));
 
 export default function PrimarySearchAppBar() {
-  // const { user,error,loadingUser,refetchUser } = useRefreshUser();
-  const { WifiConfig, loadingWifiConfig, erroWifi, refetchWifiConfig } = useWifiConfig();  
+  const refreshProducts  = useRefreshProducts();
+  const { WifiConfig, loadingWifiConfig, erroWifi, refetchWifiConfig } = useWifiConfig();
   const logout = useLogout();
   const { Dados, setDados } = React.useContext(DadosContext);
   const [searchValue, setSearchValue] = React.useState('')
@@ -270,7 +271,7 @@ export default function PrimarySearchAppBar() {
             }
 
             {/* Categorias */}
-            {Dados?.logado &&  window.location.pathname === '/minha-conta' &&
+            {Dados?.logado && window.location.pathname === '/minha-conta' &&
               <ListItem
                 selected={Dados?.activeTabPerfil === 'Categories'}
                 onClick={() => setDados({ ...Dados, activeTabPerfil: 'Categories' })}
@@ -297,7 +298,7 @@ export default function PrimarySearchAppBar() {
             }
 
             {/* Produtos */}
-            {Dados?.logado &&window.location.pathname === '/minha-conta' &&
+            {Dados?.logado && window.location.pathname === '/minha-conta' &&
               <ListItem
                 sx={{ display: { md: "none" }, mb: 1, borderRadius: 2 }}
                 selected={Dados?.activeTabPerfil === 'products'}
@@ -310,7 +311,7 @@ export default function PrimarySearchAppBar() {
               </ListItem>
             }
 
-          
+
 
             {/* Images */}
             {Dados?.logado && window.location.pathname === '/minha-conta' &&
@@ -378,7 +379,7 @@ export default function PrimarySearchAppBar() {
 
 
             <TrocarTheme />
-            <Search sx={{ borderRadius: 999, display: { xs: 'none', md: 'flex' }, mx: 'auto' }}>
+            <Search sx={{ borderRadius: 999, display: { xs: 'none', md: 'flex' }, mx: 'auto',marginRight:2 }}>
               <SearchIconWrapper>
                 <SearchIcon />
               </SearchIconWrapper>
@@ -411,6 +412,26 @@ export default function PrimarySearchAppBar() {
                 }
               />
             </Search>
+
+            <Tooltip  title="Atualizar Lista" arrow TransitionComponent={Zoom}>
+              <IconButton
+              size='small'
+                onClick={refreshProducts}
+                // color="primary"
+                sx={{
+                  border: "1px solid",
+                  borderColor: "primary.light",
+                  transition: "all 0.2s",
+                  "&:hover": {
+                    backgroundColor: "primary.main",
+                    color: "primary.contrastText",
+                    transform: "rotate(45deg)",
+                  },
+                }}
+              >
+                <Refresh />
+              </IconButton>
+            </Tooltip>
             <Box sx={{ flexGrow: 1 }} />
 
             {/* tela grande */}
@@ -459,16 +480,16 @@ export default function PrimarySearchAppBar() {
               />
             )
             }
-           {loadingWifiConfig ? <Typography variant="body1" gutterBottom>
-                Carregando configuração do Wi-Fi...
-              </Typography>
-            :erroWifi ? <Typography variant="body1" color="error" gutterBottom>  
-              Erro ao carregar configuração do Wi-Fi. Por favor, tente novamente.
+            {loadingWifiConfig ? <Typography variant="body1" gutterBottom>
+              Carregando configuração do Wi-Fi...
             </Typography>
-            :  <Typography variant="body2" color="textSecondary" sx={{ mt: 2 }}>
-              Rede: {WifiConfig[0]?.ssid} <br />
-              Senha: {WifiConfig[0]?.password}
-            </Typography>}
+              : erroWifi ? <Typography variant="body1" color="error" gutterBottom>
+                Erro ao carregar configuração do Wi-Fi. Por favor, tente novamente.
+              </Typography>
+                : <Typography variant="body2" color="textSecondary" sx={{ mt: 2 }}>
+                  Rede: {WifiConfig[0]?.ssid} <br />
+                  Senha: {WifiConfig[0]?.password}
+                </Typography>}
 
 
 

@@ -460,7 +460,7 @@ export const ImageStatic = async (req, res) => {
         // caso contrário, processa e salva no cache
         const transform = sharp(filePath)
             .resize(width, height)
-            .webp({ quality: 80, lossless: false });
+            .webp({ quality: 100, lossless: false });
 
         fs.mkdirSync(path.dirname(cachedPath), { recursive: true });
 

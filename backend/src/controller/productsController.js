@@ -417,8 +417,8 @@ export const updateProduct = async (req, res) => {
     if (!!categories) {
       // console.log(categories)
       await db('product_categories').where({ product_id: id }).del();
-      let catup = categories.map(cat => ({ product_id: id, category_id: cat }));
-      console.log(catup)
+      let catup = categories.map(cat => ({ product_id: id, category_id: cat.id }));
+      // console.log(catup)
       await db('product_categories').insert(catup);
 
     }
