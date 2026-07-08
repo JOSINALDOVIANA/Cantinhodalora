@@ -431,7 +431,7 @@ export default function UserManagement() {
                     Selecionar
                   </Button>
 
-                  <UploadImageProd props={{ upUrl: "/api/images/uploadUser" ,refetchImages: () => fetchImagesUsers() }} />
+                  <UploadImageUser props={{ upUrl: "/api/images/uploadUser" ,refetchImages: () => refetchImagesUsers() }} />
                   
 
                 </Box>
