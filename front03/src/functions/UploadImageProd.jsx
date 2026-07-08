@@ -1,7 +1,7 @@
 import { IconButton } from '@mui/material';
 import { uniqueId } from 'lodash';
 import React from 'react';
-import api from '../services/api.jsx';
+import {api} from '../services/api.jsx';
 import Swal from 'sweetalert2';
 import { PhotoCamera } from '@mui/icons-material';
 
