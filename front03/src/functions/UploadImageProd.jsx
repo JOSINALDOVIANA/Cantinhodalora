@@ -68,7 +68,7 @@ export default function UploadImageUser({ props }) {
       });
 
       // Atualiza imagens
-      props.refreshImages();
+      props.refetchImages();
 
     } catch (error) {
       console.error(error);
