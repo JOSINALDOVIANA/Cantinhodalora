@@ -90,7 +90,9 @@ export default function ImagesManager() {
                 >
                     Gerenciar Images/Produtos
                 </Typography>
-                <Tooltip title="Atualizar Lista" arrow TransitionComponent={Zoom}>
+                <Tooltip title="Atualizar Lista" arrow 
+                // TransitionComponent={Zoom}
+                >
                     <IconButton
                         onClick={refreshImages}
                         color="primary"

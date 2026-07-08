@@ -379,7 +379,7 @@ export default function PrimarySearchAppBar() {
 
 
             <TrocarTheme />
-            <Search sx={{ borderRadius: 999, display: { xs: 'none', md: 'flex' }, mx: 'auto',marginRight:2 }}>
+            {/* <Search sx={{ borderRadius: 999, display: { xs: 'none', md: 'flex' }, mx: 'auto',marginRight:2 }}>
               <SearchIconWrapper>
                 <SearchIcon />
               </SearchIconWrapper>
@@ -411,9 +411,11 @@ export default function PrimarySearchAppBar() {
                   )
                 }
               />
-            </Search>
+            </Search> */}
 
-            <Tooltip  title="Atualizar Lista" arrow TransitionComponent={Zoom}>
+            <Tooltip  title="Atualizar Lista" arrow 
+            // TransitionComponent={Zoom}
+            >
               <IconButton
               size='small'
                 onClick={refreshProducts}

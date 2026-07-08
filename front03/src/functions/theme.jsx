@@ -1,14 +1,16 @@
 export const themeLight = {
   palette: {
     primary: {
-      main: '#207e09'
+      // main: '#c48212ff'
+      main: '#12055c'
     },
     secondary: {
-      main: '#1bf16d'
+      // main: '#070ada'
+      main: '#0c0eac'
     },
     action: {
       active: '#ffffff',   // cor padrão dos ícones
-      disabled: '#999999', // cor quando desabilitado
+      // disabled: '#999999', // cor quando desabilitado
     },
     background: {
       // default: '#fcfbfe',
@@ -24,7 +26,7 @@ export const themeLight = {
     fontSize: 13,
     fontFamily: 'Roboto, Arial, sans-serif',
     allVariants: {
-      color: '#333333' // força todos os textos a usar essa cor
+      // color: '#333333' // força todos os textos a usar essa cor
     }
   },
   shape: {
@@ -42,14 +44,14 @@ export const themeLight = {
         },
         containedPrimary: {
           backgroundColor: '#285007',
-          color: '#fff',
+          // color: '#fff',
           '&:hover': {
             backgroundColor: '#1e3a05'
           }
         },
         containedSecondary: {
           backgroundColor: '#d6ed2c',
-          color: '#000',
+          // color: '#000',
           '&:hover': {
             backgroundColor: '#c0d926'
           }

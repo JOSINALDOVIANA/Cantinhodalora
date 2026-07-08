@@ -241,94 +241,53 @@ export const deleteImage = async (req, res) => {
  *                     $ref: '#/components/schemas/Image'
  */
 export const selectImages = async (req, res) => {
-    let { user_id } = req.query // id do user
-    let { id } = req.query // id da imagem
-    let { product_id } = req.query// id do produto
-    let { is_product } = req.query// se é ou não produto
+    const { user_id, id, product_id, is_product } = req.query;
 
-    if (!!user_id) {
-        try {
-            let images = await conexao("user_images").where({ is_product: false, user_id }).join("images", "user_images.image_id", "=", "images.id").select("images.*")
-
-            for (const key in images) {
-                images[key].delete = `${process.env.SERVER_URL}api/images?id=${images[key].id}&key=${images[key].key}`
-                images[key].url = `${process.env.SERVER_URL}api/static/images/${images[key].key}`;
-                images[key].urlfull = `${process.env.SERVER_URL}api/images/static/${images[key].key}`;
-            }
-            return res.json({ status: true, images })
-        } catch (error) {
-            console.log(error)
-            return res.json({ status: false, mensagem: "error ao consultar por id do user" })
-        }
+    // Função auxiliar para adicionar URLs às imagens
+    const formatImages = (images) => {
+        return images.map(img => ({
+            ...img,
+            delete: `${process.env.SERVER_URL}api/images?id=${img.id}&key=${img.key}`,
+            url: `${process.env.SERVER_URL}api/static/images/${img.key}`,
+            urlfull: `${process.env.SERVER_URL}api/images/static/${img.key}`
+        }));
     };
-
-    if (!!id) {
-        try {
-            let images = await conexao("images").where({ id }).select("*")
-
-            for (const key in images) {
-                images[key].delete = `${process.env.SERVER_URL}api/images?id=${images[key].id}&key=${images[key].key}`
-                images[key].url = `${process.env.SERVER_URL}api/static/images/${images[key].key}`;
-                images[key].urlfull = `${process.env.SERVER_URL}api/images/static/${images[key].key}`;
-            }
-            return res.json({ status: true, images })
-        } catch (error) {
-            console.log(error)
-            return res.json({ status: false, mensagem: "error ao consultar" })
-        }
-    };
-
-    if (!!product_id) {
-        try {
-            let images = await conexao("product_images")
-                .where({ is_product: true, product_id })
-                .join("images", "product_images.image_id", "=", "images.id")
-                .select("images.*")
-
-            for (const key in images) {
-                images[key].delete = `${process.env.SERVER_URL}api/images?id=${images[key].id}&key=${images[key].key}`
-                images[key].url = `${process.env.SERVER_URL}api/static/images/${images[key].key}`;
-                images[key].urlfull = `${process.env.SERVER_URL}api/images/static/${images[key].key}`;
-            }
-            return res.json({ status: true, images })
-        } catch (error) {
-            console.log(error)
-            return res.json({ status: false, mensagem: "error ao consultar por id do produto" })
-        };
-    };
-
-    if (is_product) {
-        try {
-            let images = await conexao("images").where({ is_product: true }).select("*")
-            for (const key in images) {
-                images[key].delete = `${process.env.SERVER_URL}api/images?id=${images[key].id}&key=${images[key].key}`
-                images[key].url = `${process.env.SERVER_URL}api/static/images/${images[key].key}`;
-                images[key].urlfull = `${process.env.SERVER_URL}api/images/static/${images[key].key}`;
-            }
-            return res.json({ status: true, images })
-        } catch (error) {
-            console.log(error)
-            return res.json({ status: false, mensagem: "error ao consultar por id do produto" })
-        }
-    };
-
-
-
 
     try {
-        let images = await conexao("images").select("*").where({ is_product: false })
-        // console.log(images)
-        for (const key in images) {
-            images[key].delete = `${process.env.SERVER_URL}api/images?id=${images[key].id}&key=${images[key].key}`
-            images[key].url = `${process.env.SERVER_URL}api/static/images/${images[key].key}`;
-            images[key].urlfull = `${process.env.SERVER_URL}api/images/static/${images[key].key}`;
+        let images;
+
+        if (user_id) {
+            images = await conexao("user_images")
+                .where({ is_product: false, user_id })
+                .join("images", "user_images.image_id", "=", "images.id")
+                .select("images.*");
+        } else if (id) {
+            images = await conexao("images")
+                .where({ id })
+                .select("*");
+        } else if (product_id) {
+            images = await conexao("product_images")
+                .where({ is_product: true, product_id })
+                .join("images", "product_images.image_id", "=", "images.id")
+                .select("images.*");
+        } else if (is_product) {
+            images = await conexao("images")
+                .where({ is_product: true })
+                .select("*");
+        } else {
+            images = await conexao("images")
+                .where({ is_product: false })
+                .select("*");
         }
-        return res.json({ status: true, images })
+
+        return res.json({ status: true, images: formatImages(images) });
+
     } catch (error) {
-        console.log(error)
-        return res.json({ status: false, mensagem: "error ao consultar por id da imagem" })
+        console.error(error);
+        return res.json({ status: false, mensagem: "Erro ao consultar imagens" });
     }
 };
+
 
 /**
  * @openapi

@@ -3,14 +3,16 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { api } from "../api";
 import { DadosContext } from "../Contexts/DadosContext";
+import Swal from "sweetalert2";
 
 
-// Função para buscar todos os usuarios do sistema
+
 
 // função para add usuario
 const addUser = async (dados) => {
+    // console.log("dados", dados);
     const { data } = await api.post("/api/users", { ...dados });
-    return data;
+    return data ;
 }
 // função para delete usuario
 const deleteUser = async (data) => {
@@ -82,14 +84,31 @@ export function useLogin() {
     const queryClient = useQueryClient();
 
     return useMutation({
-        mutationFn: (credentials) => loginUser(credentials), // passa a função, não executa
-        onSuccess: (response) => {
-            // Salva o token no localStorage
-            //   localStorage.setItem("token", response.token);
+        mutationFn: async (credentials) => {
+             const { data } = await api.post("/api/users/login", credentials);
+            //  console.log(data)
+             return data.user
+        }, // passa a função, não executa
+        onSuccess: () => {
+           
 
             // Atualiza os dados do usuário após login
             queryClient.invalidateQueries({ queryKey: ["refreshUser"] });
         },
+         onError:()=>{
+            return (
+               Swal.fire({
+                           title: "ERRO",
+                           text: `erro ao logar`,
+                           icon: "warning",
+                        //    showCancelButton: true,
+                           confirmButtonColor: "#d33",
+                        //    cancelButtonColor: "#3085d6",
+                           confirmButtonText: "Ok!",
+                        //    cancelButtonText: "Cancelar",
+                       })
+            )
+         }
     });
 }
 // hook para atualizar dados do usuario
@@ -99,7 +118,7 @@ export function useUpdateUser() {
         mutationFn: updateUser,
         onSuccess: () => {
             // Atualiza os dados do usuário após update
-            queryClient.invalidateQueries({ queryKey: ["refreshUser"] });
+            queryClient.invalidateQueries({ queryKey: ["usersSystem"] });
         },
     });
 }
@@ -110,7 +129,7 @@ export function useDeleteUser() {
         mutationFn: deleteUser,
         onSuccess: () => {
             // Atualiza os dados do usuário após delete
-            queryClient.invalidateQueries({ queryKey: ["refreshUser"] });
+            queryClient.invalidateQueries({ queryKey: ["usersSystem"] });
         },
     });
 }
@@ -121,7 +140,7 @@ export function useAddUser() {
         mutationFn: addUser,
         onSuccess: () => {
             // Atualiza os dados do usuário após add
-            queryClient.invalidateQueries({ queryKey: ["refreshUser"] });
+            queryClient.invalidateQueries({ queryKey: ["usersSystem"] });
         },
     });
 }

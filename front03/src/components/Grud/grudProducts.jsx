@@ -234,7 +234,9 @@ export default function ProductsManager() {
                 >
                     Gerenciar Produtos
                 </Typography>
-                <Tooltip title="Atualizar Lista" arrow TransitionComponent={Zoom}>
+                <Tooltip title="Atualizar Lista" arrow 
+                // TransitionComponent={Zoom}
+                >
                     <IconButton
                         onClick={() => refreshProducts()}
                         color="primary"

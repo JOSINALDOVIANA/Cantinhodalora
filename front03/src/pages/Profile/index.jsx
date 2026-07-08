@@ -75,13 +75,14 @@ import DashboardPage from './Dashboard.jsx';
 import Swal from 'sweetalert2'
 
 import { useRefreshUser } from '../../services/UseQuery/UsersQuery.jsx';
-import Users from './users.jsx';
+
 import { useLoadProducts } from '../../services/UseQuery/ProductsQuery.jsx';
 
 import CategoriesManager from '../../components/Grud/grudCategories.jsx';
 import ProductsManager from '../../components/Grud/grudProducts.jsx';
 import WifiManager from '../../components/Grud/grudWifi.jsx';
 import ImagesManager from '../../components/Grud/grudImages.jsx';
+import UserManagement from '../../components/Grud/grudUsers.jsx';
 
 
 
@@ -122,13 +123,15 @@ export default function AdminPanel() {
     return (
         <Container component={Box} disableGutters sx={{ mt: 8, p: 4, display: 'flex', flexDirection: isSmallScreen ? 'column' : 'row', gap: 4, minHeight: '100vh', minWidth: '100%' }}>
 
-            <Box sx={{ display: { xs: 'none', md: 'flex' }, flexDirection: 'column', gap: 2, minWidth: '200px' }}>
+            <Box sx={{ bgcolor: 'background.paper', display: { xs: 'none', md: 'flex' }, flexDirection: 'column', gap: 2, minWidth: '200px',p:2, borderRadius: 2, boxShadow: 3, flexShrink: 0,height: 'fit-content' }}>
                 <Box sx={{ mb: 0 }}>
                     <Avatar src={user?.url} sx={{ width: 80, height: 80, mx: 'auto', mb: 2 }} />
                     <Typography align="center">{user?.name}</Typography>
                 </Box>
 
-                <List>
+                <List sx
+                // ={{ width: '100%', bgcolor: 'background.paper' }}
+                >
 
                     
                     {/* //dashboard */}
@@ -236,7 +239,7 @@ export default function AdminPanel() {
                 )}
 
                 {Dados?.activeTabPerfil === 'users' && (
-                    <Users />
+                    <UserManagement />
                 )}
 
 

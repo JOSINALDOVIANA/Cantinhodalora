@@ -108,7 +108,9 @@ export default function WifiManager() {
                 >
                     Gerenciar Redes Wi-Fi
                 </Typography>
-                <Tooltip title="Atualizar Lista" arrow TransitionComponent={Zoom}>
+                <Tooltip title="Atualizar Lista" arrow 
+                // TransitionComponent={Zoom}
+                >
                     <IconButton
                         onClick={refetchWifiConfig}
                         color="primary"

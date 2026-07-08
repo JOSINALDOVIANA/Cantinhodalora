@@ -113,7 +113,9 @@ export default function CategoriesManager() {
                 >
                     Gerenciar Categorias
                 </Typography>
-                <Tooltip title="Atualizar Lista" arrow TransitionComponent={Zoom}>
+                <Tooltip title="Atualizar Lista" arrow 
+                // TransitionComponent={Zoom}
+                >
                     <IconButton
                         onClick={refreshCategories}
                         color="primary"

@@ -131,56 +131,72 @@ import { gerarHash, verificarSenha } from '../functions/argon2.js';
  *         description: Erro interno no servidor ao buscar usuários
  */
 export const getAllUsers = async (req, res) => {
-  // console.log('Conexão:', conexao)
   const { user_id } = req.query;
-  if (!!user_id) {
-    try {
-      let user = await conexao('users').where({ id: user_id }).first();
+
+  // Função auxiliar para formatar imagens
+  const formatImages = (images, mainImageId) => {
+    return images.map(img => {
+      const formatted = {
+        ...img,
+        delete: `${process.env.SERVER_URL}api/images?id=${img.id}&key=${img.key}`,
+        url: `${process.env.SERVER_URL}api/static/images/${img.key}`
+      };
+      if (img.id === mainImageId) {
+        formatted.isMain = true;
+      }
+      return formatted;
+    });
+  };
+
+  try {
+    if (user_id) {
+      const user = await conexao('users').where({ id: user_id }).first();
+
       if (!user) {
         return res.status(404).json({ error: 'Usuário não encontrado' });
       }
-      if (!!user) {
-        user.images = await conexao('user_images').where({ user_id: user.id }).join('images', 'user_images.image_id', 'images.id').select('images.*');
-        if (user.images.length > 0) {
 
-          for (const key in user.images) {
-            user.images[key].delete = `${process.env.SERVER_URL}api/images?id=${user.images[key].id}&key=${user.images[key].key}`
-            user.images[key].url = `${process.env.SERVER_URL}api/static/images/${user.images[key].key}`;
-          }
-        }
+      const images = await conexao('user_images')
+        .where({ user_id: user.id })
+        .join('images', 'user_images.image_id', 'images.id')
+        .select('images.*');
+
+      user.images = formatImages(images, user.image_id);
+
+      // Se houver imagem principal, adiciona url direto no usuário
+      const mainImage = user.images.find(img => img.isMain);
+      if (mainImage) {
+        user.url = mainImage.url;
       }
 
-      return res.json({ ...user });
-
-    } catch (error) {
-      // console.log(error)
-      return res.status(500).json({ error: error.message });
-
+      return res.json(user);
     }
 
-  }
-  try {
-    let users = await conexao('users').select('*');
-    if (users.length > 0) {
-      for (const key in users) {
-        users[key].images = await conexao('user_images').where({ user_id: users[key].id }).join('images', 'user_images.image_id', 'images.id').select('images.*');
-        if (users[key].images.length > 0) {
-          for (const key2 in users[key].images) {
-            users[key].images[key2].delete = `${process.env.SERVER_URL}api/images?id=${users[key].images[key2].id}&key=${users[key].images[key2].key}`
-            users[key].images[key2].url = `${process.env.SERVER_URL}api/static/images/${users[key].images[key2].key}`;
-            if (users[key].images[key2].id == users[key].image_id) {
-              users[key].url = users[key].images[key2].url;
-            }
-          }
-        }
+    // Caso não tenha user_id, retorna todos
+    const users = await conexao('users').select('*');
+
+    for (const user of users) {
+      const images = await conexao('user_images')
+        .where({ user_id: user.id })
+        .join('images', 'user_images.image_id', 'images.id')
+        .select('images.*');
+
+      user.images = formatImages(images, user.image_id);
+
+      const mainImage = user.images.find(img => img.isMain);
+      if (mainImage) {
+        user.url = mainImage.url;
       }
     }
+
     return res.json(users);
+
   } catch (error) {
-    // console.log(error)
-    throw new Error('Erro ao buscar usuários: ' + error.message);
+    console.error(error);
+    return res.status(500).json({ error: 'Erro ao buscar usuários', details: error.message });
   }
 };
+
 
 export const getUserById = async (req, res) => {
   try {
@@ -272,22 +288,39 @@ export const getUserById = async (req, res) => {
  *         description: Erro interno ao criar o usuário
  */
 export const createUser = async (req, res) => {
-  let { name, email, password, image_id, adm = false, images = [], others_info = {} } = req.body;
-  let { hash } = await gerarHash(password);
+  // console.log(req.body)
+  const { name, email, password, image_id, adm = false, images = [], others_info = {} } = req.body;
+  // return res.json({status:"ok"})
   try {
-    const [id] = await conexao('users').insert({ name, email, password: hash, image_id, adm, others_info }).returning('id');
-    if (!!images && images.length > 0) {
-      let imagesInsert = images.map((image) => {
-        return { user_id: id, image_id: image.id }
-      });
+    // Gera hash da senha
+    const { hash } = await gerarHash(password);
+
+    // Cria usuário e retorna o id
+    const [id] = await conexao('users')
+      .insert({ name, email, password: hash, image_id, adm, others_info })
+      .returning(['id']);
+
+      
+
+    // Se houver imagens, insere na tabela user_images
+    if (Array.isArray(images) && images.length > 0) {
+      const imagesInsert = images.map(img => ({
+        user_id:id,
+        image_id: img.id
+      }));
+      // console.log(imagesInsert)
       await conexao('user_images').insert(imagesInsert);
     }
-    return res.json({ id, name, email, password: hash, image_id, adm, images });
-  } catch (error) {
 
-    return res.status(500).json({ error: error.message });
+    // Retorna dados do usuário criado
+    return res.json({ ...req.body,id});
+
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: "Erro ao criar usuário", details: error.message });
   }
 };
+
 
 /**
  * @openapi
