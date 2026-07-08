@@ -44,9 +44,10 @@ import {
 
 } from '@mui/icons-material';
 import { useAddUser, useDeleteUser, useFetchUsersSystem } from '../../services/UseQuery/UsersQuery';
-import UploadImageProd from '../../functions/UploadImageProd';
+
 import { LoadImagesUsers } from '../../services/UseQuery/ImagesQuery';
 import Swal from 'sweetalert2';
+import UploadImageUser from '../../functions/UploadImageProd';
 
 
 const StyledInputBase = styled(InputBase)(({ theme }) => ({
