@@ -17,7 +17,7 @@ const addUser = async (dados) => {
 // função para delete usuario
 const deleteUser = async (data) => {
     const { data: response } = await api.delete(`/api/users/${data?.id}`, { ...data });
-    return data;
+    return response;
 }
 // Função para login
 const loginUser = async (credentials) => {

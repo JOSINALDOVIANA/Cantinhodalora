@@ -59,8 +59,10 @@ export function LoadImagesUsers() {
 export function useDeleteImage() {
     const queryClient = useQueryClient();
     return useMutation({
-        mutationfn: async (image) => {
-           const data = await api.delete(`/api/images?id=${image.id}&key=${image.Key}`);
+        mutationFn: async (image) => {
+            console.log('entrou aqui')
+           const {data}= await api.delete(`/api/images?id=${image.id}&key=${image.Key}`);
+           console.log(data)
             return data;
         },
         

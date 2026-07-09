@@ -165,7 +165,10 @@ export const uploadIMGuser = async (req, res) => {
  *         description: Erro ao excluir imagem
  */
 export const deleteImage = async (req, res) => {
+    
     const { id, key } = req.query;
+
+    // return res.json({status:true})
 
     try {
         // Exclui primeiro no banco
