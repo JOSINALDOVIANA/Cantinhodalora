@@ -43,11 +43,13 @@ import {
   Refresh
 
 } from '@mui/icons-material';
-import { useAddUser, useDeleteUser, useFetchUsersSystem } from '../../services/UseQuery/UsersQuery';
+import { useAddUser, useDeleteUser, useFetchUsersSystem, useUpdateUser } from '../../services/UseQuery/UsersQuery';
 
 import { LoadImagesUsers } from '../../services/UseQuery/ImagesQuery';
 import Swal from 'sweetalert2';
 import UploadImageUser from '../../functions/UploadImageProd';
+
+
 
 
 const StyledInputBase = styled(InputBase)(({ theme }) => ({
@@ -96,6 +98,7 @@ export default function UserManagement() {
   const { imagesUsers, loadingImagesUsers, refetchImagesUsers } = LoadImagesUsers();
   const userAdd = useAddUser();
   const deleteUser = useDeleteUser();
+  const updateUser = useUpdateUser();
   const [searchTerm, setSearchTerm] = useState('');
 
   // Estados para o Modal (Formulário)
@@ -137,12 +140,80 @@ export default function UserManagement() {
 
   const handleSave = (e) => {
     e.preventDefault();
-    if (isEditing) {}else{
-      userAdd.mutate(currentUser, {
-        onSuccess: () => {
-          refetchUsersSystem();
-        },
+    // console.log(currentUser)
+    if (isEditing) {
+      Swal.fire({
+        title: "Tem certeza?",
+        text: `Você deseja editar o usario "${currentUser?.name}"?`,
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#d33",
+        cancelButtonColor: "#3085d6",
+        confirmButtonText: "Sim, Editar!",
+        cancelButtonText: "Cancelar",
+      }).then((result) => {
+        if (result.isConfirmed) {
+          updateUser.mutate(currentUser, {
+            onSuccess: () => {
+              Swal.fire({
+                title: "Editado!",
+                text: "O usuário foi atualizado com sucesso.",
+                icon: "success",
+                timer: 1500,
+                showConfirmButton: false,
+              });
+            },
+            onError:()=>{
+               Swal.fire({
+                title: "Erro!",
+                text: "O usuário não foi atualizado com sucesso.",
+                icon: "error",
+                timer: 1500,
+                showConfirmButton: false,
+              });
+            }
+          });
+
+        }
       });
+     
+    } else {
+
+      Swal.fire({
+        title: "Tem certeza?",
+        text: `Você deseja adicionar o usario "${currentUser?.name}"?`,
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#d33",
+        cancelButtonColor: "#3085d6",
+        confirmButtonText: "Sim, Adicionar!",
+        cancelButtonText: "Cancelar",
+      }).then((result) => {
+        if (result.isConfirmed) {
+          userAdd.mutate(currentUser, {
+            onSuccess: () => {
+              Swal.fire({
+                title: "Salvo!",
+                text: "O usuário foi adicionado com sucesso.",
+                icon: "success",
+                timer: 1500,
+                showConfirmButton: false,
+              });
+            },
+            onError:()=>{
+               Swal.fire({
+                title: "Erro!",
+                text: "O usuário não foi adicionado com sucesso.",
+                icon: "error",
+                timer: 1500,
+                showConfirmButton: false,
+              });
+            }
+          });
+
+        }
+      });
+      
     }
     handleCloseModal();
   };
@@ -166,8 +237,8 @@ export default function UserManagement() {
               `O usuário ${user.name} foi excluído.`,
               "success"
             );
-            refetchUsersSystem(); 
-          },onError: () => {
+            refetchUsersSystem();
+          }, onError: () => {
             Swal.fire(
               "Erro!",
               `Não foi possível excluir o usuário ${user.name}.`,
@@ -180,48 +251,48 @@ export default function UserManagement() {
   };
 
   const handleToggleImage = (img) => {
-        if (isEditing) {
-            const exists = currentUser.images?.some(item => item.id === img.id);
-            if (exists) {
-                setCurrentUser(prev => ({
-                    ...prev,
-                    image_id: prev.image_id == img.id ? "" : prev.image_id,
-                    images: prev.images.filter(item => item.id !== img.id)
-                }));
-            } else {
-                setCurrentUser(prev => ({
-                    ...prev,
-                    images: [...(prev.images || []), img],
-                    image_id: img.id
-                }));
+    if (isEditing) {
+      const exists = currentUser.images?.some(item => item.id === img.id);
+      if (exists) {
+        setCurrentUser(prev => ({
+          ...prev,
+          image_id: prev.image_id == img.id ? "" : prev.image_id,
+          images: prev.images.filter(item => item.id !== img.id)
+        }));
+      } else {
+        setCurrentUser(prev => ({
+          ...prev,
+          images: [...(prev.images || []), img],
+          image_id: img.id
+        }));
 
-            }
-        } else {
-            const exists = currentUser.images?.some(item => item.id === img.id);
-            if (exists) {
-                setCurrentUser(prev => ({
-                    ...prev,
-                    image_id: prev.image_id == img.id ? "" : prev.image_id,
-                    images: prev.images.filter(item => item.id !== img.id)
-                }));
-            } else {
-                setCurrentUser(prev => ({
-                    ...prev,
-                    images: [...(prev.images || []), img],
-                    image_id: img.id
-                }));
+      }
+    } else {
+      const exists = currentUser.images?.some(item => item.id === img.id);
+      if (exists) {
+        setCurrentUser(prev => ({
+          ...prev,
+          image_id: prev.image_id == img.id ? "" : prev.image_id,
+          images: prev.images.filter(item => item.id !== img.id)
+        }));
+      } else {
+        setCurrentUser(prev => ({
+          ...prev,
+          images: [...(prev.images || []), img],
+          image_id: img.id
+        }));
 
-            }
-        }
-    };
+      }
+    }
+  };
 
   return (
-    <Container maxWidth="lg" sx={{ mt: 4, mb: 4,bgcolor:"background.paper", p:3, borderRadius:2, boxShadow: 3 }}>
+    <Container maxWidth="lg" sx={{ mt: 4, mb: 4, bgcolor: "background.paper", p: 3, borderRadius: 2, boxShadow: 3 }}>
       {/* cabeçalho */}
       <Box sx={{
-        display:'flex', justifyContent:"space-between", alignItems:"center" ,mb:3, gap:2, flexWrap:"wrap"
+        display: 'flex', justifyContent: "space-between", alignItems: "center", mb: 3, gap: 2, flexWrap: "wrap"
       }}>
-        <Typography variant="h4" component="h1"  sx={{ fontWeight: 'bold' }}>
+        <Typography variant="h4" component="h1" sx={{ fontWeight: 'bold' }}>
           Gestão de Usuários
         </Typography>
         <Button
@@ -233,7 +304,7 @@ export default function UserManagement() {
         >
           Novo Usuário
         </Button>
-        <Tooltip title="Atualizar Lista" arrow 
+        <Tooltip title="Atualizar Lista" arrow
         // TransitionComponent={Zoom}
         >
           <IconButton
@@ -301,11 +372,11 @@ export default function UserManagement() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {filteredUsers.length > 0 ? (
+            {filteredUsers?.length > 0 ? (
               filteredUsers.map((user) => (
                 <TableRow key={user.id} hover>
                   <TableCell>
-                    <Avatar src={user.url} alt={user.name}>
+                    <Avatar variant='rounded' sx={{width:80,height:80}} src={user.url} alt={user.name}>
                       {user.name.charAt(0).toUpperCase()}
                     </Avatar>
                   </TableCell>
@@ -350,16 +421,16 @@ export default function UserManagement() {
       {/* Modal de Formulário */}
       <Dialog open={openModal} onClose={handleCloseModal} fullWidth maxWidth="sm">
         <form sx={{
-          p:1,gap:2
+          p: 1, gap: 2
         }} onSubmit={handleSave}>
           <DialogTitle>
             {isEditing ? 'Editar Usuário' : 'Novo Usuário'}
           </DialogTitle>
           <DialogContent dividers>
-            <Box  sx={{
-              display:'flex', 
-              flexDirection:"column",
-              gap:2
+            <Box sx={{
+              display: 'flex',
+              flexDirection: "column",
+              gap: 2
             }}>
               <TextField
                 label="Nome Completo"
@@ -432,8 +503,8 @@ export default function UserManagement() {
                     Selecionar
                   </Button>
 
-                  <UploadImageUser props={{ upUrl: "/api/images/uploadUser" ,refetchImages: () => refetchImagesUsers() }} />
-                  
+                  <UploadImageUser props={{ upUrl: "/api/images/uploadUser", refetchImages: () => refetchImagesUsers() }} />
+
 
                 </Box>
               </Box>

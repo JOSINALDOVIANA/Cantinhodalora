@@ -41,6 +41,7 @@ import { TrocarTheme } from "./../Theme/index.jsx";
 import { useLogout, useRefreshUser } from '../../services/UseQuery/UsersQuery.jsx';
 import { useWifiConfig } from '../../services/UseQuery/WifiQuery.jsx';
 import { useRefreshProducts } from '../../services/UseQuery/ProductsQuery.jsx';
+import ListItensMenu from './listItensMenu.jsx';
 
 
 const Search = styled('div')(({ theme }) => ({
@@ -122,7 +123,7 @@ export default function PrimarySearchAppBar() {
   const renderDrawerMenu = (
     <Box >
 
-      <Drawer sx={{}} open={openMenu} onClose={toggleOpenDrawerMenu(false)}>
+      <Drawer open={openMenu} onClose={toggleOpenDrawerMenu(false)}>
         <Box sx={{ width: 250, minHeight: '100vh', maxHeight: '100vh' }} role="presentation" onClick={toggleOpenDrawerMenu(false)} onKeyDown={toggleOpenDrawerMenu(false)}>
 
           <List>
@@ -238,95 +239,7 @@ export default function PrimarySearchAppBar() {
 
             {Dados?.logado && window.location.pathname === '/minha-conta' && isMobile && <Divider />}
 
-
-            {/* Dashboard */}
-            {Dados?.logado && window.location.pathname === '/minha-conta' &&
-              <ListItem
-                sx={{ display: { md: "none" }, mb: 1, borderRadius: 2 }}
-
-                selected={Dados?.activeTabPerfil === 'dashboard'}
-                onClick={() => setDados({ ...Dados, activeTabPerfil: 'dashboard' })}
-              >
-                <ListItemIcon>
-                  <Dashboard sx={{ color: theme.palette.primary.main }} />
-                </ListItemIcon>
-                <ListItemText primary="Dashboard" />
-              </ListItem>
-
-            }
-
-            {/* User */}
-            {Dados?.logado && window.location.pathname === '/minha-conta' &&
-              <ListItem
-
-                selected={Dados?.activeTabPerfil === 'users'}
-                onClick={() => setDados({ ...Dados, activeTabPerfil: 'users' })}
-                sx={{ display: { md: "none" }, mb: 1, borderRadius: 2 }}
-              >
-                <ListItemIcon>
-                  <People sx={{ color: theme.palette.primary.main }} />
-                </ListItemIcon>
-                <ListItemText primary="Usuários" />
-              </ListItem>
-            }
-
-            {/* Categorias */}
-            {Dados?.logado && window.location.pathname === '/minha-conta' &&
-              <ListItem
-                selected={Dados?.activeTabPerfil === 'Categories'}
-                onClick={() => setDados({ ...Dados, activeTabPerfil: 'Categories' })}
-                sx={{ display: { md: "none" }, mb: 1, borderRadius: 2 }}
-              >
-                <ListItemIcon>
-                  <Category sx={{ color: theme.palette.primary.main }} />
-                </ListItemIcon>
-                <ListItemText primary="Categorias" />
-              </ListItem>
-            }
-            {/* wifi */}
-            {Dados?.logado && window.location.pathname === '/minha-conta' &&
-              <ListItem
-                selected={Dados?.activeTabPerfil === 'WifiConfigs'}
-                onClick={() => setDados({ ...Dados, activeTabPerfil: 'WifiConfigs' })}
-                sx={{ display: { md: "none" }, mb: 1, borderRadius: 2 }}
-              >
-                <ListItemIcon>
-                  <Wifi2Bar sx={{ color: theme.palette.primary.main }} />
-                </ListItemIcon>
-                <ListItemText primary="Wi-Fi" />
-              </ListItem>
-            }
-
-            {/* Produtos */}
-            {Dados?.logado && window.location.pathname === '/minha-conta' &&
-              <ListItem
-                sx={{ display: { md: "none" }, mb: 1, borderRadius: 2 }}
-                selected={Dados?.activeTabPerfil === 'products'}
-                onClick={() => setDados({ ...Dados, activeTabPerfil: 'products' })}
-              >
-                <ListItemIcon>
-                  <ListIcon sx={{ color: theme.palette.primary.main }} />
-                </ListItemIcon>
-                <ListItemText primary="Produtos" />
-              </ListItem>
-            }
-
-
-
-            {/* Images */}
-            {Dados?.logado && window.location.pathname === '/minha-conta' &&
-              <ListItem
-                sx={{ display: { md: "none" }, mb: 1, borderRadius: 2 }}
-
-                selected={Dados?.activeTabPerfil === 'security'}
-                onClick={() => setDados({ ...Dados, activeTabPerfil: 'images' })}
-              >
-                <ListItemIcon>
-                  <ImageAspectRatio sx={{ color: theme.palette.primary.main }} />
-                </ListItemIcon>
-                <ListItemText primary="Imagens" />
-              </ListItem>
-            }
+            <ListItensMenu color={theme.palette.mode === 'light' ? red[500] : green[500]} />    
 
 
 
@@ -366,14 +279,14 @@ export default function PrimarySearchAppBar() {
               sx={{ mr: 2 }}
               onClick={toggleOpenDrawerMenu(true)}
             >
-              <ListIcon />
+              <ListIcon color="primary.contrastText" />
             </IconButton>
 
             <IconButton
               onClick={() => { navegation('/chat') }}
               edge="start"
             >
-              <ForumIcon />
+              <ForumIcon color="primary.contrastText"/>
             </IconButton>
 
 
@@ -431,7 +344,7 @@ export default function PrimarySearchAppBar() {
                   },
                 }}
               >
-                <Refresh />
+                <Refresh  />
               </IconButton>
             </Tooltip>
             <Box sx={{ flexGrow: 1 }} />

@@ -83,6 +83,8 @@ import ProductsManager from '../../components/Grud/grudProducts.jsx';
 import WifiManager from '../../components/Grud/grudWifi.jsx';
 import ImagesManager from '../../components/Grud/grudImages.jsx';
 import UserManagement from '../../components/Grud/grudUsers.jsx';
+import ListItensMenu from '../../components/AppBar/listItensMenu.jsx';
+import ImagesUsersManager from '../../components/Grud/grudImageUsers.jsx';
 
 
 
@@ -134,76 +136,7 @@ export default function AdminPanel() {
                 >
 
                     
-                    {/* //dashboard */}
-                    {user?.adm ?
-                        <ListItem
-
-                            selected={Dados?.activeTabPerfil === 'dashboard'}
-                            onClick={() => setDados(a => ({ ...a, activeTabPerfil: 'dashboard' }))}
-                        >
-                            <ListItemIcon><Dashboard /></ListItemIcon>
-                            <ListItemText primary="Dashboard" />
-                        </ListItem> : null}
-
-                    {/* //users */}
-                    {user?.adm ?
-                        <ListItem
-
-                            selected={Dados?.activeTabPerfil === 'users'}
-                            onClick={() => setDados(a => ({ ...a, activeTabPerfil: 'users' }))}
-                        >
-                            <ListItemIcon><People /></ListItemIcon>
-                            <ListItemText primary="Usuários" />
-                        </ListItem> : null}
-
-
-                    {/* //products */}
-                    {user?.adm ?
-                        <ListItem
-
-                            selected={Dados?.activeTabPerfil === 'products'}
-                            onClick={() => setDados(a => ({ ...a, activeTabPerfil: 'products' }))}
-                        >
-                            <ListItemIcon><ListIcon /></ListItemIcon>
-                            <ListItemText primary="Produtos" />
-                        </ListItem> : null}
-
-
-                    {/* //categories */}
-                    {user?.adm ?
-                        <ListItem
-
-                            selected={Dados?.activeTabPerfil === 'Categories'}
-                            onClick={() => setDados(a => ({ ...a, activeTabPerfil: 'Categories' }))}
-                        >
-                            <ListItemIcon><Category /></ListItemIcon>
-                            <ListItemText primary="Categorias" />
-                        </ListItem> : null}                 
-
-                  
-
-                    {/* wificonfigs */}
-                    <ListItem
-
-                        selected={Dados?.activeTabPerfil === 'security'}
-                        onClick={() => setDados(a => ({ ...a, activeTabPerfil: 'WifiConfigs' }))}
-                    >
-                        <ListItemIcon>
-                            <Wifi />
-                        </ListItemIcon>
-                        <ListItemText primary="WiFi" />
-                    </ListItem>
-
-                    {/* images */}
-                    {user?.adm ?
-                        <ListItem
-
-                            selected={Dados?.activeTabPerfil === 'images'}
-                            onClick={() => setDados(a => ({ ...a, activeTabPerfil: 'images' }))}
-                        >
-                            <ListItemIcon><Image /></ListItemIcon>
-                            <ListItemText primary="Imagens" />
-                        </ListItem> : null}  
+                    <ListItensMenu color={theme.palette.mode === 'light' ? red[500] : green[500]}/>
                 </List>
             </Box>
 
@@ -255,6 +188,10 @@ export default function AdminPanel() {
                 {Dados?.activeTabPerfil === 'images' && (
                     
                     <ImagesManager />
+                )}
+                {Dados?.activeTabPerfil === 'images_user' && (
+                    
+                    <ImagesUsersManager />
                 )}
 
 

@@ -306,11 +306,11 @@ export default function CategoriesManager() {
                                     <>
                                         <ListItemText
                                             primary={cat.description}
-                                            primaryTypographyProps={{
-                                                fontWeight: 600,
-                                                color: "text.primary",
-                                                fontSize: "1rem",
-                                            }}
+                                            // primaryTypographyProps={{
+                                            //     fontWeight: 600,
+                                            //     color: "text.primary",
+                                            //     fontSize: "1rem",
+                                            // }}
                                         />
                                         <Box sx={{ display: "flex", gap: 1 }}>
                                             <Tooltip title="Editar" arrow>

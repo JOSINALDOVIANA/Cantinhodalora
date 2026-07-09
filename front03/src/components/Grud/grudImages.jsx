@@ -273,7 +273,7 @@ export default function ImagesManager() {
                                 ) : (
                                     <>
                                         <ListItemAvatar>
-                                            <Avatar alt={img?.name} src={img?.urlfull||img?.url} />
+                                            <Avatar variant="rounded" sx={{width:100,height:100}} alt={img?.name} src={img?.urlfull||img?.url} />
                                         </ListItemAvatar>
                                         <Box sx={{ display: "flex", gap: 1 }}>
                                             {/* <Tooltip title="Editar" arrow>

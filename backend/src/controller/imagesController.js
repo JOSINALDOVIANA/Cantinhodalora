@@ -114,7 +114,7 @@ export const uploadIMGuser = async (req, res) => {
             is_product: false
 
         });
-        await conexao("user_images").insert({ image_id: id, user_id });
+       !!user_id? await conexao("user_images").insert({ image_id: id, user_id }):null;
         res.json({
             id, name, size, key,
             url: `${process.env.SERVER_URL}api/static/images/${key}`,
@@ -165,19 +165,26 @@ export const uploadIMGuser = async (req, res) => {
  *         description: Erro ao excluir imagem
  */
 export const deleteImage = async (req, res) => {
-    const { id, key } = req.query
+    const { id, key } = req.query;
 
     try {
-        await conexao("images").del().where({ id });
-        promisify(fs.unlink)(path.resolve(__dirname, "..", "..", "tmp", "uploads", `${key}`), (err) => {
-            if (err) { console.log("não foi possivel apagar o arquivo"); console.log(err) }
-            else { console.log('aquivo deletado'); };
-        })
+        // Exclui primeiro no banco
+        await conexao("images").where({ id }).del();
 
-        return res.json({ status: true, mensagem: "apagada" })
+        // Depois tenta excluir o arquivo
+        const filePath = path.resolve(__dirname, "..", "..", "tmp", "uploads", key);
+        try {
+            await fs.promises.unlink(filePath);
+            console.log("Arquivo deletado");
+        } catch (err) {
+            console.error("Não foi possível apagar o arquivo", err);
+            // Aqui você pode registrar em log, fila de reprocessamento, etc.
+        }
+
+        return res.json({ status: true, mensagem: "apagada" });
     } catch (error) {
-        console.log(error)
-        return res.json({ status: false, mensagem: "error ao excluir" })
+        console.error(error);
+        return res.json({ status: false, mensagem: "erro ao excluir" });
     }
 };
 
@@ -442,43 +449,6 @@ export const ImageStatic = async (req, res) => {
 
 
 
-// export const deleteIMGprod = async (req,res)=>{
-//         const {id,key}=req.query
-//         console.log(req.query)
-//         try {
-//            await conexao("images").del().where({id});
-//            promisify(fs.unlink)(path.resolve(__dirname, "..","..","tmp", "uploads", `${key}`), (err) => {
-//             if (err) { console.log("não foi possivel apagar o arquivo"); }
-//             else { console.log('aquivo deletado'); };
-//         })
 
-//            return res.json({status:true,mensagem:"apagada"})
-//         } catch (error) {
-//             console.log(error)
-//             return res.json({status:false,mensagem:"error ao excluir"})
-//         }
-//     };
-
-// export const selectIMGprod = async (req, res) => {
-//     let { id } = req.query;
-//     let images = [];
-
-//     try {
-//         if (!!id) {
-//             images = await conexao("images").where({ is_product: true, id })
-//         } else {
-//             images = await conexao("images").where({ prod: true })
-//         }
-//         for (const key in images) {
-//             images[key].delete = `${process.env.SERVER_URL}api/images/prod?id=${images[key].id}&key=${images[key].key}`;
-//             images[key].url = `${process.env.SERVER_URL}api/static/images/${images[key].key}`;
-
-//         }
-//         return res.json({ status: true, images })
-//     } catch (error) {
-//         console.log(error)
-//         return res.json({ status: false, mensagem: "error ao consultar" })
-//     }
-// }
 
 

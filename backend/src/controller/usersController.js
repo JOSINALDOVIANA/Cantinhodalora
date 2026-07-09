@@ -377,11 +377,11 @@ export const createUser = async (req, res) => {
  */
 export const updateUser = async (req, res) => {
   const { id } = req.params;
-  let { name, email, password, image_id = null, adm = false, images = [], others_info = {} } = req.body;
+  let { name, email, password, image_id = null, adm = false, images = [], others_info = {},status=true } = req.body;
   // console.log('Updating user with ID:', id, 'Data:', userData);
   others_info = JSON.stringify(others_info);
   try {
-    const updated = await conexao('users').where({ id }).update({ name, email, password, image_id, adm, others_info });
+    const updated = await conexao('users').where({ id }).update({ name, email, password, image_id, adm, others_info,status });
     const imagesDelete = await conexao('user_images').where({ user_id: id }).delete();
 
     if (!updated) {
@@ -393,7 +393,7 @@ export const updateUser = async (req, res) => {
         await conexao('user_images').insert({ user_id: id, image_id: images[key].id });
       }
     }
-    return res.json({ id, name, email, password, image_id, adm, others_info, images });
+    return res.json({ id, name, email, password, image_id, adm, others_info, images,status });
   } catch (error) {
 
     return res.status(500).json({ error: error.message });
@@ -489,7 +489,7 @@ export const userLogin = async (req, res) => {
       return res.status(401).json({ status: false, message: 'Credenciais inválidas (email)' });
     }
 
-    const user = await conexao('users').where({ email }).first();
+    const user = await conexao('users').where({ email,status:true }).first();
     const senhaValida = user && (await verificarSenha(password, user.password)).status;
 
     if (!senhaValida) {

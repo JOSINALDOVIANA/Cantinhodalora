@@ -4,11 +4,7 @@ import Swal from "sweetalert2";
 import React from "react";
 
 
-// Função para buscar imagens de produtos
-const fetchImagesProducts = async () => {
-    const { data } = await api.get("/api/images/getAllImages?is_product=1");
-    return data.images;
-};
+
 
 // Hook para carregar imagens de produtos (load)
 export function useLoadImagesProducts() {
@@ -21,7 +17,10 @@ export function useLoadImagesProducts() {
         refetch
     } = useQuery({
         queryKey: ["images"],
-        queryFn: fetchImagesProducts,
+        queryFn: async () => {
+            const { data } = await api.get("/api/images/getAllImages?is_product=1");
+            return data.images;
+        },
         enabled: true, // vai buscar quando o usuario solicitar
         staleTime: 60000,  // cache válido por 1 min
         gcTime: 300000,    // garbage collector em 5 min
@@ -42,9 +41,9 @@ export function LoadImagesUsers() {
     } = useQuery({
         queryKey: ["imagesUsers"],
         queryFn: async () => {
-            console.log("Buscando imagens de usuários...");
+            // console.log("Buscando imagens de usuários...");
             const { data } = await api.get("/api/images/getAllImages");
-                  
+
             return data.images;
         },
         enabled: true, // vai buscar quando o usuario solicitar
@@ -55,13 +54,7 @@ export function LoadImagesUsers() {
 
     return { imagesUsers, loadingImagesUsers, error, refetchImagesUsers };
 }
-// Hook para refresh    
-export function useRefreshImages() {
-    const queryClient = useQueryClient();
-    return () => {
-        queryClient.invalidateQueries({ queryKey: ["images"] });
-    };
-}
+
 
 export function useDeleteImage() {
     const queryClient = useQueryClient();

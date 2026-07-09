@@ -45,7 +45,7 @@ api.use(bodyParser.urlencoded({ extended: true, limit: '50mb', parameterLimit: 1
 
 //Configuração cors para o express
 api.use(cors({
-    origin: ['http://localhost:3000', 'http://localhost:5173', 'https://www.cantinhodalora.info', 'https://cantinhodalora.info'],
+    origin: ['http://localhost:3000', 'http://localhost:5273', 'https://www.cantinhodalora.info', 'https://cantinhodalora.info'],
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],

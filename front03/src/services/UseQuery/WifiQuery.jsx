@@ -15,7 +15,7 @@ export function useWifiConfig() {
         refetchOnWindowFocus: true,
         refetchOnReconnect: true,
         refetchOnMount: true,
-        retry: false,
+        retry: true,
         staleTime: 1000 * 60 * 5, // cache por 5 minutos
         gcTime: 1000 * 60 * 10, // não deixa a aplicação usar o cache por mais de 10 minutos
 

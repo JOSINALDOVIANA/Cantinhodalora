@@ -13,7 +13,7 @@ export function TrocarTheme(props) {
 
 
         <IconButton {...props} onClick={colorMode.toggleColorMode}>
-            {theme.palette.mode === 'dark' ? <Brightness6 /> : <Brightness7 />}
+            {theme.palette.mode === 'dark' ? <Brightness6 color="primary.contrastText" /> : <Brightness7 color="primary.contrastText" />}
         </IconButton>
 
     );

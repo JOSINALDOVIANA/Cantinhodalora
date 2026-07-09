@@ -12,7 +12,7 @@ import Swal from "sweetalert2";
 const addUser = async (dados) => {
     // console.log("dados", dados);
     const { data } = await api.post("/api/users", { ...dados });
-    return data ;
+    return data;
 }
 // função para delete usuario
 const deleteUser = async (data) => {
@@ -27,11 +27,7 @@ const loginUser = async (credentials) => {
     return data.user;
 };
 
-// Função para atualizar usuário
-const updateUser = async (d) => {
-    const { data } = await api.put(`/api/users/${d?.id}`, { ...d });
-    return data;
-};
+
 
 // hook para pegar dados do usuario logado
 export function useRefreshUser() {
@@ -42,8 +38,8 @@ export function useRefreshUser() {
         queryFn: async () => {
             // console.log("fetchUser");
             const { data } = await api.post("/api/users/refresh");
-            if (!!data?.user){
-            setDados(a => ({ ...a, logado: true, }));
+            if (!!data?.user) {
+                setDados(a => ({ ...a, logado: true, }));
             };
             return data.user;
 
@@ -60,64 +56,71 @@ export function useRefreshUser() {
 }
 // hook para logout
 export function useLogout() {
-  const { setDados } = React.useContext(DadosContext);
-  const queryClient = useQueryClient();
+    const { setDados } = React.useContext(DadosContext);
+    const queryClient = useQueryClient();
 
-  return useMutation({
-    mutationFn: async () => {
-      const { data } = await api.post("/api/users/logout");
-      return data;
-    },
-    onSuccess: () => {
-      // Zera os dados da query
-      queryClient.setQueryData(["refreshUser"], null);
+    return useMutation({
+        mutationFn: async () => {
+            const { data } = await api.post("/api/users/logout");
+            return data;
+        },
+        onSuccess: () => {
+            // Zera os dados da query
+            queryClient.setQueryData(["refreshUser"], null);
 
-      // ou, se quiser remover completamente:
-      // queryClient.removeQueries({ queryKey: ["refreshUser"] });
+            // ou, se quiser remover completamente:
+            // queryClient.removeQueries({ queryKey: ["refreshUser"] });
 
-      // Atualiza o contexto
-      setDados(a => ({ ...a, logado: false }));
-    },
-  });
+            // Atualiza o contexto
+            setDados(a => ({ ...a, logado: false }));
+        },
+    });
 }
 export function useLogin() {
     const queryClient = useQueryClient();
 
     return useMutation({
         mutationFn: async (credentials) => {
-             const { data } = await api.post("/api/users/login", credentials);
+            const { data } = await api.post("/api/users/login", credentials);
             //  console.log(data)
-             return data.user
+            return data.user
         }, // passa a função, não executa
         onSuccess: () => {
-           
+
 
             // Atualiza os dados do usuário após login
             queryClient.invalidateQueries({ queryKey: ["refreshUser"] });
         },
-         onError:()=>{
+        onError: () => {
             return (
-               Swal.fire({
-                           title: "ERRO",
-                           text: `erro ao logar`,
-                           icon: "warning",
-                        //    showCancelButton: true,
-                           confirmButtonColor: "#d33",
-                        //    cancelButtonColor: "#3085d6",
-                           confirmButtonText: "Ok!",
-                        //    cancelButtonText: "Cancelar",
-                       })
+                Swal.fire({
+                    title: "ERRO",
+                    text: `erro ao logar`,
+                    icon: "warning",
+                    //    showCancelButton: true,
+                    confirmButtonColor: "#d33",
+                    //    cancelButtonColor: "#3085d6",
+                    confirmButtonText: "Ok!",
+                    //    cancelButtonText: "Cancelar",
+                })
             )
-         }
+        }
     });
 }
 // hook para atualizar dados do usuario
 export function useUpdateUser() {
     const queryClient = useQueryClient();
+    
     return useMutation({
-        mutationFn: updateUser,
+        mutationFn:async (d) => {
+            const { data } = await api.put(`/api/users/${d?.id}`, { ...d });
+         
+            return data;
+        },
         onSuccess: () => {
-            // Atualiza os dados do usuário após update
+            Swal.fire(
+                
+            )
             queryClient.invalidateQueries({ queryKey: ["usersSystem"] });
         },
     });
@@ -146,7 +149,7 @@ export function useAddUser() {
 }
 // hook para buscar todos os usuarios do sistema
 export function useFetchUsersSystem() {
-    const { data, error, isLoading,refetch } = useQuery({
+    const { data, error, isLoading, refetch } = useQuery({
         queryKey: ["usersSystem"],
         queryFn: async () => {
             const { data } = await api.get("/api/users");
@@ -159,7 +162,7 @@ export function useFetchUsersSystem() {
         refetchOnMount: true, // não busca no mount
         retry: true, // não tenta novamente em caso de erro
     });
-    return { usersSystem: data, error, loadingUsersSystem: isLoading,refetchUsersSystem: refetch };
+    return { usersSystem: data, error, loadingUsersSystem: isLoading, refetchUsersSystem: refetch };
 }
 
 
