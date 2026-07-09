@@ -369,7 +369,7 @@ export default function PrimarySearchAppBar() {
         {renderDrawerMenu}
 
         <Dialog open={Dados?.openWifi} onClose={() => setDados({ ...Dados, openWifi: false })}>
-          <Paper sx={{ p: 4, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '100vh' }}>
+          <Paper sx={{ p: 4, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '500' }}>
             <Typography variant="h4" gutterBottom>
               Conectar ao Wi-Fi
             </Typography>

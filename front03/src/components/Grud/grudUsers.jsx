@@ -142,6 +142,17 @@ export default function UserManagement() {
     e.preventDefault();
     // console.log(currentUser)
     if (isEditing) {
+      if(!currentUser.password.trim()){
+        handleCloseModal();
+        Swal.fire({
+          title: "Campo obrigatório!",
+                text: "digite uma nova senha ou senha atual na campo de senha",
+                icon: "info",
+                // timer: 1500,
+                showConfirmButton: true,
+                confirmButtonText: "OK!",
+        })
+        return; }
       Swal.fire({
         title: "Tem certeza?",
         text: `Você deseja editar o usario "${currentUser?.name}"?`,
@@ -433,6 +444,7 @@ export default function UserManagement() {
               gap: 2
             }}>
               <TextField
+              
                 label="Nome Completo"
                 required
                 fullWidth
@@ -448,20 +460,14 @@ export default function UserManagement() {
                 onChange={(e) => setCurrentUser({ ...currentUser, email: e.target.value })}
               />
               <TextField
-                label={isEditing ? "Nova Senha (deixe em branco para não alterar)" : "Senha"}
+                label={isEditing ? "Nova Senha ou senha atual " : "Senha"}
                 type="password"
                 required={!isEditing}
                 fullWidth
                 value={currentUser.password}
                 onChange={(e) => setCurrentUser({ ...currentUser, password: e.target.value })}
               />
-              {/* <TextField
-                label="URL da Imagem de Perfil"
-                fullWidth
-                placeholder="https://exemplo.com/foto.jpg"
-                value={currentUser.url}
-                onChange={(e) => setCurrentUser({ ...currentUser, url: e.target.value })}
-              /> */}
+              
               <Box sx={{ p: 1, border: '1px solid', borderColor: 'divider', borderRadius: 2 }}>
                 <Typography>Imagens: </Typography>
                 <Box sx={{ display: 'flex', flexDirection: "row", overflowX: 'auto', maxWidth: '100%', py: 1, scrollbarWidth: 'thin' }}>

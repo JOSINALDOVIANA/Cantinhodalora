@@ -1,28 +1,11 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { api } from "../api.jsx";
 
-// Função para buscar categorias
-const fetchCategories = async () => {
-    const { data } = await api.get("/api/categories");
-    return data.categories;
-};
 
-// Função para atualizar categoria
-const updateCategory = async (payload) => {
-    const { data } = await api.put(`/api/categories/${payload?.id}`, { ...payload });
-    return data;
-};
-// Função para add   categoria
-const addCategory = async (payload) => {
-    // console.log("payload", payload);
-    const { data } = await api.post(`/api/categories`, payload);
-    return data;
-};
-// Função para delete   categoria
-const deleteCategory = async (payload) => {
-    const { data } = await api.delete(`/api/categories/${payload?.id}`);
-    return data;
-};
+
+
+
+
 
 // Hook para carregar categorias
 export function useLoadCategories() {
@@ -30,29 +13,28 @@ export function useLoadCategories() {
         data: categories,
         isLoading: loadingCategories,
         error,
+        refetch: refetchCategories
     } = useQuery({
         queryKey: ["categories"],
-        queryFn: fetchCategories,
+        queryFn: async () => {
+            const { data } = await api.get("/api/categories");
+            return data.categories;
+        },
         staleTime: 60000,  // cache válido por 1 min
         gcTime: 300000,    // garbage collector em 5 min
     });
 
-    return { categories, loadingCategories, error };
+    return { categories, loadingCategories, error, refetchCategories };
 }
-
-// Hook para refresh (revalida a query)
-export function useRefreshCategories() {
-    const queryClient = useQueryClient();
-    return () => {
-        queryClient.invalidateQueries({ queryKey: ["categories"] });
-    };
-}
-
 // Hook para update
 export function useUpdateCategory() {
     const queryClient = useQueryClient();
     return useMutation({
-        mutationFn: updateCategory,
+        mutationFn: async (payload) => {
+            console.log("entrou aqui ")
+            const { data } = await api.put(`/api/categories/${payload?.id}`, { ...payload });
+            return data;
+        },
         onSuccess: () => {
             // Após atualizar, força refresh da lista
             queryClient.invalidateQueries({ queryKey: ["categories"] });
@@ -63,7 +45,10 @@ export function useUpdateCategory() {
 export function useAddCategory() {
     const queryClient = useQueryClient();
     return useMutation({
-        mutationFn: addCategory,
+        mutationFn: async (payload) => {
+            const { data } = await api.post(`/api/categories`, payload);
+            return data;
+        },
         onSuccess: () => {
             // Após atualizar, força refresh da lista
             queryClient.invalidateQueries({ queryKey: ["categories"] });
@@ -75,7 +60,10 @@ export function useAddCategory() {
 export function useDeleteCategory() {
     const queryClient = useQueryClient();
     return useMutation({
-        mutationFn: deleteCategory,
+        mutationFn: async (payload) => {
+            const { data } = await api.delete(`/api/categories/${payload?.id}`);
+            return data;
+        },
         onSuccess: () => {
             // Após atualizar, força refresh da lista
             queryClient.invalidateQueries({ queryKey: ["categories"] });

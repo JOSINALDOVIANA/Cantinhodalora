@@ -379,9 +379,10 @@ export const updateUser = async (req, res) => {
   const { id } = req.params;
   let { name, email, password, image_id = null, adm = false, images = [], others_info = {},status=true } = req.body;
   // console.log('Updating user with ID:', id, 'Data:', userData);
+  const {hast}=gerarHash(password)
   others_info = JSON.stringify(others_info);
   try {
-    const updated = await conexao('users').where({ id }).update({ name, email, password, image_id, adm, others_info,status });
+    const updated = await conexao('users').where({ id }).update({ name, email, password:hast, image_id, adm, others_info,status });
     const imagesDelete = await conexao('user_images').where({ user_id: id }).delete();
 
     if (!updated) {

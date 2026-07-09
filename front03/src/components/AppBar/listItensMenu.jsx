@@ -55,7 +55,7 @@ export default function ListItensMenu({ color }) {
               </ListItem>
             }
             {/* wifi */}
-            {Dados?.logado  &&
+            {Dados?.logado  && window.location.pathname === '/minha-conta' &&
               <ListItem
                 selected={Dados?.activeTabPerfil === 'WifiConfigs'}
                 onClick={() => setDados({ ...Dados, activeTabPerfil: 'WifiConfigs' })}

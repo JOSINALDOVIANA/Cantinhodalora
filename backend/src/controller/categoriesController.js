@@ -171,10 +171,11 @@ export const createCategory = async (req, res) => {
  *         description: Erro ao atualizar categoria
  */
 export const updateCategory = async (req, res) => {
-  const { id, name } = req.body;
+  const { id, description } = req.body;
   try {
-    const updated = await db('categories').where({ id }).update({ name });
-    if (!updated) {
+    const updated = await db('categories').where({ id }).update({ description });
+    if (!updated) {      
+      res.status(401);
       return res.json({ category: {} })
     }
     return await getCategoryById(req, res);

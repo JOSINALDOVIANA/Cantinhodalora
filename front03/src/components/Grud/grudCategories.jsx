@@ -28,12 +28,11 @@ import {
     useAddCategory,
     useUpdateCategory,
     useDeleteCategory,
-    useRefreshCategories,
 } from "../../services/UseQuery/CategoriesQuery.jsx"; // ajuste o caminho conforme sua estrutura
 
 export default function CategoriesManager() {
-    const { categories, loadingCategories, error } = useLoadCategories();
-    const refreshCategories = useRefreshCategories();
+    const { categories, loadingCategories, error, refetchCategories } = useLoadCategories();
+
 
     const addMutation = useAddCategory();
     const updateMutation = useUpdateCategory();
@@ -45,14 +44,85 @@ export default function CategoriesManager() {
     const handleAdd = (e) => {
         e.preventDefault();
         if (!newCategory.trim()) return;
-        addMutation.mutate({ description: newCategory.trim() });
+
+        Swal.fire({
+            title: "Tem certeza?",
+            text: `Você deseja Criar a categoria "${newCategory}"?`,
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "rgb(51, 221, 51)",
+            cancelButtonColor: "#3085d6",
+            confirmButtonText: "Sim, Criar!",
+            cancelButtonText: "Cancelar",
+        }).then((result) => {
+            if (result.isConfirmed) {
+                addMutation.mutate({ description: newCategory.trim() }, {
+                    onSuccess: () => {
+                        Swal.fire({
+                            title: "Criada!",
+                            text: "A categoria foi criada com sucesso.",
+                            icon: "success",
+                            timer: 1500,
+                            showConfirmButton: false,
+                        });
+                        refetchCategories();
+                    },
+                    onError:()=>{
+                         Swal.fire({
+                            title: "ERRO!",
+                            text: "A categoria não foi salva",
+                            icon: "error",
+                            timer: 1500,
+                            showConfirmButton: false,
+                        });
+                    }
+                });
+
+            }
+        });
+
         setNewCategory("");
     };
 
     const handleSaveEdit = () => {
-        if (!editCategory?.description?.trim()) return;
-        updateMutation.mutate(editCategory);
-        setEditCategory(null);
+        if (!editCategory?.description?.trim()){ return};
+        Swal.fire({
+            title: "Tem certeza?",
+            text: `Você deseja editar esta categoria?`,
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "rgb(65, 221, 51)",
+            cancelButtonColor: "#3085d6",
+            confirmButtonText: "Sim, Editar!",
+            cancelButtonText: "Cancelar",
+        }).then((result) => {
+            if (result.isConfirmed) {
+                updateMutation.mutate(editCategory, {
+                    onSuccess: () => {
+                        refetchCategories();
+                        Swal.fire({
+                            title: "Editada!",
+                            text: "A categoria foi alterada com sucesso.",
+                            icon: "success",
+                            timer: 1500,
+                            showConfirmButton: false,
+                        });
+                        setEditCategory(null);
+                    },
+                    onError:()=>{
+                         Swal.fire({
+                            title: "ERRO!",
+                            text: "A categoria não foi alterada ",
+                            icon: "error",
+                            timer: 1500,
+                            showConfirmButton: false,
+                        });
+                    }
+                });
+
+            }
+        });
+
     };
 
     const handleDelete = (cat) => {
@@ -67,14 +137,28 @@ export default function CategoriesManager() {
             cancelButtonText: "Cancelar",
         }).then((result) => {
             if (result.isConfirmed) {
-                deleteMutation.mutate({ id: cat.id });
-                Swal.fire({
-                    title: "Excluída!",
-                    text: "A categoria foi removida com sucesso.",
-                    icon: "success",
-                    timer: 1500,
-                    showConfirmButton: false,
+                deleteMutation.mutate({ id: cat.id }, {
+                    onSuccess: () => {
+                        Swal.fire({
+                            title: "Excluída!",
+                            text: "A categoria foi removida com sucesso.",
+                            icon: "success",
+                            timer: 1500,
+                            showConfirmButton: false,
+                        });
+                        refetchCategories()
+                    },
+                    onError:()=>{
+                        Swal.fire({
+                            title: "ERRO!",
+                            text: "A categoria não foi removida ",
+                            icon: "error",
+                            timer: 1500,
+                            showConfirmButton: false,
+                        });
+                    }
                 });
+
             }
         });
     };
@@ -113,11 +197,11 @@ export default function CategoriesManager() {
                 >
                     Gerenciar Categorias
                 </Typography>
-                <Tooltip title="Atualizar Lista" arrow 
+                <Tooltip title="Atualizar Lista" arrow
                 // TransitionComponent={Zoom}
                 >
                     <IconButton
-                        onClick={refreshCategories}
+                        onClick={refetchCategories}
                         color="primary"
                         sx={{
                             border: "1px solid",
@@ -306,11 +390,11 @@ export default function CategoriesManager() {
                                     <>
                                         <ListItemText
                                             primary={cat.description}
-                                            // primaryTypographyProps={{
-                                            //     fontWeight: 600,
-                                            //     color: "text.primary",
-                                            //     fontSize: "1rem",
-                                            // }}
+                                        // primaryTypographyProps={{
+                                        //     fontWeight: 600,
+                                        //     color: "text.primary",
+                                        //     fontSize: "1rem",
+                                        // }}
                                         />
                                         <Box sx={{ display: "flex", gap: 1 }}>
                                             <Tooltip title="Editar" arrow>
