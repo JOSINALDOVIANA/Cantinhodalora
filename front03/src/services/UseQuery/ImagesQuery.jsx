@@ -60,11 +60,10 @@ export function useDeleteImage() {
     const queryClient = useQueryClient();
     return useMutation({
         mutationfn: async (image) => {
-            await api.delete(`/api/images?id=${image.id}&key=${image.Key}`);
+           const data = await api.delete(`/api/images?id=${image.id}&key=${image.Key}`);
+            return data;
         },
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["images"] });
-        }
+        
     }
 
     );

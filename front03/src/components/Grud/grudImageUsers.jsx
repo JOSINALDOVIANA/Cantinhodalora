@@ -26,11 +26,11 @@ import {
     Upload,
 } from "@mui/icons-material";
 import Swal from "sweetalert2";
-import { LoadImagesUsers, useDeleteImage} from "../../services/UseQuery/ImagesQuery";
+import { LoadImagesUsers, useDeleteImage } from "../../services/UseQuery/ImagesQuery";
 import UploadImageProd from "../../functions/UploadImageProd";
 
 export default function ImagesUsersManager() {
-    const { error,imagesUsers,loadingImagesUsers,refetchImagesUsers } = LoadImagesUsers();
+    const { error, imagesUsers, loadingImagesUsers, refetchImagesUsers } = LoadImagesUsers();
     const deleteMutation = useDeleteImage();
     const handleDelete = (img) => {
         Swal.fire({
@@ -44,14 +44,19 @@ export default function ImagesUsersManager() {
             cancelButtonText: "Cancelar",
         }).then((result) => {
             if (result.isConfirmed) {
-                deleteMutation.mutate(img);
-                Swal.fire({
-                    title: "Excluída!",
-                    text: "A categoria foi removida com sucesso.",
-                    icon: "success",
-                    timer: 1500,
-                    showConfirmButton: false,
+                deleteMutation.mutate(img, {
+                    onSuccess: () => {
+                        refetchImagesUsers();
+                        Swal.fire({
+                            title: "Excluída!",
+                            text: "A categoria foi removida com sucesso.",
+                            icon: "success",
+                            timer: 1500,
+                            showConfirmButton: false,
+                        });
+                    }
                 });
+
             }
         });
     };
@@ -90,7 +95,7 @@ export default function ImagesUsersManager() {
                 >
                     Gerenciar Images/usuarios
                 </Typography>
-                <Tooltip title="Atualizar Lista" arrow 
+                <Tooltip title="Atualizar Lista" arrow
                 // TransitionComponent={Zoom}
                 >
                     <IconButton
@@ -113,10 +118,10 @@ export default function ImagesUsersManager() {
             </Box>
 
             {/* Adicionar Image */}
-            
-                <UploadImageProd props={{ upUrl: "/api/images/uploadUser", refetchImages: () => refetchImagesUsers() }} />
-                
-           
+
+            <UploadImageProd props={{ upUrl: "/api/images/uploadUser", refetchImages: () => refetchImagesUsers() }} />
+
+
 
             {/* Conteúdo principal / Lista */}
             {loadingImagesUsers ? (
@@ -245,7 +250,7 @@ export default function ImagesUsersManager() {
                                 ) : (
                                     <>
                                         <ListItemAvatar>
-                                            <Avatar variant="rounded" sx={{width:100,height:100}} alt={img?.name} src={img?.urlfull||img?.url} />
+                                            <Avatar variant="rounded" sx={{ width: 100, height: 100 }} alt={img?.name} src={img?.urlfull || img?.url} />
                                         </ListItemAvatar>
                                         <Box sx={{ display: "flex", gap: 1 }}>
                                             {/* <Tooltip title="Editar" arrow>
