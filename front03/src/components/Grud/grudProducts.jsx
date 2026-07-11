@@ -46,6 +46,7 @@ import { api } from "../../services/api.jsx";
 import { useLoadImagesProducts } from "../../services/UseQuery/ImagesQuery.jsx";
 import { useLoadCategories } from "../../services/UseQuery/CategoriesQuery.jsx";
 import { uniqueId } from "lodash";
+import UploadImageUser from "../../functions/UploadImageProd.jsx";
 
 export default function ProductsManager() {
     const { imagesProducts, loadingImagesProducts, refreshImages } = useLoadImagesProducts();
@@ -274,7 +275,7 @@ export default function ProductsManager() {
                     Novo Produto
                 </Typography>
                 <Grid container spacing={2}>
-                    <Grid item xs={12} sm={6}>
+                    <Grid  xs={12} sm={6}>
                         <TextField
                             fullWidth
                             size="small"
@@ -284,8 +285,7 @@ export default function ProductsManager() {
                             onChange={(e) => setNewProduct({ ...newProduct, name: e.target.value })}
                         />
                     </Grid>
-
-                    <Grid item xs={12}>
+                    <Grid  xs={12}>
                         <TextField
                             fullWidth
                             size="small"
@@ -298,7 +298,7 @@ export default function ProductsManager() {
                             }
                         />
                     </Grid>
-                    <Grid item xs={12} sm={4}>
+                    <Grid  xs={12} sm={4}>
                         <TextField
                             fullWidth
                             size="small"
@@ -308,18 +308,18 @@ export default function ProductsManager() {
                             placeholder="Ex: 500ml, 1kg, Unitário"
                         />
                     </Grid>
-                    <Grid item xs={12} sm={4}>
+                    <Grid  xs={12} sm={4}>
                         <TextField
                             fullWidth
                             size="small"
                             label="Preço (R$)"
                             type="number"
-                            inputProps={{ step: "0.01" }}
+                            // inputProps={{ step: "0.01" }}
                             value={newProduct.price}
                             onChange={(e) => setNewProduct({ ...newProduct, price: e.target.value })}
                         />
                     </Grid>
-                    <Grid item xs={12} sm={4}>
+                    <Grid  xs={12} sm={4}>
                         <TextField
                             fullWidth
                             size="small"
@@ -329,7 +329,7 @@ export default function ProductsManager() {
                             onChange={(e) => setNewProduct({ ...newProduct, unit: e.target.value })}
                         />
                     </Grid>
-                    <Grid item xs={12} sm={6}>
+                    <Grid  xs={12} sm={6}>
                         {/* <TextField
                             fullWidth
                             size="small"
@@ -374,153 +374,14 @@ export default function ProductsManager() {
                                 >
                                     Selecionar
                                 </Button>
-
-
-                                <IconButton
-                                    sx={{
-
-                                        mr: 2
-                                    }}
-                                    color="success"
-                                    component="label">
-                                    <input id='img' hidden accept="image/*" type="file"
-                                        onChange={async (ee) => {
-
-                                            const files = ee.target.files;
-                                            let uploadedFiles = []
-
-
-                                            for (let iterator of files) {
-
-                                                uploadedFiles.push(
-                                                    {
-                                                        "file": iterator,
-                                                        "id": uniqueId(),//definindo um id unico 
-                                                        "name": iterator.name,
-                                                        "prod": false,
-                                                        "readableSize": iterator.size,
-                                                        preview: URL.createObjectURL(iterator), // criando um link para preview da foto carregada
-                                                        url: URL.createObjectURL(iterator),// sera usado para setar a variavel img no proprietario/index.js
-                                                    }
-                                                )
-                                            }
-
-
-
-                                            // CRIANDO UM DATAFORM
-                                            const data = new FormData();
-                                            data.append('file', uploadedFiles[0].file, uploadedFiles[0].name);
-
-                                            // SALVANDO NOVA IMAGEM
-                                            // console.log(data)
-
-                                            // try {
-                                            //     await api.post(`/api/images/uploadProduct`, data, {
-                                            //         onUploadProgress: e => {
-                                            //             let progr = parseInt(Math.round((e.loaded * 100) / e.total));
-                                            //             // setProgress(a => a + progr)
-                                            //         }
-                                            //     }).then(r => {
-
-                                            //         Swal.mixin({
-                                            //             toast: true,
-                                            //             position: "top-end",
-                                            //             showConfirmButton: false,
-                                            //             timer: 3000,
-                                            //             timerProgressBar: true,
-                                            //             didOpen: (toast) => {
-                                            //                 toast.onmouseenter = Swal.stopTimer;
-                                            //                 toast.onmouseleave = Swal.resumeTimer;
-                                            //             }
-                                            //         }).fire({
-                                            //             icon: "success",
-                                            //             title: "Signed in successfully"
-                                            //         });
-
-
-
-                                            //     })
-                                            //     await api.get(`/api/images/getAllImages?is_product=true`).then(r => {
-                                            //         setDados(a => ({ ...a, imagesProducts: r.data.images }))
-                                            //     })
-
-                                            // } catch (error) {
-
-                                            //     alert("formato nao aceito");
-
-                                            //     Swal.mixin({
-                                            //         toast: true,
-                                            //         position: "top-end",
-                                            //         showConfirmButton: false,
-                                            //         timer: 3000,
-                                            //         timerProgressBar: true,
-                                            //         didOpen: (toast) => {
-                                            //             toast.onmouseenter = Swal.stopTimer;
-                                            //             toast.onmouseleave = Swal.resumeTimer;
-                                            //         }
-                                            //     }).fire({
-                                            //         icon: "error",
-                                            //         title: "Formato de arquivo não aceito"
-                                            //     })
-
-                                            // }
-
-                                            try {
-                                                const response = await api.post(`/api/images/uploadProduct`, data, {
-                                                    onUploadProgress: e => {
-                                                        const progress = Math.round((e.loaded * 100) / e.total);
-                                                        // setProgress(progress); // se quiser mostrar progresso
-                                                    }
-                                                });
-
-                                                // Toast de sucesso
-                                                Swal.mixin({
-                                                    toast: true,
-                                                    position: "top-end",
-                                                    showConfirmButton: false,
-                                                    timer: 3000,
-                                                    timerProgressBar: true,
-                                                    didOpen: toast => {
-                                                        toast.onmouseenter = Swal.stopTimer;
-                                                        toast.onmouseleave = Swal.resumeTimer;
-                                                    }
-                                                }).fire({
-                                                    icon: "success",
-                                                    title: "Upload realizado com sucesso!"
-                                                });
-
-                                                // Buscar imagens atualizadas
-                                                refreshImages();
-                                            } catch (error) {
-                                                console.error(error);
-
-                                                Swal.mixin({
-                                                    toast: true,
-                                                    position: "top-end",
-                                                    showConfirmButton: false,
-                                                    timer: 3000,
-                                                    timerProgressBar: true,
-                                                    didOpen: toast => {
-                                                        toast.onmouseenter = Swal.stopTimer;
-                                                        toast.onmouseleave = Swal.resumeTimer;
-                                                    }
-                                                }).fire({
-                                                    icon: "error",
-                                                    title: "Formato de arquivo não aceito"
-                                                });
-                                            }
-
-                                        }}
-                                    />
-
-                                    <PhotoCamera />
-                                </IconButton>
+                                <UploadImageUser props={{upUrl:"/api/images/uploadProduct",refetchImages:()=>refreshImages()}}/>
+                                
 
                             </Box>
                         </Box>
 
                     </Grid>
-                    <Grid item xs={12} sm={6}>
+                    <Grid  xs={12} sm={6}>
                         <Box
                             sx={{ p: 1, border: '1px solid', borderColor: 'divider', borderRadius: 2 }}
                         >
@@ -554,7 +415,7 @@ export default function ProductsManager() {
                             ))}
                         </Box>
                     </Grid>
-                    <Grid item xs={12} sx={{ display: "flex", justifyContent: "flex-end" }}>
+                    <Grid  xs={12} sx={{ display: "flex", justifyContent: "flex-end" }}>
                         <Button
                             type="submit"
                             variant="contained"

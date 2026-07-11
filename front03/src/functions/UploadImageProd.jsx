@@ -71,7 +71,7 @@ export default function UploadImageUser({ props }) {
       props.refetchImages();
 
     } catch (error) {
-      console.error(error);
+      // console.error(error);
       Swal.fire({
         toast: true,
         position: "center",

@@ -31,7 +31,7 @@ export function useUpdateCategory() {
     const queryClient = useQueryClient();
     return useMutation({
         mutationFn: async (payload) => {
-            console.log("entrou aqui ")
+            // console.log("entrou aqui ")
             const { data } = await api.put(`/api/categories/${payload?.id}`, { ...payload });
             return data;
         },

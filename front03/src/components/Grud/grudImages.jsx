@@ -125,7 +125,7 @@ export default function ImagesManager() {
                     mb: 4,
                 }}
             >
-                <UploadImageProd props={{upUrl:'/api/images/uploadProduct', rrefetchImages:()=>refreshImages()}} />
+                <UploadImageProd props={{upUrl:'/api/images/uploadProduct', refetchImages:()=>refreshImages()}} />
                 {/* <Button
                     type="submit"
                     variant="contained"

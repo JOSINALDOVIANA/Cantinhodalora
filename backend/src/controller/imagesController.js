@@ -421,7 +421,7 @@ export const ImageStatic = async (req, res) => {
     try {
         // se já existe no cache, serve direto
         if (fs.existsSync(cachedPath)) {
-            res.set('Cache-Control', 'public, max-age=2592000, immutable');
+            res.set('Cache-Control', 'public, max-age=31536000, immutable');
             res.type('image/webp');
             return fs.createReadStream(cachedPath).pipe(res);
         }
@@ -434,7 +434,7 @@ export const ImageStatic = async (req, res) => {
         fs.mkdirSync(path.dirname(cachedPath), { recursive: true });
 
         const writeStream = fs.createWriteStream(cachedPath);
-        res.set('Cache-Control', 'public, max-age=2592000, immutable');
+        res.set('Cache-Control', 'public, max-age=31536000, immutable');
         res.type('image/webp');
 
         // envia ao cliente e salva no cache ao mesmo tempo
