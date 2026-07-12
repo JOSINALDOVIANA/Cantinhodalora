@@ -60,7 +60,7 @@ function Categories() {
                                 minHeight: 56,
                                 fontWeight: 600,
                                 color: "text.secondary",
-                                "&.Mui-selected": { color: "primary.light" },
+                                "&.Mui-selected": { color: "primary.main" },
                             },
                         }}
                     >

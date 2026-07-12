@@ -21,6 +21,8 @@ import {
   AvatarGroup,
   alpha,
   useTheme,
+  Menu,
+  MenuItem,
 } from '@mui/material';
 import { green, red } from '@mui/material/colors';
 
@@ -29,7 +31,7 @@ import AttachFileIcon from '@mui/icons-material/AttachFile';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import LockIcon from '@mui/icons-material/Lock';
 import LockOpenIcon from '@mui/icons-material/LockOpen';
-
+import KeyboardDoubleArrowDownIcon from '@mui/icons-material/KeyboardDoubleArrowDown';
 
 
 import { DadosContext } from '../../services/Contexts/DadosContext.jsx'
@@ -41,6 +43,9 @@ import gerarCorAleatoriaRGB from '../../functions/RandomColors.jsx';
 export default function Chat() {
   const [newMensagem, setNewMensagem] = useState({ from: 'public', destino: 'all', origem: {} });
   const { Dados, setDados } = React.useContext(DadosContext);
+  const [anchorElUsers, setAnchorElUsers] = useState(null);
+  const usuariosMenuOpen = Boolean(anchorElUsers);
+  
   const [input, setInput] = useState('');
   const [socketIo, setSocketIo] = useState(null);
   const listRef = useRef(null);
@@ -68,6 +73,8 @@ export default function Chat() {
       },
     },
   };
+
+
 
 
 
@@ -120,7 +127,13 @@ export default function Chat() {
   // console.log(Dados.chat);
 
 
+const handleOpenUsuariosMenu = (event) => {
+    setAnchorElUsers(event.currentTarget);
+  };
 
+  const handleCloseUsuariosMenu = () => {
+    setAnchorElUsers(null);
+  };
 
 
 
@@ -146,11 +159,48 @@ export default function Chat() {
             <Typography variant="caption" >{Dados.chat?.user?.name || 'Visitante'}</Typography>
 
           </Box>
-          <AvatarGroup max={4}>
+          {/* <AvatarGroup max={4}>
             {Dados.chat?.usuariosOnline?.map((u) => (
               <Avatar key={u.id} sx={{ bgcolor: u.cor || 'primary.main' }}>{u.name[0].toUpperCase()}</Avatar>
             ))}
-          </AvatarGroup>
+          </AvatarGroup> */}
+          <Typography variant="caption" sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+            Usuários online {Dados?.chat?.usuariosOnline?.length}
+          </Typography>
+          <IconButton
+            size="small"
+            aria-controls={Dados?.chat?.usuariosOnline ? 'usuarios-online-menu' : undefined}
+            aria-haspopup="true"
+            aria-expanded={Dados?.chat?.usuariosOnline ? 'true' : undefined}
+            onClick={handleOpenUsuariosMenu}
+          >
+            <KeyboardDoubleArrowDownIcon />
+          </IconButton>
+
+          <Menu
+          id="usuarios-online-menu"
+          anchorEl={anchorElUsers}
+          open={usuariosMenuOpen}
+          onClose={handleCloseUsuariosMenu}
+          anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+          transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+          sx={{width:500}}
+        >
+          {Dados?.chat?.usuariosOnline?.length > 0 ? (
+            Dados?.chat?.usuariosOnline?.map((u) => (
+              <MenuItem sx={{width:"15vw"}} key={u.id} onClick={()=>{
+                setNewMensagem(a => ({ ...a, destino: u }));
+              }}>
+                <Box sx={{ width:"100%",display:'flex',justifyContent:"space-between"}}>
+                  <Avatar sx={{width: 24, height: 24,background:u.color}}>{u.name[0]}</Avatar>
+                  <Typography sx={{letterSpacing:4,fontSize:16}}>{u.name}</Typography>
+                </Box>
+              </MenuItem>
+            ))
+          ) : (
+            <MenuItem disabled>Nenhum usuário online</MenuItem>
+          )}
+        </Menu>
         </Box>
 
         {/* area das mensgaens */}
