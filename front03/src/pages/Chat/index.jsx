@@ -45,7 +45,7 @@ export default function Chat() {
   const { Dados, setDados } = React.useContext(DadosContext);
   const [anchorElUsers, setAnchorElUsers] = useState(null);
   const usuariosMenuOpen = Boolean(anchorElUsers);
-  
+
   const [input, setInput] = useState('');
   const [socketIo, setSocketIo] = useState(null);
   const listRef = useRef(null);
@@ -79,7 +79,7 @@ export default function Chat() {
 
 
   useEffect(() => {
-    // vps
+
     const socket = window.location.origin.includes('localhost') ? io(url) : io("wss://cantinhodalora.info", {
       transports: ["websocket"],   // força uso de WebSocket
       secure: true,                // garante SSL/TLS
@@ -127,7 +127,7 @@ export default function Chat() {
   // console.log(Dados.chat);
 
 
-const handleOpenUsuariosMenu = (event) => {
+  const handleOpenUsuariosMenu = (event) => {
     setAnchorElUsers(event.currentTarget);
   };
 
@@ -150,68 +150,106 @@ const handleOpenUsuariosMenu = (event) => {
 
 
   return (
-    <Box sx={{ mt: 10, display: 'flex', justifyContent: 'center', minHeight: '100vh', maxHeight: '100vh' }}>
-      <Paper sx={{ width: '90%', maxHeight: '90vh', display: 'flex', flexDirection: 'column', borderRadius: 5 }} elevation={1}>
-        {/*cabeçalho */}
-        <Box component={Paper} elevation={2} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 1, p: 2, borderBottom: '1px solid', borderColor: 'divider', borderRadius: '20px 20px 0 0' }}>
-          <Box>
-            <Typography variant="subtitle1">Bem vindo ao Chat</Typography>
-            <Typography variant="caption" >{Dados.chat?.user?.name || 'Visitante'}</Typography>
+    <Box sx={{
+      mt: 10,
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: "center",
+      height: "32rem",
+      width: "100%",
+      p: 2
 
+    }}>
+      <Paper sx={{
+        width: "100%",
+        height: "32rem",
+        display: 'flex',
+        flexDirection: 'column',
+        borderRadius: 5
+      }} elevation={1}>
+        {/*cabeçalho */}
+        <Box component={Paper} elevation={2}
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            gap: 1, p: 2,
+            borderBottom: '1px solid',
+            borderColor: 'divider',
+            borderRadius: '20px 20px 0 0'
+          }}
+        >
+
+          <Typography variant="subtitle1">Bem vindo ao Chat</Typography>
+          {/* <Typography variant="caption" >{Dados.chat?.user?.name || 'Visitante'}</Typography> */}
+
+
+
+          <Box sx={{ display: "flex", width: "30%", alignItems: "centrer", justifyContent: "space-between" }}>
+            <Typography variant="caption" sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+              onlines {Dados?.chat?.usuariosOnline?.length}
+            </Typography>
+
+            <IconButton
+
+              size="small"
+              aria-controls={Dados?.chat?.usuariosOnline ? 'usuarios-online-menu' : undefined}
+              aria-haspopup="true"
+              aria-expanded={Dados?.chat?.usuariosOnline ? 'true' : undefined}
+              onClick={handleOpenUsuariosMenu}
+            >
+              <KeyboardDoubleArrowDownIcon sx={{ color: theme.palette.getContrastText(theme.palette.background.paper) }} />
+            </IconButton>
           </Box>
-          {/* <AvatarGroup max={4}>
-            {Dados.chat?.usuariosOnline?.map((u) => (
-              <Avatar key={u.id} sx={{ bgcolor: u.cor || 'primary.main' }}>{u.name[0].toUpperCase()}</Avatar>
-            ))}
-          </AvatarGroup> */}
-          <Typography variant="caption" sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-            Usuários online {Dados?.chat?.usuariosOnline?.length}
-          </Typography>
-          <IconButton
-            size="small"
-            aria-controls={Dados?.chat?.usuariosOnline ? 'usuarios-online-menu' : undefined}
-            aria-haspopup="true"
-            aria-expanded={Dados?.chat?.usuariosOnline ? 'true' : undefined}
-            onClick={handleOpenUsuariosMenu}
-          >
-            <KeyboardDoubleArrowDownIcon />
-          </IconButton>
 
           <Menu
-          id="usuarios-online-menu"
-          anchorEl={anchorElUsers}
-          open={usuariosMenuOpen}
-          onClose={handleCloseUsuariosMenu}
-          anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-          transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-          sx={{width:500}}
-        >
-          {Dados?.chat?.usuariosOnline?.length > 0 ? (
-            Dados?.chat?.usuariosOnline?.map((u) => (
-              <MenuItem sx={{width:"15vw"}} key={u.id} onClick={()=>{
-                setNewMensagem(a => ({ ...a, destino: u }));
-              }}>
-                <Box sx={{ width:"100%",display:'flex',justifyContent:"space-between"}}>
-                  <Avatar sx={{width: 24, height: 24,background:u.color}}>{u.name[0]}</Avatar>
-                  <Typography sx={{letterSpacing:4,fontSize:16}}>{u.name}</Typography>
-                </Box>
-              </MenuItem>
-            ))
-          ) : (
-            <MenuItem disabled>Nenhum usuário online</MenuItem>
-          )}
-        </Menu>
+            id="usuarios-online-menu"
+            anchorEl={anchorElUsers}
+            open={usuariosMenuOpen}
+            onClose={handleCloseUsuariosMenu}
+            anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+            transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+            
+            
+          >
+            <MenuItem sx={{ minWidth:"50vw" }} key={uuidv4} onClick={() => {
+              setNewMensagem({ from: 'public', destino: 'all' });
+              handleCloseUsuariosMenu();
+
+            }}>
+              <Box sx={{display: 'flex', justifyContent: "space-between",width:"100%"}}>
+                <Avatar sx={{ width: 24, height: 24, background: gerarCorAleatoriaRGB() }}>T</Avatar>
+                <Typography sx={{ letterSpacing: 2, fontSize: 16 }}>Todos</Typography>
+              </Box>
+            </MenuItem>
+
+            {Dados?.chat?.usuariosOnline?.length > 0 ? (
+              Dados?.chat?.usuariosOnline?.map((u) => (
+                <MenuItem sx={{ width: "50vw" }} key={u.id} onClick={() => {
+                  setNewMensagem(a => ({ ...a, destino: u }));
+                  handleCloseUsuariosMenu();
+                }}>
+                  <Box sx={{display: 'flex', justifyContent: "space-between",width:"100%" }}>
+                    <Avatar sx={{ mr:1,width: 24, height: 24, background: u.color }}>{u.name[0]}</Avatar>
+                    <Typography sx={{ letterSpacing: 2, fontSize: 16 }}>{u.name}</Typography>
+                  </Box>
+                </MenuItem>
+              ))
+            ) : (
+              <MenuItem disabled>Nenhum usuário online</MenuItem>
+            )}
+          </Menu>
         </Box>
 
         {/* area das mensgaens */}
-        <Box ref={listRef} sx={{ flex: 1, overflowY: 'auto', p: 2, backgroundColor: '#d5d5d5' }}>
+        <Box ref={listRef} sx={{ flex: 1, overflowY: 'auto', p: 1, backgroundColor: '#ada7a7' }}>
           <List sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
 
             {Dados?.chat?.mensagens?.map((m) => (
               <ListItem key={uuidv4()}
                 sx={{
                   display: 'flex',
-                  alignItems: 'flex-end',
+                  
 
                   // isso vai controlar o lado que aparece a mensgem 
                   justifyContent: m?.origem?.id === Dados.chat?.user?.id ? 'flex-end' : 'flex-start',
@@ -224,17 +262,18 @@ const handleOpenUsuariosMenu = (event) => {
                     elevation={2}
                     sx={{
                       overflow: 'hidden',
-                      p: 1.5,
-                      maxWidth: '80%',
+                      p: 1,
+                      width:"50vw",
                       borderRadius: 2,
-                      backgroundColor: m?.destino?.color
+                      backgroundColor: m?.destino?.color,
+                      // border:"#f30f07 solid 1px"
                     }}>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5, flex: 1 }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5, flex: 1,borderBottom:"1px solid",borderColor:"divider"}}>
                       <Typography variant="body2"
                         sx={{
-                          fontWeight: 'bold',
+                          letterSpacing: 1, fontSize: "0.9rem"
                         }}>
-                        {m?.origem?.name?.toUpperCase() || 'Desconecido'} {m?.from === 'private' ? 'privado' : null}  Para {m?.destino === 'all' ? 'Todos' : m?.destino.name.toUpperCase() || 'Desconecido'}
+                        {"=> " + m?.origem?.name?.toUpperCase() || 'Desconecido'} {m?.from === 'private' ? 'privado' : null}  Para {m?.destino === 'all' ? 'Todos' : m?.destino.name.toUpperCase() || 'Desconecido'}
                       </Typography>
 
                     </Box>
@@ -257,15 +296,17 @@ const handleOpenUsuariosMenu = (event) => {
                     sx={{
                       cursor: "pointer",
                       overflow: 'hidden', // evita transbordo interno
-                      p: 1.5,
-                      maxWidth: '70%',
+                      p: 1,
+                      width:"50%",
                       borderRadius: 2,
-                      backgroundColor: m?.origem?.color
+                      backgroundColor: m?.origem?.color,
+                      border: m?.destino?.id === Dados?.chat?.user?.id ? "#f30f07 solid 1px" : null
+
                     }}
                   >
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
-                      <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
-                        {m?.origem?.name?.toUpperCase() || 'Desconecido'} {m?.from === 'private' ? 'privado' : null}  Para {m?.destino === 'all' ? 'Todos' : m?.destino?.name?.toUpperCase() || 'Desconecido'}
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5,borderBottom:"1px solid",borderColor:"divider" }}>
+                      <Typography sx={{ letterSpacing: 1, fontSize: "0.9rem" }}>
+                        {"=> " + m?.origem?.name?.toUpperCase() || 'Desconecido'} {m?.from === 'private' ? 'privado' : null}  Para {m?.destino === 'all' ? 'Todos' : m?.destino?.name?.toUpperCase() || 'Desconecido'}
                       </Typography>
 
                     </Box>
@@ -290,14 +331,16 @@ const handleOpenUsuariosMenu = (event) => {
                       cursor: "pointer",
                       overflow: 'hidden', // evita transbordo interno
                       p: 1.5,
-                      maxWidth: '70%',
+                      maxWidth: '20rem',
+                      minWidth: "20rem",
                       borderRadius: 2,
-                      backgroundColor: m?.origem?.color
+                      backgroundColor: m?.origem?.color,
+                      border: m?.destino?.id === Dados?.chat?.user?.id ? "#f30f07 solid 1px" : null
                     }}
                   >
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
-                      <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
-                        {m?.origem?.name?.toUpperCase() || 'Desconecido'} {m?.from === 'private' ? 'privado' : null}  Para {m?.destino === 'all' ? 'Todos' : m?.destino?.name?.toUpperCase() || 'Desconecido'}
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5,borderBottom:"1px solid",borderColor:"divider" }}>
+                      <Typography variant="body2" sx={{ letterSpacing: 1, fontSize: "0.9rem" }}>
+                        {"=> " + m?.origem?.name?.toUpperCase() || 'Desconecido'} {m?.from === 'private' ? 'privado' : null}  Para {m?.destino === 'all' ? 'Todos' : m?.destino?.name?.toUpperCase() || 'Desconecido'}
                       </Typography>
 
                     </Box>
@@ -351,15 +394,15 @@ const handleOpenUsuariosMenu = (event) => {
           setOpenDialog(false);
         }}
 
-        PaperProps={{
-          sx: {
-            borderRadius: 3,
-            p: 2,
-            minWidth: 400,
-            minHeight: 500,
-            background: 'linear-gradient(135deg, #E3F2FD, #FCE4EC)',
-          },
-        }}
+        // PaperProps={{
+        //   sx: {
+        //     borderRadius: 3,
+        //     p: 2,
+        //     minWidth: 400,
+        //     minHeight: 500,
+        //     background: 'linear-gradient(135deg, #E3F2FD, #FCE4EC)',
+        //   },
+        // }}
       >
         <DialogTitle>
           <Typography sx={{ fontWeight: 'bold', textAlign: 'center' }}>

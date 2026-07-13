@@ -86,7 +86,7 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 }));
 
 export default function PrimarySearchAppBar() {
-  const refreshProducts  = useRefreshProducts();
+  const refreshProducts = useRefreshProducts();
   const { WifiConfig, loadingWifiConfig, erroWifi, refetchWifiConfig } = useWifiConfig();
   const logout = useLogout();
   const { Dados, setDados } = React.useContext(DadosContext);
@@ -239,7 +239,7 @@ export default function PrimarySearchAppBar() {
 
             {Dados?.logado && window.location.pathname === '/minha-conta' && isMobile && <Divider />}
 
-            <ListItensMenu color={theme.palette.mode === 'light' ? red[500] : green[500]} />    
+            <ListItensMenu color={theme.palette.mode === 'light' ? red[500] : green[500]} />
 
 
 
@@ -286,7 +286,7 @@ export default function PrimarySearchAppBar() {
               onClick={() => { navegation('/chat') }}
               edge="start"
             >
-              <ForumIcon color="primary.contrastText"/>
+              <ForumIcon color="primary.contrastText" />
             </IconButton>
 
 
@@ -326,7 +326,7 @@ export default function PrimarySearchAppBar() {
               />
             </Search> */}
 
-            <Tooltip  title="Atualizar Lista" arrow 
+            {/* <Tooltip  title="Atualizar Lista" arrow 
             // TransitionComponent={Zoom}
             >
               <IconButton
@@ -346,21 +346,37 @@ export default function PrimarySearchAppBar() {
               >
                 <Refresh  />
               </IconButton>
-            </Tooltip>
+            </Tooltip> */}
+            <Typography
+              variant={isMobile ? "caption" : "subtitle1"}
+              color="text.secondary"
+              noWrap
+              sx={{ 
+                letterSpacing:{xs: "0.2rem", sm: "0.3rem", md: "0.5rem"}, 
+                ml: 2, 
+                display: "flex", 
+                alignItems: "center", 
+                gap: 0.5, 
+                color: "inherit", 
+                fontSize: "clamp(1rem, 2vw, 2rem)",flexGrow:1 }}
+            >
+              <AccessTimeIcon color='action' fontSize="small" />
+              · 10h até 2h
+            </Typography>
             <Box sx={{ flexGrow: 1 }} />
 
             {/* tela grande */}
 
-            <Box sx={{ flexShrink: 0, display: {}, flexDirection: 'column', alignItems: 'flex-end' }}>
-
+            <Box sx={{ flexShrink: 0, display: {xs:"none",md:"flex"}, flexDirection: 'column', alignItems: 'flex-end' }}>
               <Typography
                 variant={isMobile ? "caption" : "subtitle1"}
                 color="text.secondary"
-                sx={{ display: "flex", alignItems: "center", gap: 0.5, color: "inherit" }}
+                sx={{ letterSpacing: 4, ml: 2, display: "flex", alignItems: "center", gap: 0.5, color: "inherit", fontSize: 24 }}
               >
-                <AccessTimeIcon color='action' fontSize="small" />
-                · 10h até 2h
+                
+               Cantinho da Lora
               </Typography>
+
             </Box>
 
           </Toolbar>
